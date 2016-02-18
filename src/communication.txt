@@ -1,0 +1,9 @@
+This will be used for communication to each other.
+
+I have finished the diagram with the other methods that need to be implement. But check it if it's all there. 
+ also you can change the headings of the method in the diagram in (click on a method and in the 
+ 															left corner the is a option called visibility)
+ set that option correct so we can begin implement the methods and also set the 
+ heading of the method also correct so we can see it easily.
+ 
+ so questions ask them.
