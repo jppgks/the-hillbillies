@@ -92,5 +92,44 @@ public class Unit {
 	 */
 	private int agility;
 	
+	/**
+	 * Returns the current toughness of this unit.
+	 * 
+	 * @return	Current toughness of this unit.
+	 * 			| result == this.toughness
+	 */
+	public int getToughness() {
+		return -1;
+	}
+	
+	/**
+	 * Set the toughness for this unit to the given toughness.
+	 * 
+	 * @param 	toughness
+	 * 			The new toughness for this unit.
+	 * @post 	If the given toughness is within the range established by 
+	 * 			the minimum and maximum attribute value for this unit,
+	 * 			then the toughness of this unit is equal to the given toughness.
+	 * 			| if (toughness >= this.getMinAttributeValue()) && (toughness <= this.getMaxAttributeValue())
+	 * 			|	then new.getToughness() == toughness
+	 * @post	If the given toughness exceeds the maximum attribute value,
+	 * 			then the toughness of this unit is equal to the given toughness modulo
+	 * 			the range established by the minimum and maximum attribute values of this unit.
+	 * 			| if (toughness > this.getMaxAttributeValue())
+	 * 			| 	then new.getToughness() == 
+	 * 			|		((toughness-getMinAttributeValue()) % (getMaxAttributeValue()-getMinAttributeValue()+1)) + getMinAttributeValue()
+	 * @post	If the given toughness is lower than the minimum attribute value of this unit,
+	 * 			then the toughness of this unit is equal to the minimum attribute value.
+	 * 			| if (toughness < this.getMinAttributeValue())
+	 * 			|	then new.getToughness() == this.getMinAttributeValue()
+	 */
+	public void setToughness(int toughness) {
+		
+	}
+	
+	/**
+	 * Variable registering the toughness of this unit.
+	 */
+	private int toughness;
 	
 }
