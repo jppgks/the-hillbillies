@@ -9,7 +9,7 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * @author 	Iwein Bau & Joppe Geluykens
  * 
  * @invar 	The activity is always equals to a valid activity.
- * 			| isvalidAcivity(activity)
+ * 			| isValidAcivity(activity)
  * 
  */
 public class Unit {
@@ -59,18 +59,36 @@ public class Unit {
 		return this.weight;
 	}
 	
+	/**
+	 * @param weight
+	 * 
+	 * @post if the given weight larger is then MAX_WEIGHT then weight
+	 * 		is equals to MAX_WEIGHT
+	 * 		| if( weight > MAX_WEIGHT)
+	 * 		|	then new.weight == MAX_WEIGHT
+	 * @post if the given weight smaller is then MIN_WEIGHT
+	 * 			then is new weight equals to MIN_WEIGHT
+	 * 
+	 * @post the weight of a unit must all times be at least minWeight() 
+	 * 			if its smaller set the weight equals to minWeight()
+
+	 * @post the new weight is equals as the given weight 
+	 * 		|new.weight == weight
+	 * 
+	 */
 	public void setWeight(int weight){
+	
 		
 	}
 	/**
-	 * @param weight
-	 * 			the weight that needs to be checked
-	 * @return true if the weight is larger then 1 and 
+	 * @return the minWeight of a unit 
+	 * 		|(strengt+agility)/2
 	 */
-	public static boolean isValidWeight(int weight){
-		return true;
+	public static final int minWeight(){
+		return -1;
 	}
-
+	public static final int MAX_WEIGHT = 200;
+	public static final int	MIN_WEIGHT = 1;
 	/**
 	 * Variable registering the strength of this unit.
 	 */
@@ -270,7 +288,6 @@ public class Unit {
 		String[] activities = {"work,attack","defend","rest","move"};
 		return activities;
 	}
-
 
 	//her we put all the variables
 	private int hitPoints;
