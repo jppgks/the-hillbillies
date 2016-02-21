@@ -132,5 +132,28 @@ public class Unit {
 	 */
 	private int toughness;
 	
+	/**
+	 * Returns the current orientation of this unit.
+	 * 
+	 * @return 	Current orientation of this unit.
+	 * 			| result == this.orientation
+	 */
+	public float getOrientation() {
+		return -1;
+	}
+	
+	/**
+	 * @param 	orientation
+	 * 			The new orientation for this unit.
+	 * @post 	
+	 */
+	private void setOrientation(float orientation) {
+		
+	}
+	
+	/**
+	 * Variable registering the orientation of this unit.
+	 */
+	private float orientation = (float) (Math.PI / 2);
 	
 }
