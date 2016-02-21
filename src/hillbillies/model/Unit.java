@@ -171,7 +171,7 @@ public class Unit {
 	 *  		| result == this.MIN_ORIENTATION
 	 */
 	@Immutable
-	public float getMinOrientation() {
+	private float getMinOrientation() {
 		return -1;
 	}
 	
