@@ -10,8 +10,6 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * 
  * @invar 	The activity is always equals to a valid activity.
  * 			| isValidAcivity(activity)
- * @invar 	The weight is always equals to a valid weight
- * 			| isValidWeight(weight)
  * 
  */
 public class Unit {
@@ -64,27 +62,30 @@ public class Unit {
 	/**
 	 * @param weight
 	 * 
-	 * @pre the new weight must be valid
-	 * 		|isValisWeight(weight)
+	 * @post if the given weight larger is then MAX_WEIGHT then weight
+	 * 		is equals to MAX_WEIGHT
+	 * 		| if( weight > MAX_WEIGHT)
+	 * 		|	then new.weight == MAX_WEIGHT
+	 * @post if the given weight smaller is then MIN_WEIGHT
+	 * 			then is new weight equals to MIN_WEIGHT
 	 * 
+	 * @post the weight of a unit must all times be at least minWeight() 
+	 * 			if its smaller set the weight equals to minWeight()
+
 	 * @post the new weight is equals as the given weight 
 	 * 		|new.weight == weight
 	 * 
 	 */
 	public void setWeight(int weight){
-		assert isValidWeight(weight);
+	
 		
 	}
 	/**
-	 * @param weight
-	 * 			the weight that needs to be checked
-	 * @return true if the weight is larger then MIN_WEIGHT and smaller then MAX_WEIGHT
-	 * 			and must all times be at least be (strength + agility)/2
-	 * 			|return if ( weight >MIN_WEIGHT)&&(weight < MAX_WEIGHT)
-	 * 			
+	 * @return the minWeight of a unit 
+	 * 		|(strengt+agility)/2
 	 */
-	public static boolean isValidWeight(int weight){
-		return true;
+	public static final int minWeight(){
+		return -1;
 	}
 	public static final int MAX_WEIGHT = 200;
 	public static final int	MIN_WEIGHT = 1;
