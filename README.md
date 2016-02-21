@@ -1,2 +1,2 @@
 # the-hillbillies
-Java game, loosely based on War Craft or Dwarf Fortress.
+Java game, loosely based on War Craft / Dwarf Fortress.
