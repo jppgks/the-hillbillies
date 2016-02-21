@@ -7,6 +7,10 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * A class for a cubical object that occupies a position in the game world.
  * 
  * @author 	Iwein Bau & Joppe Geluykens
+ * 
+ * @invar 	The activity is always equals to a valid activity.
+ * 			| isvalidAcivity(activity)
+ * 
  */
 public class Unit {
 	
@@ -201,4 +205,54 @@ public class Unit {
 	 */
 	private float orientation = (float) (Math.PI / 2);
 	
+	/**
+	 * @param 	activity
+	 * 
+	 * @return 	Returns the current activity of this unit.
+	 * 			| result == this.activity
+	 */
+	public String getActivity(String activity){
+		return this.activity;
+	}
+	
+	/**
+	 * @param 	activity
+	 * 
+	 * @pre 	The given activity has to be a valid activity.
+	 * 			| isvalidAcivity(activity)
+	 * @post 	The new activity is equal to the given activity.
+	 * 			| new.getActivity() == activity
+	 * 
+	 */
+	public void setActivity(String activity){
+		assert isValidActivity(activity);
+		this.activity = activity;	
+	}
+	/**
+	 * @param 	activity
+	 * 
+	 * 
+	 * @return 	Returns true if the activity is equal to a valid activity.
+	 * 			| for each i in validActivities()
+	 * 			|	if( activity == j in validAcitivties())
+	 * 			|		then return true
+	 * 			| return false
+	 */
+	public static boolean isValidActivity(String activity){
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @return 	All the activities a unit can perform
+	 */
+	public static String[] validActivities(){
+		String[] activities = {"work,attack","defend","rest","move"};
+		return activities;
+	}
+
+	//her we put all the variables
+	private int hitPoints;
+	private String activity;
+	private int weight;
 }
