@@ -136,6 +136,8 @@ public class Unit {
 	
 	/**
 	 * A nested class in Unit for maintaining its position.
+	 * 
+	 * @note 	All of these functions should be worked out defensively.
 	 *
 	 */
 	private class Position {
