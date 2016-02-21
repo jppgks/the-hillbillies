@@ -52,6 +52,26 @@ public class Unit {
 	}
 	
 	/**
+	 * @return 	Returns the current weight of the unit.
+	 * 			| result == this.weight
+	 */
+	public int getWeight(){
+		return this.weight;
+	}
+	
+	public void setWeight(int weight){
+		
+	}
+	/**
+	 * @param weight
+	 * 			the weight that needs to be checked
+	 * @return true if the weight is larger then 1 and 
+	 */
+	public static boolean isValidWeight(int weight){
+		return true;
+	}
+
+	/**
 	 * Variable registering the strength of this unit.
 	 */
 	private int strength;
@@ -250,6 +270,7 @@ public class Unit {
 		String[] activities = {"work,attack","defend","rest","move"};
 		return activities;
 	}
+
 
 	//her we put all the variables
 	private int hitPoints;
