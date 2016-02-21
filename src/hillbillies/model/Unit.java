@@ -10,6 +10,8 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * 
  * @invar 	The activity is always equals to a valid activity.
  * 			| isValidAcivity(activity)
+ * @invar The amount of hitpoints is always a valid amount
+ * 			|isValidHitPoints(hitpoints)
  * 
  */
 public class Unit {
@@ -17,34 +19,38 @@ public class Unit {
 	/**
 	 * @return return the current hitpoints of the unit
 	 */
-	public int getHitpoints(){
+	public int getHitPoints(){
 		return this.hitPoints;
 	}
 	/**
 	 * @param hitpoints
-	 * 
-	 * @post the given new hitpoinst must be smaller then MAX_HITPOINTS else we set the 
-	 * 		hitpoints to the MAX_HITPOINTS
-	 * 		|if( hitpoints > MAX_HITPOINTS)
-	 * 		|	then new.hitpoints == MAX_HITPOINTS
-	 * 		|
-	 * @post the given hitpoints must be larger then MIN_HITPOINTS else we set the 
-	 * 		new hitpoints to the MIN_HITPOINTS
-	 * 		|if(hitpoints < MIN_HITPOINTS)
-	 * 		| then new.hitpoints = MIN_HITPOINTS
-	 * 
-	 * @post if the hitponst ar larger then MIN_HITPOINTS and the hitpoints are
-	 * 			smaller then MAX_HITPOINTS the new hitpoinst are equals to hitpoints
-	 * 		|else
-	 * 		|new.hitpoints == hitpoints
+	 * 			the amount of hitpoints need to be set
+	 * @post the hitpoints must be valid
+	 * 		|isValidHitPoints(hitpoints)
 	 * 
 	 */
 	public void setHitPoints(int hitpoints){
-		
-		
+		assert isValidHitPoints(hitpoints);
+		this.hitPoints = hitpoints;
 	}
-	public static final int MAX_HITPOINTS= 200;
-	public static final int	MIN_HITPOINTS = 1;
+	/**
+	 * @param hitpoints
+	 * 
+	 * @return true if the amounts of hitpoints larger or equals to zero
+	 *          and is smaller or equals to the maximum hitpoints the unit can have
+	 *         |return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
+	 */
+	public static boolean isValidHitPoints(int hitpoints){
+		return true;
+	}
+	/**
+	 * @return returns the maximum hitpoints the unit can have
+	 * 			|200.(weight/100).(toughness/100)
+	 */
+	public int maxHitPoints(){
+		return -1;
+	}
+
 	
 	/**
 	 * Returns the current strength of this unit.
