@@ -1,6 +1,7 @@
 package hillbillies.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
 
 /**
  * A class for a cubical object that occupies a position in the game world.
@@ -98,6 +99,7 @@ public class Unit {
 	 * @return	Current toughness of this unit.
 	 * 			| result == this.toughness
 	 */
+	@Basic
 	public int getToughness() {
 		return -1;
 	}
@@ -190,8 +192,72 @@ public class Unit {
 //			this.z = z;
 //		}
 	}
+
+	/**
+	 * Returns the current orientation of this unit.
+	 * 
+	 * @return 	Current orientation of this unit.
+	 * 			| result == this.orientation
+	 */
+	@Basic
+	public float getOrientation() {
+		return -1;
+	}
 	
+	/**
+	 * @param 	orientation
+	 * 			The new orientation for this unit.
+	 * @post 	If the given orientation is within the range of minimum and maximum
+	 * 			orientation values, the orientation of this unit is set to the given orientation.
+	 * 			| if (orientation >= this.getMinOrientation()) && (orientation <= this.getMaxOrientation)
+	 * 			| 	then new.getOrientation() == orientation
+	 * @post	If the given orientation is less than the minimum or greater than the
+	 * 			maximum orientation value, then the orientation of this unit is set to
+	 * 			the given orientation modulo the range established by the minimum and maximum
+	 * 			orientation values.
+	 * 			| if (orientation < this.getMinOrientation) || (orientation > this.getMaxOrientation())
+	 * 			| 	then new.getOrientation() == 
+	 * 			|		((orientation-getMinOrientation()) % (getMaxOrientation()-getMinOrientation()+1)) + getMinOrientation()
+	 */
+	private void setOrientation(float orientation) {
+		
+	}
 	
+	/**
+	 * Returns the minimum orientation value of this unit.
+	 * 
+	 * @return 	Minimum orientation value of this unit.
+	 *  		| result == this.MIN_ORIENTATION
+	 */
+	@Immutable
+	private float getMinOrientation() {
+		return -1;
+	}
 	
+	/**
+	 * Constant reflecting the lowest possible value for the orientation of this unit.
+	 */
+	private static final float MIN_ORIENTATION = (float) (- Math.PI / 2);
+	
+	/**
+	 * Returns the maximum orientation value of this unit.
+	 * 
+	 * @return 	Maximum orientation value of this unit.
+	 *  		| result == this.MAX_ORIENTATION
+	 */
+	@Immutable
+	private float getMaxOrientation() {
+		return -1;
+	}
+	
+	/**
+	 * Constant reflecting the highest possible value for the orientation of this unit.
+	 */
+	private static final float MAX_ORIENTATION = (float) (Math.PI / 2);
+	
+	/**
+	 * Variable registering the orientation of this unit.
+	 */
+	private float orientation = (float) (Math.PI / 2);
 	
 }
