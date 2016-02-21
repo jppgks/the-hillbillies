@@ -46,6 +46,51 @@ public class Unit {
 		
 	}
 	
+	/**
+	 * Variable registering the strength of this unit.
+	 */
+	private int strength;
+	
+	/**
+	 * Returns the current agility of this unit.
+	 * 
+	 * @return	Current agility of this unit.
+	 * 			| result == this.agility
+	 */
+	@Basic
+	public int getAgility() {
+		return -1;
+	}
+	
+	/**
+	 * Set the agility for this unit to the given agility.
+	 * 
+	 * @param 	agility
+	 * 			The new agility for this unit.
+	 * @post 	If the given agility is within the range established by 
+	 * 			the minimum and maximum attribute value for this unit,
+	 * 			then the agility of this unit is equal to the given agility.
+	 * 			| if (agility >= this.getMinAttributeValue()) && (agility <= this.getMaxAttributeValue())
+	 * 			|	then new.getAgility() == agility
+	 * @post	If the given agility exceeds the maximum attribute value,
+	 * 			then the agility of this unit is equal to the given agility modulo
+	 * 			the range established by the minimum and maximum attribute values of this unit.
+	 * 			| if (agility > this.getMaxAttributeValue())
+	 * 			| 	then new.getAgility() == 
+	 * 			|		((agility-getMinAttributeValue()) % (getMaxAttributeValue()-getMinAttributeValue()+1)) + getMinAttributeValue()
+	 * @post	If the given agility is lower than the minimum attribute value of this unit,
+	 * 			then the agility of this unit is equal to the minimum attribute value.
+	 * 			| if (agility < this.getMinAttributeValue())
+	 * 			|	then new.getAgility() == this.getMinAttributeValue()
+	 */
+	public void setAgility(int agility) {
+		
+	}
+	
+	/**
+	 * Variable registering the agility of this unit.
+	 */
+	private int agility;
 	
 	
 }
