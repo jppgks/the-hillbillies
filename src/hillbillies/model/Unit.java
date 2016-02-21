@@ -14,6 +14,37 @@ import be.kuleuven.cs.som.annotate.Immutable;
  */
 public class Unit {
 	
+	/**
+	 * @return return the current hitpoints of the unit
+	 */
+	public int getHitpoints(){
+		return this.hitPoints;
+	}
+	/**
+	 * @param hitpoints
+	 * 
+	 * @post the given new hitpoinst must be smaller then MAX_HITPOINTS else we set the 
+	 * 		hitpoints to the MAX_HITPOINTS
+	 * 		|if( hitpoints > MAX_HITPOINTS)
+	 * 		|	then new.hitpoints == MAX_HITPOINTS
+	 * 		|
+	 * @post the given hitpoints must be larger then MIN_HITPOINTS else we set the 
+	 * 		new hitpoints to the MIN_HITPOINTS
+	 * 		|if(hitpoints < MIN_HITPOINTS)
+	 * 		| then new.hitpoints = MIN_HITPOINTS
+	 * 
+	 * @post if the hitponst ar larger then MIN_HITPOINTS and the hitpoints are
+	 * 			smaller then MAX_HITPOINTS the new hitpoinst are equals to hitpoints
+	 * 		|else
+	 * 		|new.hitpoints == hitpoints
+	 * 
+	 */
+	public void setHitPoints(int hitpoints){
+		
+		
+	}
+	public static final int MAX_HITPOINTS= 200;
+	public static final int	MIN_HITPOINTS = 1;
 	
 	/**
 	 * Returns the current strength of this unit.
