@@ -6,6 +6,10 @@ import be.kuleuven.cs.som.annotate.Basic;
  * A class for a cubical object that occupies a position in the game world.
  * 
  * @author 	Iwein Bau & Joppe Geluykens
+ * 
+ * @invar the activity is always equals to a valid activity
+ * 			| isvalidAcivity(activity)
+ * 
  */
 public class Unit {
 	
@@ -45,7 +49,53 @@ public class Unit {
 	public void setStrength(int strength) {
 		
 	}
+	/**
+	 * @param activity
+	 * 
+	 * @return this gives the current activity of the unit
+	 * 			| result == this.activity
+	 */
+	public String getActivity(String activity){
+		return this.activity;
+	}
+	/**
+	 * @param activity
+	 * 
+	 * @pre the activity has to be a valid activity
+	 * 		| isvalidAcivity(activity)
+	 * @post the current activity is equals to the new activity
+	 * 		| new.getActivity() == activity
+	 * 
+	 */
+	public void setActivity(String activity){
+		assert isValidActivity(activity);
+		this.activity = activity;	
+	}
+	/**
+	 * @param activity
+	 * 
+	 * 
+	 * @return true if the activity equals to a valid activity
+	 * 			|for each i in validActivities()
+	 * 			|	if( activity == j in validAcitivties())
+	 * 			|		then return true
+	 * 			|return false
+	 */
+	public static boolean isValidActivity(String activity){
+		return true;
+	}
 	
-	
-	
+	/**
+	 * 
+	 * @return all the activities an unit van do
+	 */
+	public static String[] validActivities(){
+		String[] activities = {"work,attack","defend","rest","move"};
+		return activities;
+	}
+
+	//her we put all the variables
+	private int hitPoints;
+	private String activity;
+	private int weight;
 }
