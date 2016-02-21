@@ -9,7 +9,9 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * @author 	Iwein Bau & Joppe Geluykens
  * 
  * @invar 	The activity is always equals to a valid activity.
- * 			| isvalidAcivity(activity)
+ * 			| isValidAcivity(activity)
+ * @invar 	The weight is always equals to a valid weight
+ * 			| isValidWeight(weight)
  * 
  */
 public class Unit {
