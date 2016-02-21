@@ -59,18 +59,33 @@ public class Unit {
 		return this.weight;
 	}
 	
+	/**
+	 * @param weight
+	 * 
+	 * @pre the new weight must be valid
+	 * 		|isValisWeight(weight)
+	 * 
+	 * @post the new weight is equals as the given weight 
+	 * 		|new.weight == weight
+	 * 
+	 */
 	public void setWeight(int weight){
+		assert isValidWeight(weight);
 		
 	}
 	/**
 	 * @param weight
 	 * 			the weight that needs to be checked
-	 * @return true if the weight is larger then 1 and 
+	 * @return true if the weight is larger then MIN_WEIGHT and smaller then MAX_WEIGHT
+	 * 			and must all times be at least be (strength + agility)/2
+	 * 			|return if ( weight >MIN_WEIGHT)&&(weight < MAX_WEIGHT)
+	 * 			
 	 */
 	public static boolean isValidWeight(int weight){
 		return true;
 	}
-
+	public static final int MAX_WEIGHT = 200;
+	public static final int	MIN_WEIGHT = 1;
 	/**
 	 * Variable registering the strength of this unit.
 	 */
@@ -270,7 +285,6 @@ public class Unit {
 		String[] activities = {"work,attack","defend","rest","move"};
 		return activities;
 	}
-
 
 	//her we put all the variables
 	private int hitPoints;
