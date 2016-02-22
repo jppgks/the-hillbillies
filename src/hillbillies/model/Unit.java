@@ -123,8 +123,12 @@ public class Unit {
 	 * @throws IllegalStateException
 	 * 			The given workActivity is not a valid workActivity for work
 	 * 			| !isValidWorkActivity(workActivity)
+	 *
+	 * @throws IllegalArgumentException
+	 * 			The given workActivity is not a valid workActivity for work
+	 * 			| !isValidWorkActivity(workActivity)
 	 */			
-	public void work(String workActivity) throws IllegalStateException{
+	public void work(String workActivity) throws IllegalArgumentException{
 		
 	}
 	/**
@@ -156,7 +160,7 @@ public class Unit {
 	
 	/**
 	 * 
-	 * @post the time it takes for a work activity is equals to 500/streght
+	 * @post the time it takes for a work activity is equals to 500/strength
 	 * 		| new.timeForWork == 500/strength 
 	 * 
 	 */
