@@ -9,8 +9,8 @@ import be.kuleuven.cs.som.annotate.*;
  * 
  * @invar 	The activity is always equals to a valid activity.
  * 			| isValidAcivity(activity)
- * @invar The amount of hitpoints is always a valid amount
- * 			|isValidHitPoints(hitpoints)
+ * @invar 	The amount of hitpoints is always a valid amount
+ * 			| isValidHitPoints(hitpoints)
  * 
  */
 public class Unit {
@@ -21,6 +21,7 @@ public class Unit {
 	public int getHitPoints(){
 		return this.hitPoints;
 	}
+
 	/**
 	 * @param hitpoints
 	 * 			the amount of hitpoints need to be set
@@ -32,6 +33,7 @@ public class Unit {
 		assert isValidHitPoints(hitpoints);
 		this.hitPoints = hitpoints;
 	}
+
 	/**
 	 * @param hitpoints
 	 * 
@@ -42,6 +44,7 @@ public class Unit {
 	public static boolean isValidHitPoints(int hitpoints){
 		return true;
 	}
+
 	/**
 	 * @return returns the maximum hitpoints the unit can have
 	 * 			|200.(weight/100).(toughness/100)
@@ -217,59 +220,93 @@ public class Unit {
 	
 	/**
 	 * A nested class in Unit for maintaining its position.
+	 *
+	 * @invar  	The coordinates of each Position must be a valid coordinates for any
+	 *         	Position.
+	 *       	| isValidPosition(this.getCoordinates())
 	 * 
 	 * @note 	All of these functions should be worked out defensively.
 	 *
 	 */
 	private class Position {
-		
-		private double x, y, z;
-		
+
+		/**
+		 * Initialize this new Position to default coordinates.
+		 *
+		 * @effect 	The coordinates of this new Position are set to 0.
+		 *       	| this.setCoordinates(Coordinate)
+		 */
 		public Position() {
 			this.x = 0;
 			this.y = 0;
 			this.z = 0;
 		}
-		
-//		public Position(double x, double y, double z) {
-//			this.x = x;
-//			this.y = y;
-//			this.z = z;
-//		}
-		
-		public double[] get() {
-			return new double[] {x, y, z};
+
+		/**
+		 * Initialize this new Position with given coordinates.
+		 *
+		 * @param  coordinates
+		 *         The coordinates for this new Position.
+		 * @effect The coordinates of this new Position are set to
+		 *         the given coordinates.
+		 *       | this.setCoordinates(coordinates)
+		 */
+		public Position(double... coordinates) throws IllegalCoordinateException {
+			this.setCoordinates(coordinates);
 		}
 		
-//		public double getX() {
-//			return this.x;
-//		}
-//		
-//		public double getY() {
-//			return this.y;
-//		}
-//		
-//		public double getZ() {
-//			return this.z;
-//		}
 		
-		public void set(double... position) {
-			this.x = position[0];
-			this.y = position[1];
-			this.z = position[2];
+		/**
+		 * Return the coordinates of this Position.
+		 */
+		@Basic @Raw
+		public double[] getCoordinates() {
+		  return new double[] {this.x, this.y, this.z};
 		}
 		
-//		public void setX(double x) {
-//			this.x = x;
-//		}
-//		
-//		public void setY(double y) {
-//			this.y = y;
-//		}
-//		
-//		public void setZ(double z) {
-//			this.z = z;
-//		}
+		/**
+		 * Check whether the given coordinates are valid coordinates for
+		 * any Position.
+		 *  
+		 * @param  	coordinates
+		 *         	The coordinates to check.
+		 * @return 	True if all coordinates are within range, false otherwise.
+		 *       	| result ==
+		 *       	|	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
+		 *       	|	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
+		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
+		 */
+		public boolean isValidPosition(double[] coordinates) {
+		  return false;
+		}
+		
+		/**
+		 * Set the coordinates of this Position to the given coordinates.
+		 * 
+		 * @param	coordinates
+		 *         	The new coordinates for this Position.
+		 * @post 	The coordinates of this new Position are equal to
+		 *         	the given coordinates.
+		 *       	| new.getCoordinates() == coordinates
+		 * @throws IllegalCoordinateException
+		 *         	The given coordinates are not valid coordinates for any
+		 *         	Position.
+		 *       	| ! isValidPosition(getCoordinates())
+		 */
+		@Raw
+		public void setCoordinates(double[] coordinates) throws IllegalCoordinateException {
+			if (! isValidPosition(coordinates))
+				throw new IllegalCoordinateException(coordinates);
+			this.x = coordinates[0];
+			this.y = coordinates[1];
+			this.z = coordinates[2];
+		}
+		
+		/**
+		 * Variables registering the coordinates of this Position.
+		 */
+		private double x, y, z;
+
 	}
 
 	/**
