@@ -172,6 +172,53 @@ public class Unit {
 	 * variable time that it takes for a work activity
 	 */
 	public float timeForWork;
+	
+	
+	/**
+	 * @post the activity of the unit is set to work
+	 * 			|new.setActivity(rest) == rest
+	 * @post while the hitpoints not larger or equals the maxHitpoints then
+	 * 		 add every REGEN_REST_TIME second toughness/200 hitpoints
+	 * 		 else check the stamina points if they are not the
+	 * 		 maximun add every REGEN_REST_TIME tougness/100 stanmina points
+	 * 			| while (this.getHitPoints() <= this.maxHitPoints)
+	 * 			| 		then advanceTime(REGEN_REST_TIME)
+	 * 			|while (this.getStamina <= this.maxStaminaPoints())
+	 * 			|		then advaceTime(REGEN_REST_TIME)
+	 * 			|
+	 * 
+	 * @effect set the activity of the unit to work
+	 * 			|this.setActivity(rest)
+	 * 
+	 * @throws IllegalStateException
+	 * 			When a unit has the maximum hitpoints and the maximum of stamina
+	 * 			the unit can't rest
+	 * 			|if(this.getHitPoints() == this.maxHitPoints()) 
+	 * 			|&& ( this.getStamina == this.getMaxStaminaPoints())	
+	 */
+	public void rest()throws IllegalStateException{
+		
+	}
+	/**
+	 * variable time need the regen hp and stamina
+	 * 
+	 */
+	public static final double REGEN_REST_TIME = 0.2;
+
+	/**
+	 * @return gives the amount hitpoinst need to regenerate per time unit of REGEN_REST_TIME
+	 * 			|result == (this.toughness)/200
+	 */
+	public int getRegenHitPoints(){
+		return -1;
+	}
+	/**
+	 * @return gives the amount Stamina points need to regenerate per time unit of REGEN_REST_TIME
+	 * 			| restult == (this.toughness)/100
+	 */	
+	public int getRegenStamina(){
+		return -1;
+	}
 	/**
 	 * Variable registering the current Position of this Unit.
 	 */
@@ -568,7 +615,7 @@ public class Unit {
 	 * @param  name
 	 *         The name to check.
 	 * @return
-	 *       | result == name.matches(“\”?[A-Z]{1}[a-zA-Z’\s]*\”?”)
+	 *       | result == name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?")
 	 */
 	public static boolean isValidName(String name) {
 	  return name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?");
