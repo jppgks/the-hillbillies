@@ -1,7 +1,6 @@
 package hillbillies.model;
 
-import be.kuleuven.cs.som.annotate.Basic;
-import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.*;
 
 /**
  * A class for a cubical object that occupies a position in the game world.
@@ -87,6 +86,11 @@ public class Unit {
 	public void setStrength(int strength) {
 		
 	}
+
+	/**
+	 * Variable registering the strength of this unit.
+	 */
+	private int strength;
 	
 	/**
 	 * @return 	Returns the current weight of the unit.
@@ -126,10 +130,6 @@ public class Unit {
 	}
 	public static final int MAX_WEIGHT = 200;
 	public static final int	MIN_WEIGHT = 1;
-	/**
-	 * Variable registering the strength of this unit.
-	 */
-	private int strength;
 	
 	/**
 	 * Returns the current agility of this unit.
