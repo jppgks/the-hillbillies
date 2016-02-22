@@ -9,3 +9,7 @@ Practice the notion of:
 
 ## Notes
 - src/ contains our self-written code, code in src-provided/ was given at the start of this assignment.
+
+## Contributors
+- [Iwein Bau](https://github.com/iweinbau)
+- [Joppe Geluykens](https://github.com/jppgks)
