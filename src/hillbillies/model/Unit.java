@@ -120,11 +120,11 @@ public class Unit {
 	 * @effect set the activity of the unit to work
 	 * 			|this.setActivity(work)
 	 * 
-	 * @throws IllegalStateException
+	 * @throws IllegalArgumentException
 	 * 			The given workActivity is not a valid workActivity for work
 	 * 			| !isValidWorkActivity(workActivity)
 	 */			
-	public void work(String workActivity) throws IllegalStateException{
+	public void work(String workActivity) throws IllegalArgumentException{
 		
 	}
 	/**
