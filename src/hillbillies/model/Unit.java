@@ -113,73 +113,65 @@ public class Unit {
 		private double x, y, z;
 	}
 	/**
-	 * Return the workActivity of this Unit.
-	 */
-	@Basic @Raw
-	public String getWorkActivity() {
-		return this.workActivity;
+	 * @param workActivity
+	 * 
+	 * @post the activity of the unit is set to work
+	 * 			|new.setActivity(work) == work
+	 * 
+	 * @effect set the activity of the unit to work
+	 * 			|this.setActivity(work)
+	 * 
+	 * @throws IllegalStateException
+	 * 			The given workActivity is not a valid workActivity for work
+	 * 			| !isValidWorkActivity(workActivity)
+	 *
+	 * @throws IllegalArgumentException
+	 * 			The given workActivity is not a valid workActivity for work
+	 * 			| !isValidWorkActivity(workActivity)
+	 */			
+	public void work(String workActivity) throws IllegalArgumentException{
+		
 	}
-	
 	/**
-	 * Check whether the given workActivity is a valid workActivity for
-	 * any Unit.
+	 * @param workActivity
+	 * 			the workActivity that we want to check
+	 * @return true if workActivity is in VALID_WORKACTIVITIES else we return false
+	 * 			|for each i in VALID_WORKACTIVITIES
+	 * 			| 	if workActivity == VALID_WORKACTIVITIES[j]
+	 * 			|		then return true
+	 * 			|return false
+	 */
+	public boolean isValidWorkActivity(String workActivity){
+		return true;
+	}
+	/**
+	 *  variable list with all valid workActivities a unit can do
 	 *  
-	 * @param  workActivity
-	 *         The workActivity to check.
-	 * @return return true if the workActivity sit in VALID_ACTIVITIES
-	 *       | result == for i in VALID_ACTIVITIES
-	 *       |				if (workActivity == VALID_ACTIVITIES[j])
-	 *       |					return true
-	 *       |			return false
-	*/
-	public static boolean isValidWorkActivity(String workActivity) {
-		return false;
+	 */
+	private static String VALID_WORKACTIVITIES[]= {"write all available work activities"};
+	
+	/**
+	 * 
+	 * @return gives the time its takes for a work activity
+	 * 			|result == this.timeForWork
+	 */
+	public float getTimeForWork(){
+		return this.timeForWork;
 	}
 	
 	/**
-	 * Set the workActivity of this Unit to the given workActivity.
 	 * 
-	 * @param  workActivity
-	 *         The new workActivity for this Unit.
-	 * @post   The workActivity of this new Unit is equal to
-	 *         the given workActivity.
-	 *       | new.getWorkActivity() == workActivity
-	 * @throws IlligalActivityException
-	 *         The given workActivity is not a valid workActivity for any
-	 *         Unit.
-	 *       | ! isValidWorkActivity(getWorkActivity())
-	 */
-	@Raw
-	public void setWorkActivity(String workActivity) throws IlligalActivityException {
-		if (! isValidWorkActivity(workActivity))
-			throw new IlligalActivityException();
-		this.workActivity = workActivity;
-	}
-	/**
-	 * @return the time need for a workActivity
+	 * @post the time it takes for a work activity is equals to 500/strength
+	 * 		| new.timeForWork == 500/strength 
 	 * 
 	 */
-	public float getTimeForActivity() {
-		return this.timeForActivity;
+	public void setTimeForWork(){
+		
 	}
 	/**
-	 * @post the time of a workActivity is always equals to 500/strength
+	 * variable time that it takes for a work activity
 	 */
-	public void setTimeForActivity(){
-		float timeForActivity = 500/strength;
-		this.timeForActivity= timeForActivity;
-	}
-	/**
-	 * Variable registering the workActivity of this Unit.
-	 */
-	private String workActivity;
-	/**
-	 * Variable registering the time need for an activity.
-	 */
-	public float timeForActivity;
-	
-	public static final String[] VALID_ACTIVITIES = {" "," "};
-	
+	public float timeForWork;
 	/**
 	 * Variable registering the current Position of this Unit.
 	 */
