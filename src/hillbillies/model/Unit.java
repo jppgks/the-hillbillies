@@ -14,8 +14,13 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar  	The stamina of each Unit must be a valid stamina for any
  *         	Unit.
  *       	| isValidStamina(getStamina())
+ * @invar  The workActivity of each Unit must be a valid workActivity for any
+ *         Unit.
+ *       | isValidWorkActivity(getWorkActivity())
+ *	
  * 
  */
+
 public class Unit {
 
 	/**
@@ -101,14 +106,79 @@ public class Unit {
 			this.y = coordinates[1];
 			this.z = coordinates[2];
 		}
-
 		/**
 		 * Variables registering the coordinates of this Position.
 		 */
 		private double x, y, z;
-
 	}
-
+	/**
+	 * Return the workActivity of this Unit.
+	 */
+	@Basic @Raw
+	public String getWorkActivity() {
+		return this.workActivity;
+	}
+	
+	/**
+	 * Check whether the given workActivity is a valid workActivity for
+	 * any Unit.
+	 *  
+	 * @param  workActivity
+	 *         The workActivity to check.
+	 * @return return true if the workActivity sit in VALID_ACTIVITIES
+	 *       | result == for i in VALID_ACTIVITIES
+	 *       |				if (workActivity == VALID_ACTIVITIES[j])
+	 *       |					return true
+	 *       |			return false
+	*/
+	public static boolean isValidWorkActivity(String workActivity) {
+		return false;
+	}
+	
+	/**
+	 * Set the workActivity of this Unit to the given workActivity.
+	 * 
+	 * @param  workActivity
+	 *         The new workActivity for this Unit.
+	 * @post   The workActivity of this new Unit is equal to
+	 *         the given workActivity.
+	 *       | new.getWorkActivity() == workActivity
+	 * @throws IlligalActivityException
+	 *         The given workActivity is not a valid workActivity for any
+	 *         Unit.
+	 *       | ! isValidWorkActivity(getWorkActivity())
+	 */
+	@Raw
+	public void setWorkActivity(String workActivity) throws IlligalActivityException {
+		if (! isValidWorkActivity(workActivity))
+			throw new IlligalActivityException();
+		this.workActivity = workActivity;
+	}
+	/**
+	 * @return the time need for a workActivity
+	 * 
+	 */
+	public float getTimeForActivity() {
+		return this.timeForActivity;
+	}
+	/**
+	 * @post the time of a workActivity is always equals to 500/strength
+	 */
+	public void setTimeForActivity(){
+		float timeForActivity = 500/strength;
+		this.timeForActivity= timeForActivity;
+	}
+	/**
+	 * Variable registering the workActivity of this Unit.
+	 */
+	private String workActivity;
+	/**
+	 * Variable registering the time need for an activity.
+	 */
+	public float timeForActivity;
+	
+	public static final String[] VALID_ACTIVITIES = {" "," "};
+	
 	/**
 	 * Variable registering the current Position of this Unit.
 	 */
