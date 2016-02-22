@@ -14,11 +14,12 @@ import be.kuleuven.cs.som.annotate.*;
  * @invar  	The stamina of each Unit must be a valid stamina for any
  *         	Unit.
  *       	| isValidStamina(getStamina())
- * @invar  The workActivity of each Unit must be a valid workActivity for any
- *         Unit.
- *       | isValidWorkActivity(getWorkActivity())
- *	
- * 
+ * @invar  	The workActivity of each Unit must be a valid workActivity for any
+ *         	Unit.
+ *       	| isValidWorkActivity(getWorkActivity())
+ * @invar  	The name of each Unit must be a valid name for any
+ *         	Unit.
+ *       	| isValidName(getName())
  */
 
 public class Unit {
@@ -559,4 +560,51 @@ public class Unit {
 	 * Variable registering the stamina of this Unit.
 	 */
 	private int stamina;
+
+	/**
+	 * Return the name of this Unit.
+	 */
+	@Basic @Raw
+	public String getName() {
+	  return this.name;
+	}
+
+	/**
+	 * Check whether the given name is a valid name for
+	 * any Unit.
+	 *
+	 * @param  name
+	 *         The name to check.
+	 * @return
+	 *       | result == name.matches(“\”?[A-Z]{1}[a-zA-Z’\s]*\”?”)
+	 */
+	public static boolean isValidName(String name) {
+	  return name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?");
+	}
+
+	/**
+	 * Set the name of this Unit to the given name.
+	 *
+	 * @param  name
+	 *         The new name for this Unit.
+	 * @post   The name of this new Unit is equal to
+	 *         the given name.
+	 *       | new.getName() == name
+	 * @throws IllegalArgumentException
+	 *         The given name is not a valid name for any
+	 *         Unit.
+	 *       | ! isValidName(getName())
+	 */
+	@Raw
+	public void setName(String name)
+	      throws IllegalArgumentException {
+	  if (! isValidName(name))
+	    throw new IllegalArgumentException();
+	  this.name = name;
+	}
+
+	/**
+	 * Variable registering the name of this Unit.
+	 */
+	private String name;
 }
