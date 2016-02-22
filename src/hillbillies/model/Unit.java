@@ -11,6 +11,9 @@ import be.kuleuven.cs.som.annotate.*;
  * 			| isValidAcivity(activity)
  * @invar 	The amount of hitpoints is always a valid amount
  * 			| isValidHitPoints(hitpoints)
+ * @invar  	The stamina of each Unit must be a valid stamina for any
+ *         	Unit.
+ *       	| isValidStamina(getStamina())
  * 
  */
 public class Unit {
@@ -429,4 +432,61 @@ public class Unit {
 	}
 
 	private int hitPoints;
+	
+	/**
+	 * Return the stamina of this Unit.
+	 *
+	 * @return	| result == this.stamina
+	 */
+	@Basic @Raw
+	public int getStamina() {
+	  return this.stamina;
+	}
+	
+	/**
+	 * Check whether the given stamina is a valid stamina for
+	 * any Unit.
+	 *  
+	 * @param  stamina
+	 *         The stamina to check.
+	 * @return 
+	 *       | result == (stamina >= 0) && (stamina < this.getMaxStaminaPoints())
+	 */
+	public static boolean isValidStamina(int stamina) {
+	  return false;
+	}
+	
+	/**
+	 * Set the stamina of this Unit to the given stamina.
+	 * 
+	 * @param  stamina
+	 *         The new stamina for this Unit.
+	 * @pre    The given stamina must be a valid stamina for any
+	 *         Unit.
+	 *       | isValidStamina(stamina)
+	 * @post   The stamina of this Unit is equal to the given
+	 *         stamina.
+	 *       | new.getStamina() == stamina
+	 */
+	@Raw
+	public void setStamina(int stamina) {
+	  assert isValidStamina(stamina);
+	  this.stamina = stamina;
+	}
+
+	/**
+	 * Returns the maximum amount of stamina points for any Unit.
+	 *
+	 * @return	| result == this.maxStamina
+     */
+	public int getMaxStaminaPoints() {
+		return -1;
+	}
+
+	private int maxStamina;
+	
+	/**
+	 * Variable registering the stamina of this Unit.
+	 */
+	private int stamina;
 }
