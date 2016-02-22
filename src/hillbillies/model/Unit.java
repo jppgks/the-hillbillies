@@ -113,6 +113,13 @@ public class Unit {
 	}
 	/**
 	 * @param workActivity
+	 * 
+	 * @post the activity of the unit is set to work
+	 * 			|new.setActivity(work) == work
+	 * 
+	 * @effect set the activity of the unit to work
+	 * 			|this.setActivity(work)
+	 * 
 	 * @throws IllegalStateException
 	 * 			The given workActivity is not a valid workActivity for work
 	 * 			| !isValidWorkActivity(workActivity)
