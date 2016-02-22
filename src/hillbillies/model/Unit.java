@@ -7,9 +7,50 @@ import be.kuleuven.cs.som.annotate.Immutable;
  * A class for a cubical object that occupies a position in the game world.
  * 
  * @author 	Iwein Bau & Joppe Geluykens
+ * 
+ * @invar 	The activity is always equals to a valid activity.
+ * 			| isValidAcivity(activity)
+ * @invar The amount of hitpoints is always a valid amount
+ * 			|isValidHitPoints(hitpoints)
+ * 
  */
 public class Unit {
 	
+	/**
+	 * @return return the current hitpoints of the unit
+	 */
+	public int getHitPoints(){
+		return this.hitPoints;
+	}
+	/**
+	 * @param hitpoints
+	 * 			the amount of hitpoints need to be set
+	 * @post the hitpoints must be valid
+	 * 		|isValidHitPoints(hitpoints)
+	 * 
+	 */
+	public void setHitPoints(int hitpoints){
+		assert isValidHitPoints(hitpoints);
+		this.hitPoints = hitpoints;
+	}
+	/**
+	 * @param hitpoints
+	 * 
+	 * @return true if the amounts of hitpoints larger or equals to zero
+	 *          and is smaller or equals to the maximum hitpoints the unit can have
+	 *         |return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
+	 */
+	public static boolean isValidHitPoints(int hitpoints){
+		return true;
+	}
+	/**
+	 * @return returns the maximum hitpoints the unit can have
+	 * 			|200.(weight/100).(toughness/100)
+	 */
+	public int maxHitPoints(){
+		return -1;
+	}
+
 	
 	/**
 	 * Returns the current strength of this unit.
@@ -47,6 +88,44 @@ public class Unit {
 		
 	}
 	
+	/**
+	 * @return 	Returns the current weight of the unit.
+	 * 			| result == this.weight
+	 */
+	public int getWeight(){
+		return this.weight;
+	}
+	
+	/**
+	 * @param weight
+	 * 
+	 * @post if the given weight larger is then MAX_WEIGHT then weight
+	 * 		is equals to MAX_WEIGHT
+	 * 		| if( weight > MAX_WEIGHT)
+	 * 		|	then new.weight == MAX_WEIGHT
+	 * @post if the given weight smaller is then MIN_WEIGHT
+	 * 			then is new weight equals to MIN_WEIGHT
+	 * 
+	 * @post the weight of a unit must all times be at least minWeight() 
+	 * 			if its smaller set the weight equals to minWeight()
+
+	 * @post the new weight is equals as the given weight 
+	 * 		|new.weight == weight
+	 * 
+	 */
+	public void setWeight(int weight){
+	
+		
+	}
+	/**
+	 * @return the minWeight of a unit 
+	 * 		|(strengt+agility)/2
+	 */
+	public static final int minWeight(){
+		return -1;
+	}
+	public static final int MAX_WEIGHT = 200;
+	public static final int	MIN_WEIGHT = 1;
 	/**
 	 * Variable registering the strength of this unit.
 	 */
@@ -260,4 +339,54 @@ public class Unit {
 	 */
 	private float orientation = (float) (Math.PI / 2);
 	
+	/**
+	 * @param 	activity
+	 * 
+	 * @return 	Returns the current activity of this unit.
+	 * 			| result == this.activity
+	 */
+	public String getActivity(String activity){
+		return this.activity;
+	}
+	
+	/**
+	 * @param 	activity
+	 * 
+	 * @pre 	The given activity has to be a valid activity.
+	 * 			| isvalidAcivity(activity)
+	 * @post 	The new activity is equal to the given activity.
+	 * 			| new.getActivity() == activity
+	 * 
+	 */
+	public void setActivity(String activity){
+		assert isValidActivity(activity);
+		this.activity = activity;	
+	}
+	/**
+	 * @param 	activity
+	 * 
+	 * 
+	 * @return 	Returns true if the activity is equal to a valid activity.
+	 * 			| for each i in validActivities()
+	 * 			|	if( activity == j in validAcitivties())
+	 * 			|		then return true
+	 * 			| return false
+	 */
+	public static boolean isValidActivity(String activity){
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @return 	All the activities a unit can perform
+	 */
+	public static String[] validActivities(){
+		String[] activities = {"work,attack","defend","rest","move"};
+		return activities;
+	}
+
+	//her we put all the variables
+	private int hitPoints;
+	private String activity;
+	private int weight;
 }
