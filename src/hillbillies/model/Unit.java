@@ -6,6 +6,9 @@ import be.kuleuven.cs.som.annotate.*;
  * A class for a cubical object that occupies a position in the game world.
  * 
  * @author 	Iwein Bau & Joppe Geluykens
+ *
+ * @note 	A Unit is a basic type of in-game character with the ability to move around,
+ * 			interact with other such characters and manipulate the game world.
  * 
  * @invar 	The activity is always equals to a valid activity.
  * 			| isValidAcivity(activity)
