@@ -733,6 +733,11 @@ public class Unit {
 	 */
 	private String name;
 
+	/**
+	 * 
+	 * @param attacker
+	 * @param defender
+     */
 	public static void fight(Unit attacker, Unit defender) {
 		defend(attacker, defender);
 	}
@@ -772,6 +777,7 @@ public class Unit {
 	 * @post	When the defender fails to dodge or block the attack,
 	 * 			the defender's hitpoints are lowered,
 	 * 			relative to the strength of the attacker.
+	 * 			|
 	 *
 	 */
 	public static void defend(Unit attacker, Unit defender) {
