@@ -126,7 +126,7 @@ public class Unit {
 	 * 			when the unit can't move when the it is attacked
 	 * 
 	 */
-	public void moveToAdjacent(Position targetposition) throws IllegalStateException{targetposition
+	public void moveToAdjacent(Position targetposition) throws IllegalStateException{
 
 	}
 	/**
