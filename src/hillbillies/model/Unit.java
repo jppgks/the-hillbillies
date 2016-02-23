@@ -115,8 +115,29 @@ public class Unit {
 		 */
 		private double x, y, z;
 	}
-	public void moveToAdjacent(Position targetposition) throws IllegalStateException{
+	/**
+	 * @param targetposition
+	 * 			the adjacent field were the unit has to move
+	 * @post the unit moves to an adjacent position of the current one
+	 * 			|new.posistion.getCoordinates() == targetposition
+	 * @post the orientation must set by atan2(vy,vx)
+	 * 			| new.getOrentation() == atan2(vy,vx)
+	 * @throws IllegalStateException
+	 * 			when the unit can't move when the it is attacked
+	 * 
+	 */
+	public void moveToAdjacent(Position targetposition) throws IllegalStateException{targetposition
 
+	}
+	/**
+	 * @param targetpositon
+	 * 
+	 * @post the new position must be the target positon
+	 * 			|this.Position.getPositon() == targetposition
+	 * 
+	 */
+	public void moveTo(Position targetposition){
+		
 	}
 	/**
 	 * @return the base speed of a unit determined by the unit's weight, strength and agility
