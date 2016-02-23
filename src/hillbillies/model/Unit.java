@@ -126,11 +126,11 @@ public class Unit {
 	 * 			when the unit can't move when the it is attacked
 	 * 
 	 */
-	public void moveToAdjacent(Position targetposition) throws IllegalStateException{
+	public void moveToAdjacent(Position targetposition) throws IllegalStateException {
 
 	}
 	/**
-	 * @param targetpositon
+	 * @param targetposition
 	 * 
 	 * @post the new position must be the target positon
 	 * 			|this.Position.getPositon() == targetposition
@@ -732,4 +732,55 @@ public class Unit {
 	 * Variable registering the name of this Unit.
 	 */
 	private String name;
+
+	/**
+	 * 
+	 * @param attacker
+	 * @param defender
+     */
+	public static void fight(Unit attacker, Unit defender) {
+		defend(attacker, defender);
+	}
+
+	/**
+	 * Attack other unit that occupies the same or a neighbouring cube
+	 * of the game world.
+	 *
+	 * @param 	defender
+	 * 			The defending unit.
+	 * @throws IllegalStateException
+	 * 			When the victim is not within reach.
+	 * @note 	Conducting an attack lasts 1s of game time.
+	 */
+	public void attack(Unit defender) throws IllegalStateException {
+		fight(this, defender);
+	}
+
+	/**
+	 * When being attacked, a unit defends itself by either
+	 * dodging, blocking or taking damage, respectively.
+	 *
+	 * @param 	attacker
+	 * 			The attacking unit.
+	 * @param 	defender
+	 * 			The defending unit.
+	 * @post 	When the agility of the defender is high enough,
+	 * 			relative to the agility of its attacker,
+	 * 			the defender dodges the attack and moves to a
+	 * 			random neighbouring cube.
+	 * 			| 1 <= 0.25 * (defender.getAgility() / attacker.getAgility())
+	 * @post 	When the defender fails to dodge the attack,
+	 * 			the defender blocks the attack when the sum of it's
+	 * 			strength and agility, relative to those of its attacker
+	 * 			is high enough.
+	 * 			|
+	 * @post	When the defender fails to dodge or block the attack,
+	 * 			the defender's hitpoints are lowered,
+	 * 			relative to the strength of the attacker.
+	 * 			|
+	 *
+	 */
+	public static void defend(Unit attacker, Unit defender) {
+
+	}
 }
