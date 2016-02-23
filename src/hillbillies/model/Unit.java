@@ -126,11 +126,11 @@ public class Unit {
 	 * 			when the unit can't move when the it is attacked
 	 * 
 	 */
-	public void moveToAdjacent(Position targetposition) throws IllegalStateException{targetposition
+	public void moveToAdjacent(Position targetposition) throws IllegalStateException {
 
 	}
 	/**
-	 * @param targetpositon
+	 * @param targetposition
 	 * 
 	 * @post the new position must be the target positon
 	 * 			|this.Position.getPositon() == targetposition
