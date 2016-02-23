@@ -239,21 +239,15 @@ public class Unit {
 	/**
 	 * 
 	 * @return gives the time its takes for a work activity
-	 * 			|result == this.timeForWork
+	 * 			|result == 500/this.strength 
+	 * 
+	 * 		
+	 * 
 	 */
 	public float getTimeForWork(){
 		return this.timeForWork;
 	}
 	
-	/**
-	 * 
-	 * @post the time it takes for a work activity is equals to 500/strength
-	 * 		| new.timeForWork == 500/strength 
-	 * 
-	 */
-	public void setTimeForWork(){
-		
-	}
 	/**
 	 * variable time that it takes for a work activity
 	 */
