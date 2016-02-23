@@ -649,4 +649,21 @@ public class Unit {
 	 * Variable registering the name of this Unit.
 	 */
 	private String name;
+
+	/**
+	 * Attack other unit that occupies the same or a neighbouring cube
+	 * of the game world.
+	 *
+	 * @param 	victim
+	 * 			The unit that's being attacked.
+	 * @throws IllegalStateException
+	 * 			When the victim is not within reach.
+	 */
+	public void attack(Unit victim) {
+
+	}
+
+	public void defend() {
+		
+	}
 }
