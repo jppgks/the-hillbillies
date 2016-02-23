@@ -115,6 +115,68 @@ public class Unit {
 		 */
 		private double x, y, z;
 	}
+	public void moveToAdjacent(Position targetposition) throws IllegalStateException{
+
+	}
+	/**
+	 * @return the base speed of a unit determined by the unit's weight, strength and agility
+	 * 			|result == 1.5*((strength + agility)/(200*(weight/100))
+	 */
+	public double getUnitBaseSpeed(){
+		return -1;
+	}
+	/**
+	 * @param targetposition
+	 * 			the position were the unit will go
+	 * @return if the unit is lower than the targetposition then the speed will be 
+	 * 			0.5*getUnitBaseSpeed()
+	 * 			if the unit is higher then the targetposition the speed will be 
+	 * 			1.2 * getUnitBaseSpeed()
+	 * 			if a unit is sprinting return the getUnitWalkSpeed *2 			
+	 * 			else is the speed equals as getUnitBaseSpeed()
+	 * 			|private double totalSpeed == getUnitBaseSpeed;
+	 * 			|if( position[2] - targetposition[2] = -1)
+	 * 			|	then totalSpeed == 0.5*getUnitBaseSpeed()
+	 * 			|if( position[2] - targetposition[2] = 1)
+	 * 			|	then totalSpeed == 1.2* getUnitBaseSpeed()
+	 * 			|if( getSprinting())
+	 * 			|	then totalSpeed *2
+	 * 			|result == totalSpeed
+	 */
+	public double getUnitWalkSpeed(Position targetposition){
+		return -1;
+	}
+	/**
+	 * @post if the unit is sprinting do nothing 
+	 * 
+	 * @post if the unit isn't sprinting set sprinting to true
+	 * 		|if(! isSprinting)
+	 * 		|	then new.isSprinting == true
+	 * @throws IllegalStateException
+	 * 		if the unit's stamina is lower or equals to zero
+	 * 		|if (!(this.getStamina >= 0))
+	 * 
+	 */
+	public void startSprinting() throws IllegalStateException{
+		
+	}
+	/**
+	 * @post if the unit isn't sprinting do nothing 
+	 * 
+	 * @post if the unit is sprinting set sprinting to true
+	 * 		|if(! isSprinting)
+	 * 		|	then new.isSprinting == false
+	 *  
+	 */
+	public void stopSprinting(){
+		
+	}
+	public boolean isSprinting(){
+		return this.isSprinting;
+	}
+	public boolean isSprinting = false;
+	
+	public static final double TIME_EXHAUSTSSPRINTNG = 0.1 ;
 	/**
 	 * @param workActivity
 	 * 
