@@ -577,12 +577,32 @@ public class Unit {
 	 * @return 	All the activities a unit can perform
 	 */
 	public static String[] validActivities(){
-		String[] activities = {"work,attack","defend","rest","move"};
+		String[] activities = {"work,attack","defend","rest","move",null};
 		return activities;
 	}
 
-	private String activity;
+	private String activity = null;
 	
+	/**
+	 * @post choose a random activity move, conduct a work task, rest unil it has full recovered hitpoints and stamina
+	 * 			
+	 * @post  if it is sprinting till it's exhausted
+	 * 
+	 * @throws IllegalStateException
+	 * 			if the unit is doing an activity
+	 */
+	public void startDefaultBehaviour() throws IllegalStateException{
+		
+	}
+	/**
+	 * @post stop the Default activity and set the current activity on null
+	 * 
+	 * @throws IllegalStateException
+	 * 			if a unit doesn't conduct an activty
+	 */
+	public void stopDefaultBehavior() throws IllegalStateException{
+		
+	}
 	/**
 	 * @return return the current hitpoints of the unit
 	 */
