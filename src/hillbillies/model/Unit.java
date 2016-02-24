@@ -736,6 +736,7 @@ public class Unit {
 	 * 			The defending unit.
 	 * @effect 	The defending unit defends.
 	 * 			| defender.defend(attacker)
+	 * @note 	To-do: add orientation update.
      */
 	public static void fight(Unit attacker, Unit defender) {
 		defender.defend(attacker);
@@ -752,6 +753,7 @@ public class Unit {
 	 * @throws IllegalStateException
 	 * 			When the victim is not within reach.
 	 * @note 	Conducting an attack lasts 1s of game time.
+	 * @note 	To-do: add orientation update.
 	 */
 	public void attack(Unit defender) throws IllegalStateException {
 		fight(this, defender);
@@ -767,19 +769,22 @@ public class Unit {
 	 * 			relative to the agility of its attacker,
 	 * 			this unit dodges the attack and moves to a
 	 * 			random neighbouring cube.
-	 * 			| 1 <= 0.25 * (defender.getAgility() / attacker.getAgility())
+	 * 			| 1 <= 0.20 * (this.getAgility() / attacker.getAgility())
 	 * @post 	When this unit fails to dodge the attack,
 	 * 			this unit blocks the attack when the sum of it's
 	 * 			strength and agility, relative to those of its attacker
 	 * 			is high enough.
-	 * 			|
+	 * 			| 1 <= 0.25 * ( (this.getStrength() + this.getAgility())
+	 * 			|	/ (attacker.getStrength() + attacker.getAgility()) )
 	 * @post	When this unit fails to dodge or block the attack,
 	 * 			this unit's hitpoints are lowered,
 	 * 			relative to the strength of the attacker.
-	 * 			|
-	 *
+	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
+	 * @note 	To-do: add orientation update.
 	 */
 	public void defend(Unit attacker) {
 
 	}
 }
+
+
