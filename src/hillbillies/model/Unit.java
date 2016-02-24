@@ -11,21 +11,46 @@ import be.kuleuven.cs.som.annotate.*;
  * 			interact with other such characters and manipulate the game world.
  * 
  * @invar 	The activity is always equals to a valid activity.
- * 			| isValidAcivity(activity)
+ * 		  | isValidAcivity(activity)
  * @invar 	The amount of hitpoints is always a valid amount
- * 			| isValidHitPoints(hitpoints)
+ * 		  | isValidHitPoints(hitpoints)
  * @invar  	The stamina of each Unit must be a valid stamina for any
  *         	Unit.
- *       	| isValidStamina(getStamina())
+ *        | isValidStamina(getStamina())
  * @invar  	The workActivity of each Unit must be a valid workActivity for any
  *         	Unit.
- *       	| isValidWorkActivity(getWorkActivity())
+ *        | isValidWorkActivity(getWorkActivity())
  * @invar  	The name of each Unit must be a valid name for any
  *         	Unit.
- *       	| isValidName(getName())
+ *        | isValidName(getName())
  */
 
 public class Unit {
+
+	/**
+	 * Initialize this new unit with a name, initial position,
+	 * weight, agility, strength, toughness and whether default behavior
+	 * is enabled or not.
+	 *
+	 * @param name
+	 *            The name of the unit.
+	 * @param initialPosition
+	 *            The initial position of the unit, as an array with 3 elements
+	 *            {x, y, z}.
+	 * @param weight
+	 *            The initial weight of the unit
+	 * @param agility
+	 *            The initial agility of the unit
+	 * @param strength
+	 *            The initial strength of the unit
+	 * @param toughness
+	 *            The initial toughness of the unit
+	 * @param enableDefaultBehavior
+	 *            Whether the default behavior of the unit is enabled
+     */
+	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior) {
+
+	}
 
 	/**
 	 * A nested class in Unit for maintaining its position.
@@ -803,6 +828,10 @@ public class Unit {
 	 * @note 	To-do: add orientation update.
 	 */
 	public void defend(Unit attacker) {
+
+	}
+
+	public void advanceTime() {
 
 	}
 }
