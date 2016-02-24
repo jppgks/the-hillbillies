@@ -13,8 +13,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getPosition(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.position.getCoordinates();
 	}
 
 	@Override
@@ -25,62 +24,52 @@ public class Facade implements IFacade {
 
 	@Override
 	public String getName(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.getName();
 	}
 
 	@Override
 	public void setName(Unit unit, String newName) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setName(newName);
 	}
 
 	@Override
 	public int getWeight(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getWeight();
 	}
 
 	@Override
 	public void setWeight(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setWeight(newValue);
 	}
 
 	@Override
 	public int getStrength(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getStrength();
 	}
 
 	@Override
 	public void setStrength(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setStrength(newValue);
 	}
 
 	@Override
 	public int getAgility(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getAgility();
 	}
 
 	@Override
 	public void setAgility(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setAgility(newValue);
 	}
 
 	@Override
 	public int getToughness(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getToughness();
 	}
 
 	@Override
 	public void setToughness(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setToughness(newValue);
 	}
 
 	@Override
@@ -97,8 +86,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getMaxStaminaPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getMaxStaminaPoints();
 	}
 
 	@Override
@@ -109,8 +97,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void advanceTime(Unit unit, double dt) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.advanceTime(dt);
 	}
 
 	@Override
@@ -133,26 +120,22 @@ public class Facade implements IFacade {
 
 	@Override
 	public void startSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.startSprinting();
 	}
 
 	@Override
 	public void stopSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.stopSprinting();
 	}
 
 	@Override
 	public boolean isSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.isSprinting();
 	}
 
 	@Override
 	public double getOrientation(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getOrientation();
 	}
 
 	@Override
@@ -175,8 +158,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void fight(Unit attacker, Unit defender) throws ModelException {
-		// TODO Auto-generated method stub
-
+		fight(attacker, defender);
 	}
 
 	@Override
@@ -187,8 +169,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void rest(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.rest();
 	}
 
 	@Override
