@@ -728,12 +728,17 @@ public class Unit {
 	private String name;
 
 	/**
+	 * Make two units fight each other.
 	 * 
-	 * @param attacker
-	 * @param defender
+	 * @param 	attacker
+	 * 			The unit attacking defender.
+	 * @param 	defender
+	 * 			The defending unit.
+	 * @effect 	The defending unit defends.
+	 * 			| defender.defend(attacker)
      */
 	public static void fight(Unit attacker, Unit defender) {
-		defend(attacker, defender);
+		defender.defend(attacker);
 	}
 
 	/**
@@ -742,6 +747,8 @@ public class Unit {
 	 *
 	 * @param 	defender
 	 * 			The defending unit.
+	 * @effect	This unit fights defender.
+	 * 			| fight(this, defender)
 	 * @throws IllegalStateException
 	 * 			When the victim is not within reach.
 	 * @note 	Conducting an attack lasts 1s of game time.
@@ -751,30 +758,28 @@ public class Unit {
 	}
 
 	/**
-	 * When being attacked, a unit defends itself by either
+	 * When being attacked, this unit defends itself by either
 	 * dodging, blocking or taking damage, respectively.
 	 *
 	 * @param 	attacker
 	 * 			The attacking unit.
-	 * @param 	defender
-	 * 			The defending unit.
-	 * @post 	When the agility of the defender is high enough,
+	 * @post 	When the agility of this unit is high enough,
 	 * 			relative to the agility of its attacker,
-	 * 			the defender dodges the attack and moves to a
+	 * 			this unit dodges the attack and moves to a
 	 * 			random neighbouring cube.
 	 * 			| 1 <= 0.25 * (defender.getAgility() / attacker.getAgility())
-	 * @post 	When the defender fails to dodge the attack,
-	 * 			the defender blocks the attack when the sum of it's
+	 * @post 	When this unit fails to dodge the attack,
+	 * 			this unit blocks the attack when the sum of it's
 	 * 			strength and agility, relative to those of its attacker
 	 * 			is high enough.
 	 * 			|
-	 * @post	When the defender fails to dodge or block the attack,
-	 * 			the defender's hitpoints are lowered,
+	 * @post	When this unit fails to dodge or block the attack,
+	 * 			this unit's hitpoints are lowered,
 	 * 			relative to the strength of the attacker.
 	 * 			|
 	 *
 	 */
-	public static void defend(Unit attacker, Unit defender) {
+	public void defend(Unit attacker) {
 
 	}
 }
