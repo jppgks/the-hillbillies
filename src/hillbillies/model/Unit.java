@@ -59,18 +59,15 @@ public class Unit {
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior)
 		throws IllegalArgumentException {
 		this.setName(name);
-<<<<<<< HEAD
-		this.position = this.new Position(initialPosition);
+		
+		this.position.setUnitCoordinates(initialPosition);
 		
 		//set the weight of the unit
 		if(weight < MIN_START_PARAM)
 			throw new IllegalArgumentException();
 		if(weight > MAX_START_PARAM)
 			throw new IllegalArgumentException();
-=======
-		this.position.setUnitCoordinates(initialPosition);
->>>>>>> 03d22370f78707784ce8f88d5750dbf69c8e342c
-		this.setWeight(weight);
+		this.setWeight(weight);		
 		
 		//set the agility of a unit
 		if(agility < MIN_START_PARAM)
@@ -511,14 +508,14 @@ public class Unit {
 	}
 	
 	/**
-	 * @return	  the minimum number of agility
+	 * @return	  the minimum number of weight, agility, strength,toughness
 	 */
 	public int getMinAttributeValue(){
 		return 1;
 	}
 	
 	/**
-	 * @return	  the maximum number of agility
+	 * @return	  the maximum number of weight, agility, strength,toughness
 	 */
 	public int getMaxAttributeValue(){
 		return 200;
@@ -604,10 +601,10 @@ public class Unit {
 	public void setWeight(int weight){
 		if(weight <= minWeight())
 			weight = minWeight();
-		if(weight >= MAX_WEIGHT)
-			weight = MAX_WEIGHT;
-		if(weight <= MIN_WEIGHT)
-			weight = MIN_WEIGHT;
+		if(weight >= getMaxAttributeValue())
+			weight = getMaxAttributeValue();
+		if(weight <= getMinAttributeValue())
+			weight = getMinAttributeValue();
 		this.weight = weight;
 	}
 	
@@ -618,8 +615,6 @@ public class Unit {
 	public int minWeight(){
 		return (this.strength+this.agility)/2;
 	}
-	public static final int MAX_WEIGHT = 200;
-	public static final int	MIN_WEIGHT = 1;
 
 	private int weight;
 
