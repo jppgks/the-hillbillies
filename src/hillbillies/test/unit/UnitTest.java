@@ -2,18 +2,17 @@ package hillbillies.test.unit;
 
 import hillbillies.model.IllegalCoordinateException;
 import hillbillies.model.Unit;
-import hillbillies.model.Unit.Position;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
- * A class of ...
+ * A class of unit tests.
  *
- * @author  ...
+ * @author  Iwein Bau & Joppe Geluykens
  * @version 1.0
  */
 public class UnitTest {
@@ -34,20 +33,26 @@ public class UnitTest {
 	@Test
 	public void CreateUnit_LegalCase() {
 		assertEquals("TestUnit", this.unit.getName());
-		fail();
+
+		double halfCubeSideLength = this.unit.position.cubeSideLength / 2;
+		assertDoublePositionEquals(
+				1 + halfCubeSideLength,
+				2 + halfCubeSideLength,
+				3 + halfCubeSideLength,
+				this.unit.position.getUnitCoordinates()
+		);
+		fail("Constructor has not yet been implemented completely.");
 	}
 	
 	@Test
 	public void CreatePosition_LegalCase() {
 		this.unit.position = unit.new Position(new int[] {1, 2, 3});
-		assertEquals(new double[]{1, 2, 3}, this.unit.position);
-		//problems with array it gives the location in you memory
+		assertDoublePositionEquals(1, 2, 3, this.unit.position.getUnitCoordinates());
 	}
+
 	@Test(expected = IllegalCoordinateException.class)
-	public void CreatePosition_IllegalCase() {
-		this.unit.position = unit.new Position(new int[] {5, 5, 5});
-		this.unit.position = unit.new Position(new int[] {52, 2, 3});
-		this.unit.position = unit.new Position(new int[] {5, -2, 0});
+	public void CreatePosition_IllegalCase() throws IllegalCoordinateException {
+		this.unit.position = unit.new Position(new int[] {1, 2, 50});
 	}
 
 	/**
