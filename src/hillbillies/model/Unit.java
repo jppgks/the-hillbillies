@@ -1,5 +1,7 @@
 package hillbillies.model;
 
+import java.util.Arrays;
+
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -49,15 +51,40 @@ public class Unit {
 	 * @post 	  The new unit is initialized with the given name if it is valid.
 	 * 			| if (isValidName(name))
 	 * 			|	new.getName() == name
-	 * @post 	  ...
+	 * @post 	  the unit it's weight, agility, strength,toughness has to be in between MIN_START_PARAM and MAX_START_PARAM
 	 * @effect	  ...
 	 * @throws IllegalArgumentException
+	 * 			  the unit it's weight, agility, strength,toughness smaller then MIN_START_PARAM or grater then MAX_START_PARAM
      */
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior)
 		throws IllegalArgumentException {
-
-	}
-
+		this.setName(name);
+		this.position = this.new Position(initialPosition);
+		
+		//set the weight of the unit
+		if(weight < MIN_START_PARAM)
+			throw new IllegalArgumentException();
+		if(weight > MAX_START_PARAM)
+			throw new IllegalArgumentException();
+		this.setWeight(weight);
+		
+		//set the agility of a unit
+		if(agility < MIN_START_PARAM)
+			throw new IllegalArgumentException();
+		if(agility > MAX_START_PARAM)
+			throw new IllegalArgumentException();
+		this.setAgility(agility);
+		
+		//set the strength of a unit
+		if(strength < MIN_START_PARAM)
+			throw new IllegalArgumentException();
+		if(strength > MAX_START_PARAM)
+			throw new IllegalArgumentException();
+		this.setStrength(strength);
+	}		
+	public static final int MIN_START_PARAM = 25;
+	public static final int MAX_START_PARAM = 100;
+	
 	/**
 	 * A nested class in Unit for maintaining its position.
 	 *
@@ -77,9 +104,9 @@ public class Unit {
 		 *       	| this.setCoordinates(Coordinate)
 		 */
 		public Position() {
-			this.x = 0;
-			this.y = 0;
-			this.z = 0;
+			this.x = LENGHT_CUBE/2;
+			this.y = LENGHT_CUBE/2;
+			this.z = LENGHT_CUBE/2;
 		}
 
 		/**
@@ -91,17 +118,35 @@ public class Unit {
 		 *         	  the given coordinates.
 		 *       	| this.setCoordinates(coordinates)
 		 */
-		public Position(double... coordinates) throws IllegalCoordinateException {
-			this.setCoordinates(coordinates);
+		public Position(int[] coordinates) throws IllegalCoordinateException {
+			double[] doubleArrayOfCoordinates = intArrayToDoubleArray(coordinates);
+			this.setCoordinates(doubleArrayOfCoordinates);
 		}
 
+
+		/**
+		 * @param coordinates
+		 * 
+		 * @return al list of coordinates in a list of doubles 
+		 * 
+		 * @post set type of coordinates from integers to doubles and add 1/2 LENGT_CUBE
+		 * 
+		 */
+		public double[] intArrayToDoubleArray(int[] coordinates) {
+			double[] doubleArrayFromIntArray = new double[coordinates.length];
+			for (int i = 0; i < coordinates.length; i++) {
+				doubleArrayFromIntArray[i] = (double) coordinates[i]+(LENGHT_CUBE/2);
+			}
+			return doubleArrayFromIntArray;
+		}
 
 		/**
 		 * Return the coordinates of this Position.
 		 */
 		@Basic @Raw
 		public double[] getCoordinates() {
-			return new double[] {this.x, this.y, this.z};
+			double[] coordinates = new double[] {this.x, this.y, this.z};
+			return coordinates;
 		}
 
 		/**
@@ -117,6 +162,8 @@ public class Unit {
 		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
 		 */
 		public boolean isValidPosition(double[] coordinates) {
+			if((coordinates[0] > 0 && coordinates[0] < 50 )&& (coordinates[1] > 0 && coordinates[1] < 50 )&&(coordinates[2] > 0 && coordinates[2] < 50 ))
+				return true;
 			return false;
 		}
 
@@ -145,12 +192,14 @@ public class Unit {
 		 * Variables registering the coordinates of this Position.
 		 */
 		private double x, y, z;
+		
+		private static final double LENGHT_CUBE = 1;
 	}
 
 	/**
 	 * Variable registering the current Position of this Unit.
 	 */
-	public Unit.Position position = new Unit.Position();
+	public Position position;
 
 	/**
 	 * @param 	  targetposition
@@ -412,7 +461,7 @@ public class Unit {
 	 */
 	@Basic
 	public int getStrength() {
-		return -1;
+		return this.strength;
 	}
 
 	/**
@@ -437,9 +486,27 @@ public class Unit {
 	 * 			|	then new.getStrength() == this.getMinAttributeValue()
 	 */
 	public void setStrength(int strength) {
-
+			if(strength <= getMinAttributeValue())
+				strength = getMinAttributeValue();
+			if(strength >= getMaxAttributeValue())
+				strength =getMaxAttributeValue();
+			this.strength = strength;
 	}
-
+	
+	/**
+	 * @return	  the minimum number of agility
+	 */
+	public int getMinAttributeValue(){
+		return 1;
+	}
+	
+	/**
+	 * @return	  the maximum number of agility
+	 */
+	public int getMaxAttributeValue(){
+		return 200;
+	}
+	
 	/**
 	 * Variable registering the strength of this unit.
 	 */
@@ -453,7 +520,7 @@ public class Unit {
 	 */
 	@Basic
 	public int getAgility() {
-		return -1;
+		return this.agility;
 	}
 
 	/**
@@ -478,7 +545,13 @@ public class Unit {
 	 * 			|	then new.getAgility() == this.getMinAttributeValue()
 	 */
 	public void setAgility(int agility) {
-
+		if (agility > this.getMaxAttributeValue())
+			this.agility=((agility-this.getMinAttributeValue()) 
+					% (this.getMaxAttributeValue()-this.getMinAttributeValue()+1)) + this.getMinAttributeValue();
+		if (agility < this.getMinAttributeValue())
+			this.agility= this.getMinAttributeValue();
+		if(agility >= this.getMinAttributeValue() && (agility <= this.getMaxAttributeValue()))
+				this.agility=agility;			
 	}
 
 	/**
@@ -512,15 +585,21 @@ public class Unit {
 	 *
 	 */
 	public void setWeight(int weight){
-
-
+		if(weight <= minWeight())
+			weight = minWeight();
+		if(weight >= MAX_WEIGHT)
+			weight = MAX_WEIGHT;
+		if(weight <= MIN_WEIGHT)
+			weight = MIN_WEIGHT;
+		this.weight = weight;
 	}
+	
 	/**
 	 * @return 	  the minWeight of a unit
-	 * 			| (strengt+agility)/2
+	 * 			| (strength+agility)/2
 	 */
-	public static final int minWeight(){
-		return -1;
+	public int minWeight(){
+		return (this.strength+this.agility)/2;
 	}
 	public static final int MAX_WEIGHT = 200;
 	public static final int	MIN_WEIGHT = 1;
@@ -535,7 +614,7 @@ public class Unit {
 	 */
 	@Basic
 	public int getToughness() {
-		return -1;
+		return this.toughness;
 	}
 
 	/**
@@ -628,14 +707,31 @@ public class Unit {
 		
 	}
 	/**
-	 * @post 	  stop the Default activity and set the current activity on null
+	 * @post 	  Stop the Default activity and set the current activity on null
 	 * 
 	 * @throws IllegalStateException
-	 * 			  if a unit doesn't conduct an activty
+	 * 			  if a unit doesn't conduct an activity
 	 */
 	public void stopDefaultBehavior() throws IllegalStateException{
 		
 	}
+	
+	/**
+	 * 
+	 * @post 	  Set defaultBehaviorEnabled true if defaultBehaviorEnabled
+	 * 			  is false, set to false otherwise.
+	 * 			| if this.defaultBehaviorEnabled
+	 * 			|	then new.defaultBehaviorEnabled == false
+	 * 			| else 
+	 * 			|	then new.defaultBehaviorEnabled == true
+	 * 
+	 */
+	public void toggleDefaultBehavior(){
+		
+	}
+	
+	private boolean defaultBehaviorEnabled;
+	
 	/**
 	 * @return 	  return the current hitpoints of the unit
 	 */
