@@ -51,16 +51,39 @@ public class Unit {
 	 * @post 	  The new unit is initialized with the given name if it is valid.
 	 * 			| if (isValidName(name))
 	 * 			|	new.getName() == name
-	 * @post 	  ...
+	 * @post 	  the unit it's weight, agility, strength,toughness has to be in between MIN_START_PARAM and MAX_START_PARAM
 	 * @effect	  ...
 	 * @throws IllegalArgumentException
+	 * 			  the unit it's weight, agility, strength,toughness smaller then MIN_START_PARAM or grater then MAX_START_PARAM
      */
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior)
 		throws IllegalArgumentException {
 		this.setName(name);
 		this.position = this.new Position(initialPosition);
+		
+		//set the weight of the unit
+		if(weight < MIN_START_PARAM)
+			throw new IllegalArgumentException();
+		if(weight > MAX_START_PARAM)
+			throw new IllegalArgumentException();
 		this.setWeight(weight);
-	}
+		
+		//set the agility of a unit
+		if(agility < MIN_START_PARAM)
+			throw new IllegalArgumentException();
+		if(agility > MAX_START_PARAM)
+			throw new IllegalArgumentException();
+		this.setAgility(agility);
+		
+		//set the strength of a unit
+		if(strength < MIN_START_PARAM)
+			throw new IllegalArgumentException();
+		if(strength > MAX_START_PARAM)
+			throw new IllegalArgumentException();
+		this.setStrength(strength);
+	}		
+	public static final int MIN_START_PARAM = 25;
+	public static final int MAX_START_PARAM = 100;
 	
 	/**
 	 * A nested class in Unit for maintaining its position.
@@ -438,7 +461,7 @@ public class Unit {
 	 */
 	@Basic
 	public int getStrength() {
-		return -1;
+		return this.strength;
 	}
 
 	/**
@@ -463,9 +486,27 @@ public class Unit {
 	 * 			|	then new.getStrength() == this.getMinAttributeValue()
 	 */
 	public void setStrength(int strength) {
-
+			if(strength <= getMinAttributeValue())
+				strength = getMinAttributeValue();
+			if(strength >= getMaxAttributeValue())
+				strength =getMaxAttributeValue();
+			this.strength = strength;
 	}
-
+	
+	/**
+	 * @return	  the minimum number of agility
+	 */
+	public int getMinAttributeValue(){
+		return 1;
+	}
+	
+	/**
+	 * @return	  the maximum number of agility
+	 */
+	public int getMaxAttributeValue(){
+		return 200;
+	}
+	
 	/**
 	 * Variable registering the strength of this unit.
 	 */
@@ -479,7 +520,7 @@ public class Unit {
 	 */
 	@Basic
 	public int getAgility() {
-		return -1;
+		return this.agility;
 	}
 
 	/**
@@ -504,7 +545,13 @@ public class Unit {
 	 * 			|	then new.getAgility() == this.getMinAttributeValue()
 	 */
 	public void setAgility(int agility) {
-
+		if (agility > this.getMaxAttributeValue())
+			this.agility=((agility-this.getMinAttributeValue()) 
+					% (this.getMaxAttributeValue()-this.getMinAttributeValue()+1)) + this.getMinAttributeValue();
+		if (agility < this.getMinAttributeValue())
+			this.agility= this.getMinAttributeValue();
+		if(agility >= this.getMinAttributeValue() && (agility <= this.getMaxAttributeValue()))
+				this.agility=agility;			
 	}
 
 	/**
@@ -538,12 +585,12 @@ public class Unit {
 	 *
 	 */
 	public void setWeight(int weight){
+		if(weight <= minWeight())
+			weight = minWeight();
 		if(weight >= MAX_WEIGHT)
 			weight = MAX_WEIGHT;
 		if(weight <= MIN_WEIGHT)
 			weight = MIN_WEIGHT;
-		if(weight <= minWeight())
-			weight = minWeight();
 		this.weight = weight;
 	}
 	
@@ -567,7 +614,7 @@ public class Unit {
 	 */
 	@Basic
 	public int getToughness() {
-		return -1;
+		return this.toughness;
 	}
 
 	/**

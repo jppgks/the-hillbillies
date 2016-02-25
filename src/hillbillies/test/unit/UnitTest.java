@@ -198,9 +198,8 @@ public class UnitTest {
 	 * Test method for {@link hillbillies.model.Unit#getWeight()}.
 	 */
 	@Test
-	public void getWeight_LegalCase() {
-		this.unit.setWeight(100);
-		assertEquals(100, this.unit.getWeight());
+	public void testGetWeight() {
+		assertEquals(50,this.unit.getWeight());
 	}
 
 	/**
@@ -208,7 +207,12 @@ public class UnitTest {
 	 */
 	@Test
 	public void testSetWeight() {
-		fail("Not yet implemented");
+		this.unit.setWeight(100);
+		assertEquals(100, this.unit.getWeight());
+		this.unit.setAgility(50);
+		this.unit.setStrength(50);
+		this.unit.setWeight(-5);
+		assertEquals((unit.getAgility()+unit.getStrength())/2, this.unit.getWeight());
 	}
 
 	/**
@@ -216,7 +220,7 @@ public class UnitTest {
 	 */
 	@Test
 	public void testMinWeight() {
-		fail("Not yet implemented");
+		assertEquals((unit.getStrength()+ unit.getAgility())/2, unit.minWeight());
 	}
 
 	/**
