@@ -55,6 +55,7 @@ public class Unit {
      */
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior)
 		throws IllegalArgumentException {
+		this.setName(name);
 
 	}
 
@@ -628,14 +629,31 @@ public class Unit {
 		
 	}
 	/**
-	 * @post 	  stop the Default activity and set the current activity on null
+	 * @post 	  Stop the Default activity and set the current activity on null
 	 * 
 	 * @throws IllegalStateException
-	 * 			  if a unit doesn't conduct an activty
+	 * 			  if a unit doesn't conduct an activity
 	 */
 	public void stopDefaultBehavior() throws IllegalStateException{
 		
 	}
+	
+	/**
+	 * 
+	 * @post 	  Set defaultBehaviorEnabled true if defaultBehaviorEnabled
+	 * 			  is false, set to false otherwise.
+	 * 			| if this.defaultBehaviorEnabled
+	 * 			|	then new.defaultBehaviorEnabled == false
+	 * 			| else 
+	 * 			|	then new.defaultBehaviorEnabled == true
+	 * 
+	 */
+	public void toggleDefaultBehavior(){
+		
+	}
+	
+	private boolean defaultBehaviorEnabled;
+	
 	/**
 	 * @return 	  return the current hitpoints of the unit
 	 */
