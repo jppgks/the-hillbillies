@@ -1,5 +1,7 @@
 package hillbillies.model;
 
+import java.util.Arrays;
+
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -56,9 +58,10 @@ public class Unit {
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior)
 		throws IllegalArgumentException {
 		this.setName(name);
-
+		this.position = this.new Position(initialPosition);
+		this.setWeight(weight);
 	}
-
+	
 	/**
 	 * A nested class in Unit for maintaining its position.
 	 *
@@ -78,9 +81,9 @@ public class Unit {
 		 *       	| this.setCoordinates(Coordinate)
 		 */
 		public Position() {
-			this.x = 0;
-			this.y = 0;
-			this.z = 0;
+			this.x = LENGHT_CUBE/2;
+			this.y = LENGHT_CUBE/2;
+			this.z = LENGHT_CUBE/2;
 		}
 
 		/**
@@ -98,10 +101,18 @@ public class Unit {
 		}
 
 
+		/**
+		 * @param coordinates
+		 * 
+		 * @return al list of coordinates in a list of doubles 
+		 * 
+		 * @post set type of coordinates from integers to doubles and add 1/2 LENGT_CUBE
+		 * 
+		 */
 		public double[] intArrayToDoubleArray(int[] coordinates) {
 			double[] doubleArrayFromIntArray = new double[coordinates.length];
 			for (int i = 0; i < coordinates.length; i++) {
-				doubleArrayFromIntArray[i] = (double) coordinates[i];
+				doubleArrayFromIntArray[i] = (double) coordinates[i]+(LENGHT_CUBE/2);
 			}
 			return doubleArrayFromIntArray;
 		}
@@ -111,7 +122,8 @@ public class Unit {
 		 */
 		@Basic @Raw
 		public double[] getCoordinates() {
-			return new double[] {this.x, this.y, this.z};
+			double[] coordinates = new double[] {this.x, this.y, this.z};
+			return coordinates;
 		}
 
 		/**
@@ -127,6 +139,8 @@ public class Unit {
 		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
 		 */
 		public boolean isValidPosition(double[] coordinates) {
+			if((coordinates[0] > 0 && coordinates[0] < 50 )&& (coordinates[1] > 0 && coordinates[1] < 50 )&&(coordinates[2] > 0 && coordinates[2] < 50 ))
+				return true;
 			return false;
 		}
 
@@ -155,12 +169,14 @@ public class Unit {
 		 * Variables registering the coordinates of this Position.
 		 */
 		private double x, y, z;
+		
+		private static final double LENGHT_CUBE = 1;
 	}
 
 	/**
 	 * Variable registering the current Position of this Unit.
 	 */
-	public Unit.Position position;
+	public Position position;
 
 	/**
 	 * @param 	  targetposition
@@ -522,15 +538,21 @@ public class Unit {
 	 *
 	 */
 	public void setWeight(int weight){
-
-
+		if(weight >= MAX_WEIGHT)
+			weight = MAX_WEIGHT;
+		if(weight <= MIN_WEIGHT)
+			weight = MIN_WEIGHT;
+		if(weight <= minWeight())
+			weight = minWeight();
+		this.weight = weight;
 	}
+	
 	/**
 	 * @return 	  the minWeight of a unit
-	 * 			| (strengt+agility)/2
+	 * 			| (strength+agility)/2
 	 */
-	public static final int minWeight(){
-		return -1;
+	public int minWeight(){
+		return (this.strength+this.agility)/2;
 	}
 	public static final int MAX_WEIGHT = 200;
 	public static final int	MIN_WEIGHT = 1;

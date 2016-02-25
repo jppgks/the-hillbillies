@@ -1,5 +1,6 @@
 package hillbillies.test.unit;
 
+import hillbillies.model.IllegalCoordinateException;
 import hillbillies.model.Unit;
 import hillbillies.model.Unit.Position;
 
@@ -39,8 +40,14 @@ public class UnitTest {
 	@Test
 	public void CreatePosition_LegalCase() {
 		this.unit.position = unit.new Position(new int[] {1, 2, 3});
-		assertEquals(new double[]{1, 2, 3}, this.unit.position.getCoordinates());
-		// Fails because isValidPosition is not yet implemented.
+		assertEquals(new double[]{1, 2, 3}, this.unit.position);
+		//problems with array it gives the location in you memory
+	}
+	@Test(expected = IllegalCoordinateException.class)
+	public void CreatePosition_IllegalCase() {
+		this.unit.position = unit.new Position(new int[] {5, 5, 5});
+		this.unit.position = unit.new Position(new int[] {52, 2, 3});
+		this.unit.position = unit.new Position(new int[] {5, -2, 0});
 	}
 
 	/**
@@ -191,8 +198,9 @@ public class UnitTest {
 	 * Test method for {@link hillbillies.model.Unit#getWeight()}.
 	 */
 	@Test
-	public void testGetWeight() {
-		fail("Not yet implemented");
+	public void getWeight_LegalCase() {
+		this.unit.setWeight(100);
+		assertEquals(100, this.unit.getWeight());
 	}
 
 	/**
