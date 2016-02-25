@@ -58,16 +58,16 @@ public class Unit {
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior)
 		throws IllegalArgumentException {
 		this.setName(name);
-		this.position = this.new Position(initialPosition);
+		this.position.setUnitCoordinates(initialPosition);
 		this.setWeight(weight);
 	}
 	
 	/**
 	 * A nested class in Unit for maintaining its position.
 	 *
-	 * @invar  	  The coordinates of each Position must be a valid coordinates for any
-	 *         	  Position.
-	 *       	| isValidPosition(this.getCoordinates())
+	 * @invar  	  The unit coordinates of each unit position must be valid
+	 * 			  unit coordinates for any unit position.
+	 *       	| isValidPosition(this.getUnitCoordinates())
 	 *
 	 * @note 	  All of these functions should be worked out defensively.
 	 *
@@ -75,62 +75,61 @@ public class Unit {
 	public class Position {
 
 		/**
-		 * Initialize this new Position to default coordinates.
+		 * Initialize this new unit position to default unit coordinates.
 		 *
-		 * @effect 	  The coordinates of this new Position are set to 0.
-		 *       	| this.setCoordinates(Coordinate)
+		 * @post 	  The unit coordinates of this new position are set to 0.5
+		 * 			| new.getUnitCoordinates() == {.5, .5, .5}
 		 */
 		public Position() {
-			this.x = LENGHT_CUBE/2;
-			this.y = LENGHT_CUBE/2;
-			this.z = LENGHT_CUBE/2;
+			this.x = cubeSideLength / 2;
+			this.y = cubeSideLength / 2;
+			this.z = cubeSideLength / 2;
 		}
 
 		/**
-		 * Initialize this new Position with given coordinates.
+		 * Initialize this new unit position with given cube coordinates.
 		 *
-		 * @param 	  coordinates
-		 *            The coordinates for this new Position.
-		 * @effect 	  The coordinates of this new Position are set to
-		 *         	  the given coordinates.
-		 *       	| this.setCoordinates(coordinates)
+		 * @param cubeCoordinates
+		 *            The cube coordinates of this new unit position.
+		 * @effect 	  Converts given array of ints to array of doubles
+		 * 			  before passing it on to the setter.
+		 * 			  The unit coordinates of this new unit position are set to
+		 *         	  the given cube coordinate + 1/2 of the cube side length
+		 *         	  for each coordinate.
+		 *       	| this.setUnitCoordinates(cubeCoordinates)
 		 */
-		public Position(int[] coordinates) throws IllegalCoordinateException {
-			double[] doubleArrayOfCoordinates = intArrayToDoubleArray(coordinates);
-			this.setCoordinates(doubleArrayOfCoordinates);
+		public Position(int[] cubeCoordinates) throws IllegalCoordinateException {
+			this.setUnitCoordinates(cubeCoordinates);
 		}
 
-
 		/**
-		 * @param coordinates
+		 * Returns a copy of a given array of ints as an array of doubles.
 		 * 
-		 * @return al list of coordinates in a list of doubles 
-		 * 
-		 * @post set type of coordinates from integers to doubles and add 1/2 LENGT_CUBE
-		 * 
-		 */
-		public double[] intArrayToDoubleArray(int[] coordinates) {
-			double[] doubleArrayFromIntArray = new double[coordinates.length];
-			for (int i = 0; i < coordinates.length; i++) {
-				doubleArrayFromIntArray[i] = (double) coordinates[i]+(LENGHT_CUBE/2);
+		 * @param arrayOfInts
+		 * 			  The int array to transform.
+         * @return	| (double[]) arrayOfInts
+         */
+		public double[] getDoubleArrayFromIntArray(int[] arrayOfInts) {
+			double[] doubleArrayFromIntArray = new double[arrayOfInts.length];
+			for (int i = 0; i < arrayOfInts.length; i++) {
+				doubleArrayFromIntArray[i] = (double) arrayOfInts[i];
 			}
 			return doubleArrayFromIntArray;
 		}
 
 		/**
-		 * Return the coordinates of this Position.
+		 * Return the unit coordinates of this unit position.
 		 */
 		@Basic @Raw
-		public double[] getCoordinates() {
-			double[] coordinates = new double[] {this.x, this.y, this.z};
-			return coordinates;
+		public double[] getUnitCoordinates() {
+			return new double[] {this.x, this.y, this.z};
 		}
 
 		/**
 		 * Check whether the given coordinates are valid coordinates for
-		 * any Position.
+		 * any position.
 		 *
-		 * @param 	  coordinates
+		 * @param coordinates
 		 *         	  The coordinates to check.
 		 * @return 	  True if all coordinates are within range, false otherwise.
 		 *       	| result ==
@@ -139,50 +138,64 @@ public class Unit {
 		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
 		 */
 		public boolean isValidPosition(double[] coordinates) {
-			if((coordinates[0] > 0 && coordinates[0] < 50 )&& (coordinates[1] > 0 && coordinates[1] < 50 )&&(coordinates[2] > 0 && coordinates[2] < 50 ))
-				return true;
-			return false;
+			return (
+					(coordinates[0] >= 0 && coordinates[0] < 50) &&
+					(coordinates[1] >= 0 && coordinates[1] < 50) &&
+					(coordinates[2] >= 0 && coordinates[2] < 50)
+			);
 		}
 
 		/**
-		 * Set the coordinates of this Position to the given coordinates.
+		 * Set the unit coordinates of this unit position to the sum of
+		 * the given cube coordinates and 1/2 of a cube side.
 		 *
-		 * @param 	  coordinates
-		 *         	  The new coordinates for this Position.
-		 * @post 	  The coordinates of this new Position are equal to
-		 *         	  the given coordinates.
-		 *       	| new.getCoordinates() == coordinates
+		 * @param cubeCoordinates
+		 *         	  The cube coordinates of this unit position.
+		 * @post 	  The unit coordinates of this new unit position are equal to
+		 *         	  the given cube coordinates + 1/2 of a cube side.
+		 *        	| new.getUnitCoordinates() ==
+		 *        	|	{
+		 *        	|	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
+		 *        	| 	  (cubeCoordinates[1] + 1/2 * cubeSideLength),
+		 *        	| 	  (cubeCoordinates[2] + 1/2 * cubeSideLength)
+		 *        	| 	}
 		 * @throws IllegalCoordinateException
 		 *         	  The given coordinates are not valid coordinates for any
-		 *         	  Position.
-		 *       	| ! isValidPosition(getCoordinates())
+		 *         	  position.
+		 *       	| ! isValidPosition(cubeCoordinates)
 		 */
 		@Raw
-		private void setCoordinates(double[] coordinates) throws IllegalCoordinateException {
-			if (! isValidPosition(coordinates))
-				throw new IllegalCoordinateException(coordinates);
-			this.x = coordinates[0];
-			this.y = coordinates[1];
-			this.z = coordinates[2];
+		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
+			double[] unitCoordinates = getDoubleArrayFromIntArray(cubeCoordinates);
+			if (! isValidPosition(unitCoordinates))
+				throw new IllegalCoordinateException(unitCoordinates);
+			double halfCubeSideLength = cubeSideLength / 2;
+			this.x = unitCoordinates[0] + halfCubeSideLength;
+			this.y = unitCoordinates[1] + halfCubeSideLength;
+			this.z = unitCoordinates[2] + halfCubeSideLength;
 		}
+
 		/**
-		 * Variables registering the coordinates of this Position.
+		 * Variable registering the length of a cube side in meters.
+		 */
+		public final double cubeSideLength = 1;
+
+		/**
+		 * Variables registering the unit coordinates of this unit position.
 		 */
 		private double x, y, z;
-		
-		private static final double LENGHT_CUBE = 1;
 	}
 
 	/**
-	 * Variable registering the current Position of this Unit.
+	 * Variable registering the current unit position of this unit.
 	 */
-	public Position position;
+	public Unit.Position position = new Unit.Position();
 
 	/**
 	 * @param 	  targetposition
 	 * 			  the adjacent field were the unit has to move
 	 * @post 	  the unit moves to an adjacent position of the current one
-	 * 			| new.posistion.getCoordinates() == targetposition
+	 * 			| new.posistion.getUnitCoordinates() == targetposition
 	 * @post 	  the orientation must set by atan2(vy,vx)
 	 * 			| new.getOrentation() == atan2(vy,vx)
 	 * @throws IllegalStateException
@@ -800,7 +813,7 @@ public class Unit {
 	 *       	| result == name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?")
 	 */
 	public static boolean isValidName(String name) {
-	  return name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?");
+	  return name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]+\"?");
 	}
 
 	/**
