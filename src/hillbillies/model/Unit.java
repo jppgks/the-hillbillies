@@ -1,5 +1,7 @@
 package hillbillies.model;
 
+import java.util.Arrays;
+
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -57,9 +59,9 @@ public class Unit {
 		throws IllegalArgumentException {
 		this.setName(name);
 		this.position.setUnitCoordinates(initialPosition);
-
+		this.setWeight(weight);
 	}
-
+	
 	/**
 	 * A nested class in Unit for maintaining its position.
 	 *
@@ -79,9 +81,9 @@ public class Unit {
 		 * 			| new.getUnitCoordinates() == {.5, .5, .5}
 		 */
 		public Position() {
-			this.x = .5;
-			this.y = .5;
-			this.z = .5;
+			this.x = cubeSideLength / 2;
+			this.y = cubeSideLength / 2;
+			this.z = cubeSideLength / 2;
 		}
 
 		/**
@@ -549,15 +551,21 @@ public class Unit {
 	 *
 	 */
 	public void setWeight(int weight){
-
-
+		if(weight >= MAX_WEIGHT)
+			weight = MAX_WEIGHT;
+		if(weight <= MIN_WEIGHT)
+			weight = MIN_WEIGHT;
+		if(weight <= minWeight())
+			weight = minWeight();
+		this.weight = weight;
 	}
+	
 	/**
 	 * @return 	  the minWeight of a unit
-	 * 			| (strengt+agility)/2
+	 * 			| (strength+agility)/2
 	 */
-	public static final int minWeight(){
-		return -1;
+	public int minWeight(){
+		return (this.strength+this.agility)/2;
 	}
 	public static final int MAX_WEIGHT = 200;
 	public static final int	MIN_WEIGHT = 1;

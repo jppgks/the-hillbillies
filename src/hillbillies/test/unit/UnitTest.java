@@ -203,8 +203,9 @@ public class UnitTest {
 	 * Test method for {@link hillbillies.model.Unit#getWeight()}.
 	 */
 	@Test
-	public void testGetWeight() {
-		fail("Not yet implemented");
+	public void getWeight_LegalCase() {
+		this.unit.setWeight(100);
+		assertEquals(100, this.unit.getWeight());
 	}
 
 	/**
