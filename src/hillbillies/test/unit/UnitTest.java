@@ -1,14 +1,13 @@
 package hillbillies.test.unit;
 
-import static org.junit.Assert.*;
+import hillbillies.model.Unit;
+import hillbillies.model.Unit.Position;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sun.net.httpserver.Authenticator.Success;
-
-import hillbillies.model.Unit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * A class of ...
@@ -33,7 +32,15 @@ public class UnitTest {
 	 */
 	@Test
 	public void CreateUnit_LegalCase() {
+		assertEquals("TestUnit", this.unit.getName());
 		fail();
+	}
+	
+	@Test
+	public void CreatePosition_LegalCase() {
+		this.unit.position = unit.new Position(new int[] {1, 2, 3});
+		assertEquals(new double[]{1, 2, 3}, this.unit.position.getCoordinates());
+		// Fails because isValidPosition is not yet implemented.
 	}
 
 	/**
@@ -374,7 +381,6 @@ public class UnitTest {
 	public void setName_IllegalCase() throws IllegalArgumentException {
 		this.unit.setName("New @Test5Name");
 	}
-
 
 	/**
 	 * Test method for {@link hillbillies.model.Unit#fight(hillbillies.model.Unit, hillbillies.model.Unit)}.

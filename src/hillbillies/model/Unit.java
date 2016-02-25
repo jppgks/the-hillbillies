@@ -92,10 +92,19 @@ public class Unit {
 		 *         	  the given coordinates.
 		 *       	| this.setCoordinates(coordinates)
 		 */
-		public Position(double... coordinates) throws IllegalCoordinateException {
-			this.setCoordinates(coordinates);
+		public Position(int[] coordinates) throws IllegalCoordinateException {
+			double[] doubleArrayOfCoordinates = intArrayToDoubleArray(coordinates);
+			this.setCoordinates(doubleArrayOfCoordinates);
 		}
 
+
+		public double[] intArrayToDoubleArray(int[] coordinates) {
+			double[] doubleArrayFromIntArray = new double[coordinates.length];
+			for (int i = 0; i < coordinates.length; i++) {
+				doubleArrayFromIntArray[i] = (double) coordinates[i];
+			}
+			return doubleArrayFromIntArray;
+		}
 
 		/**
 		 * Return the coordinates of this Position.
@@ -151,7 +160,7 @@ public class Unit {
 	/**
 	 * Variable registering the current Position of this Unit.
 	 */
-	public Unit.Position position = new Unit.Position();
+	public Unit.Position position;
 
 	/**
 	 * @param 	  targetposition
