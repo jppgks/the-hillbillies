@@ -543,13 +543,9 @@ public class Unit {
 	 * 			| if (strength >= this.getMinAttributeValue()) && (strength <= this.getMaxAttributeValue())
 	 * 			|	then new.getStrength() == strength
 	 * @post	  If the given strength exceeds the maximum attribute value,
-	 * 			  then the strength of this unit is equal to the given strength modulo
-	 * 			  the range established by the minimum and maximum attribute values of this unit.
+	 * 			  then the strength of this unit is equal to the maximum attribute value.
 	 * 			| if (strength > this.getMaxAttributeValue())
-	 * 			| 	then new.getStrength() ==
-	 * 			|			((strength - this.getMinAttributeValue()) %
-	 * 			|			(this.getMaxAttributeValue()-this.getMinAttributeValue()))
-	 * 			|			+ this.getMinAttributeValue()
+	 * 			| 	then new.getStrength() == this.getMaxAttributeValue()
 	 * @post	  If the given strength is lower than the minimum attribute value of this unit,
 	 * 			  then the strength of this unit is equal to the minimum attribute value.
 	 * 			| if (strength < this.getMinAttributeValue())
@@ -562,8 +558,7 @@ public class Unit {
 		} else if (strength < this.getMinAttributeValue()) {
 			this.strength = this.getMinAttributeValue();
 		} else if (strength > this.getMaxAttributeValue()) {
-			this.strength = ((strength - this.getMinAttributeValue()) % (this.getMaxAttributeValue() - this.getMinAttributeValue())) +
-					this.getMinAttributeValue();
+			this.strength = this.getMaxAttributeValue();
 		}
 	}
 	
@@ -608,11 +603,9 @@ public class Unit {
 	 * 			| if (agility >= this.getMinAttributeValue()) && (agility <= this.getMaxAttributeValue())
 	 * 			|	then new.getAgility() == agility
 	 * @post	  If the given agility exceeds the maximum attribute value,
-	 * 			  then the agility of this unit is equal to the given agility modulo
-	 * 			  the range established by the minimum and maximum attribute values of this unit.
+	 * 			  then the agility of this unit is equal to the maximum attribute value.
 	 * 			| if (agility > this.getMaxAttributeValue())
-	 * 			| 	then new.getAgility() ==
-	 * 			|		((agility-getMinAttributeValue()) % (getMaxAttributeValue()-getMinAttributeValue())) + getMinAttributeValue()
+	 * 			| 	then new.getAgility() == getMaxAttributeValue()
 	 * @post	  If the given agility is lower than the minimum attribute value of this unit,
 	 * 			  then the agility of this unit is equal to the minimum attribute value.
 	 * 			| if (agility < this.getMinAttributeValue())
@@ -620,8 +613,7 @@ public class Unit {
 	 */
 	public void setAgility(int agility) {
 		if (agility > this.getMaxAttributeValue())
-			this.agility=((agility-this.getMinAttributeValue()) 
-					% (this.getMaxAttributeValue()-this.getMinAttributeValue())) + this.getMinAttributeValue();
+			this.agility= this.getMaxAttributeValue();
 		if (agility < this.getMinAttributeValue())
 			this.agility= this.getMinAttributeValue();
 		if(agility >= this.getMinAttributeValue() && (agility <= this.getMaxAttributeValue()))
@@ -661,10 +653,6 @@ public class Unit {
 	public void setWeight(int weight){
 		if(weight <= minWeight())
 			weight = minWeight();
-		if(weight >= getMaxAttributeValue())
-			weight = getMaxAttributeValue();
-		if(weight <= getMinAttributeValue())
-			weight = getMinAttributeValue();
 		this.weight = weight;
 	}
 	
@@ -700,13 +688,9 @@ public class Unit {
 	 * 			| if (toughness >= this.getMinAttributeValue()) && (toughness <= this.getMaxAttributeValue())
 	 * 			|	then new.getToughness() == toughness
 	 * @post	  If the given toughness exceeds the maximum attribute value,
-	 * 			  then the toughness of this unit is equal to the given toughness modulo
-	 * 			  the range established by the minimum and maximum attribute values of this unit.
+	 * 			  then the toughness of this unit is equal to the max attribute value.
 	 * 			| if (toughness > this.getMaxAttributeValue())
-	 * 			| 	then new.getToughness() ==
-	 * 			|			((toughness - this.getMinAttributeValue()) %
-	 * 			|			(this.getMaxAttributeValue()-this.getMinAttributeValue()))
-	 * 			|			+ this.getMinAttributeValue()
+	 * 			| 	then new.getToughness() == this.getMaxAttributeValue()
 	 * @post	  If the given toughness is lower than the minimum attribute value of this unit,
 	 * 			  then the toughness of this unit is equal to the minimum attribute value.
 	 * 			| if (toughness < this.getMinAttributeValue())
@@ -719,8 +703,7 @@ public class Unit {
 		} else if (toughness < this.getMinAttributeValue()) {
 			this.toughness = this.getMinAttributeValue();
 		} else if (toughness > this.getMaxAttributeValue()) {
-			this.toughness = ((toughness - this.getMinAttributeValue()) % (this.getMaxAttributeValue() - this.getMinAttributeValue())) +
-					this.getMinAttributeValue();
+			this.toughness = this.getMaxAttributeValue();
 		}
 	}
 

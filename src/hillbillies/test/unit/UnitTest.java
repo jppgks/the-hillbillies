@@ -196,7 +196,7 @@ public class UnitTest {
 	@Test
 	public void SetStrength_InputHigherThanMaxAttrValue() {
 		this.unit.setStrength(235);
-		assertEquals(36, this.unit.getStrength());
+		assertEquals(200, this.unit.getStrength());
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class UnitTest {
 	@Test
 	public void SetAgility_InputHigherThanMaxAttrValue() {
 		this.unit.setAgility(235);
-		assertEquals(36, this.unit.getAgility());
+		assertEquals(200, this.unit.getAgility());
 	}
 
 	/**
@@ -282,7 +282,7 @@ public class UnitTest {
 	@Test
 	public void SetToughness_InputHigherThanMaxAttrValue() {
 		this.unit.setToughness(235);
-		assertEquals(36, this.unit.getToughness());
+		assertEquals(200, this.unit.getToughness());
 	}
 
 	/**
