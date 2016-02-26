@@ -72,59 +72,81 @@ public class Unit {
 		 */
 
 		// Initialize weight
-		if (weight >= this.getMinInitialAttributeValue() &&
-				weight <= this.getMaxInitialAttributeValue()) {
-			this.setWeight(weight);
-		} else if (weight < this.getMinInitialAttributeValue()) {
-			this.setWeight(this.getMinInitialAttributeValue());
-		} else if (weight > this.getMaxInitialAttributeValue()) {
-			this.setWeight(
-					this.getMinInitialAttributeValue()
-							+ ((weight - this.getMinInitialAttributeValue())
-							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-			);
-		}
+		initializeAttribute("w", weight);
 
 		// Initialize agility
-		if (agility >= this.getMinInitialAttributeValue() &&
-				agility <= this.getMaxInitialAttributeValue()) {
-			this.setAgility(agility);
-		} else if (agility < this.getMinInitialAttributeValue()) {
-			this.setAgility(this.getMinInitialAttributeValue());
-		} else if (agility > this.getMaxInitialAttributeValue()) {
-			this.setAgility(
-					this.getMinInitialAttributeValue()
-							+ ((agility - this.getMinInitialAttributeValue())
-							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-			);
-		}
+		initializeAttribute("a", agility);
 
 		// Initialize strength
-		if (strength >= this.getMinInitialAttributeValue() &&
-				strength <= this.getMaxInitialAttributeValue()) {
-			this.setStrength(strength);
-		} else if (strength < this.getMinInitialAttributeValue()) {
-			this.setStrength(this.getMinInitialAttributeValue());
-		} else if (strength > this.getMaxInitialAttributeValue()) {
-			this.setStrength(
-					this.getMinInitialAttributeValue()
-							+ ((strength - this.getMinInitialAttributeValue())
-							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-			);
-		}
+		initializeAttribute("s", strength);
 
 		// Initialize toughness
-		if (toughness >= this.getMinInitialAttributeValue() &&
-				toughness <= this.getMaxInitialAttributeValue()) {
-			this.setToughness(toughness);
-		} else if (toughness < this.getMinInitialAttributeValue()) {
-			this.setToughness(this.getMinInitialAttributeValue());
-		} else if (toughness > this.getMaxInitialAttributeValue()) {
-			this.setToughness(
-					this.getMinInitialAttributeValue()
-							+ ((toughness - this.getMinInitialAttributeValue())
+		initializeAttribute("t", toughness);
+	}
+
+	private void initializeAttribute(String attributeKind, int attributeValue) {
+		if (attributeValue >= this.getMinInitialAttributeValue() &&
+				attributeValue <= this.getMaxInitialAttributeValue()) {
+			switch (attributeKind) {
+				case "w":
+					this.setWeight(attributeValue);
+					break;
+				case "a":
+					this.setAgility(attributeValue);
+					break;
+				case "s":
+					this.setStrength(attributeValue);
+					break;
+				case "t":
+					this.setToughness(attributeValue);
+					break;
+			}
+		} else if (attributeValue < this.getMinInitialAttributeValue()) {
+			switch (attributeKind) {
+				case "w":
+					this.setWeight(this.getMinInitialAttributeValue());
+					break;
+				case "a":
+					this.setAgility(this.getMinInitialAttributeValue());
+					break;
+				case "s":
+					this.setStrength(this.getMinInitialAttributeValue());
+					break;
+				case "t":
+					this.setToughness(this.getMinInitialAttributeValue());
+					break;
+			}
+		} else if (attributeValue > this.getMaxInitialAttributeValue()) {
+			switch (attributeKind) {
+				case "w":
+					this.setWeight(
+							this.getMinInitialAttributeValue()
+							+ ((attributeValue - this.getMinInitialAttributeValue())
 							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-			);
+					);
+					break;
+				case "a":
+					this.setAgility(
+							this.getMinInitialAttributeValue()
+							+ ((attributeValue - this.getMinInitialAttributeValue())
+							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
+					);
+					break;
+				case "s":
+					this.setStrength(
+							this.getMinInitialAttributeValue()
+							+ ((attributeValue - this.getMinInitialAttributeValue())
+							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
+					);
+					break;
+				case "t":
+					this.setToughness(
+							this.getMinInitialAttributeValue()
+							+ ((attributeValue - this.getMinInitialAttributeValue())
+							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
+					);
+					break;
+			}
 		}
 	}
 
