@@ -41,6 +41,11 @@ public class UnitTest {
 				3 + halfCubeSideLength,
 				this.unit.position.getUnitCoordinates()
 		);
+
+		assertEquals(50, this.unit.getAgility());
+		assertEquals(50, this.unit.getStrength());
+		assertEquals(50, this.unit.getToughness());
+
 		fail("Constructor has not yet been implemented completely.");
 	}
 	
@@ -172,15 +177,26 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetStrength() {
-		fail("Not yet implemented");
+		this.unit.setStrength(55);
+		assertEquals(55, this.unit.getStrength());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setStrength(int)}.
-	 */
 	@Test
-	public void testSetStrength() {
-		fail("Not yet implemented");
+	public void SetStrength_LegalCase() {
+		this.unit.setStrength(67);
+		assertEquals(67, this.unit.getStrength());
+	}
+
+	@Test
+	public void SetStrength_InputLowerThanMinAttrValue() {
+		this.unit.setStrength(0);
+		assertEquals(1, this.unit.getStrength());
+	}
+
+	@Test
+	public void SetStrength_InputHigherThanMaxAttrValue() {
+		this.unit.setStrength(235);
+		assertEquals(36, this.unit.getStrength());
 	}
 
 	/**
@@ -188,15 +204,26 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetAgility() {
-		fail("Not yet implemented");
+		this.unit.setAgility(55);
+		assertEquals(55, this.unit.getAgility());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setAgility(int)}.
-	 */
 	@Test
-	public void testSetAgility() {
-		fail("Not yet implemented");
+	public void SetAgility_LegalCase() {
+		this.unit.setAgility(67);
+		assertEquals(67, this.unit.getAgility());
+	}
+
+	@Test
+	public void SetAgility_InputLowerThanMinAttrValue() {
+		this.unit.setAgility(0);
+		assertEquals(1, this.unit.getAgility());
+	}
+
+	@Test
+	public void SetAgility_InputHigherThanMaxAttrValue() {
+		this.unit.setAgility(235);
+		assertEquals(36, this.unit.getAgility());
 	}
 
 	/**
@@ -233,15 +260,29 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetToughness() {
-		fail("Not yet implemented");
+		this.unit.setToughness(55);
+		assertEquals(55, this.unit.getToughness());
 	}
 
 	/**
 	 * Test method for {@link hillbillies.model.Unit#setToughness(int)}.
 	 */
 	@Test
-	public void testSetToughness() {
-		fail("Not yet implemented");
+	public void SetToughness_LegalCase() {
+		this.unit.setToughness(67);
+		assertEquals(67, this.unit.getToughness());
+	}
+
+	@Test
+	public void SetToughness_InputLowerThanMinAttrValue() {
+		this.unit.setToughness(0);
+		assertEquals(1, this.unit.getToughness());
+	}
+
+	@Test
+	public void SetToughness_InputHigherThanMaxAttrValue() {
+		this.unit.setToughness(235);
+		assertEquals(36, this.unit.getToughness());
 	}
 
 	/**
