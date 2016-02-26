@@ -161,7 +161,7 @@ public class Unit {
 		public Position() {
 			this.x = cubeSideLength / 2;
 			this.y = cubeSideLength / 2;
-			this.z = cubeSideLength / 2;
+			this.z = cubeSideLength - 1;
 		}
 
 		/**
@@ -230,12 +230,13 @@ public class Unit {
 		 * @param cubeCoordinates
 		 *         	  The cube coordinates of this unit position.
 		 * @post 	  The unit coordinates of this new unit position are equal to
-		 *         	  the given cube coordinates + 1/2 of a cube side.
+		 *         	  the given cube coordinates + 1/2 of a cube side for x and y,
+		 *         	  equal to the given cube coordinate for z.
 		 *        	| new.getUnitCoordinates() ==
 		 *        	|	{
 		 *        	|	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
 		 *        	| 	  (cubeCoordinates[1] + 1/2 * cubeSideLength),
-		 *        	| 	  (cubeCoordinates[2] + 1/2 * cubeSideLength)
+		 *        	| 	  (cubeCoordinates[2])
 		 *        	| 	}
 		 * @throws IllegalCoordinateException
 		 *         	  The given coordinates are not valid coordinates for any
@@ -250,7 +251,7 @@ public class Unit {
 			double halfCubeSideLength = cubeSideLength / 2;
 			this.x = unitCoordinates[0] + halfCubeSideLength;
 			this.y = unitCoordinates[1] + halfCubeSideLength;
-			this.z = unitCoordinates[2] + halfCubeSideLength;
+			this.z = unitCoordinates[2];
 		}
 
 		/**
