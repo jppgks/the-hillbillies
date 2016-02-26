@@ -61,14 +61,59 @@ public class Unit {
 	 * @effect ...
 	 */
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior) {
+		// Initialize name
 		this.setName(name);
 
+		// Initialize position
 		this.position.setUnitCoordinates(initialPosition);
 
 		/*
-		 * The implementation below of weight, agility and strength has to be total instead of defensive.
+		 * TODO: Extract methods of the initializers below.
 		 */
 
+		// Initialize weight
+		if (weight >= this.getMinInitialAttributeValue() &&
+				weight <= this.getMaxInitialAttributeValue()) {
+			this.setWeight(weight);
+		} else if (weight < this.getMinInitialAttributeValue()) {
+			this.setWeight(this.getMinInitialAttributeValue());
+		} else if (weight > this.getMaxInitialAttributeValue()) {
+			this.setWeight(
+					this.getMinInitialAttributeValue()
+							+ ((weight - this.getMinInitialAttributeValue())
+							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
+			);
+		}
+
+		// Initialize agility
+		if (agility >= this.getMinInitialAttributeValue() &&
+				agility <= this.getMaxInitialAttributeValue()) {
+			this.setAgility(agility);
+		} else if (agility < this.getMinInitialAttributeValue()) {
+			this.setAgility(this.getMinInitialAttributeValue());
+		} else if (agility > this.getMaxInitialAttributeValue()) {
+			this.setAgility(
+					this.getMinInitialAttributeValue()
+							+ ((agility - this.getMinInitialAttributeValue())
+							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
+			);
+		}
+
+		// Initialize strength
+		if (strength >= this.getMinInitialAttributeValue() &&
+				strength <= this.getMaxInitialAttributeValue()) {
+			this.setStrength(strength);
+		} else if (strength < this.getMinInitialAttributeValue()) {
+			this.setStrength(this.getMinInitialAttributeValue());
+		} else if (strength > this.getMaxInitialAttributeValue()) {
+			this.setStrength(
+					this.getMinInitialAttributeValue()
+							+ ((strength - this.getMinInitialAttributeValue())
+							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
+			);
+		}
+
+		// Initialize toughness
 		if (toughness >= this.getMinInitialAttributeValue() &&
 				toughness <= this.getMaxInitialAttributeValue()) {
 			this.setToughness(toughness);
@@ -81,29 +126,6 @@ public class Unit {
 							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
 			);
 		}
-
-//		//set the weight of the unit
-//		if (weight < MIN_START_PARAM)
-//			throw new IllegalArgumentException();
-//		if (weight > MAX_START_PARAM)
-//			throw new IllegalArgumentException();
-//		this.setWeight(weight);
-//
-//		//set the agility of a unit
-//		if (agility < MIN_START_PARAM)
-//			throw new IllegalArgumentException();
-//		if (agility > MAX_START_PARAM)
-//			throw new IllegalArgumentException();
-//		this.setAgility(agility);
-//
-//		//set the strength of a unit
-//		if (strength < MIN_START_PARAM)
-//			throw new IllegalArgumentException();
-//		if (strength > MAX_START_PARAM)
-//			throw new IllegalArgumentException();
-//		this.setStrength(strength);
-
-
 	}
 
 	public int getMinInitialAttributeValue() {
@@ -525,18 +547,24 @@ public class Unit {
 	 * 			  the range established by the minimum and maximum attribute values of this unit.
 	 * 			| if (strength > this.getMaxAttributeValue())
 	 * 			| 	then new.getStrength() ==
-	 * 			|		((strength-getMinAttributeValue()) % (getMaxAttributeValue()-getMinAttributeValue()+1)) + getMinAttributeValue()
+	 * 			|			((strength - this.getMinAttributeValue()) %
+	 * 			|			(this.getMaxAttributeValue()-this.getMinAttributeValue()))
+	 * 			|			+ this.getMinAttributeValue()
 	 * @post	  If the given strength is lower than the minimum attribute value of this unit,
 	 * 			  then the strength of this unit is equal to the minimum attribute value.
 	 * 			| if (strength < this.getMinAttributeValue())
 	 * 			|	then new.getStrength() == this.getMinAttributeValue()
 	 */
 	public void setStrength(int strength) {
-			if(strength <= getMinAttributeValue())
-				strength = getMinAttributeValue();
-			if(strength >= getMaxAttributeValue())
-				strength =getMaxAttributeValue();
+		if (strength >= this.getMinAttributeValue()
+				&& strength <= this.getMaxAttributeValue()) {
 			this.strength = strength;
+		} else if (strength < this.getMinAttributeValue()) {
+			this.strength = this.getMinAttributeValue();
+		} else if (strength > this.getMaxAttributeValue()) {
+			this.strength = ((strength - this.getMinAttributeValue()) % (this.getMaxAttributeValue() - this.getMinAttributeValue())) +
+					this.getMinAttributeValue();
+		}
 	}
 	
 	/**
@@ -584,7 +612,7 @@ public class Unit {
 	 * 			  the range established by the minimum and maximum attribute values of this unit.
 	 * 			| if (agility > this.getMaxAttributeValue())
 	 * 			| 	then new.getAgility() ==
-	 * 			|		((agility-getMinAttributeValue()) % (getMaxAttributeValue()-getMinAttributeValue()+1)) + getMinAttributeValue()
+	 * 			|		((agility-getMinAttributeValue()) % (getMaxAttributeValue()-getMinAttributeValue())) + getMinAttributeValue()
 	 * @post	  If the given agility is lower than the minimum attribute value of this unit,
 	 * 			  then the agility of this unit is equal to the minimum attribute value.
 	 * 			| if (agility < this.getMinAttributeValue())
@@ -593,7 +621,7 @@ public class Unit {
 	public void setAgility(int agility) {
 		if (agility > this.getMaxAttributeValue())
 			this.agility=((agility-this.getMinAttributeValue()) 
-					% (this.getMaxAttributeValue()-this.getMinAttributeValue()+1)) + this.getMinAttributeValue();
+					% (this.getMaxAttributeValue()-this.getMinAttributeValue())) + this.getMinAttributeValue();
 		if (agility < this.getMinAttributeValue())
 			this.agility= this.getMinAttributeValue();
 		if(agility >= this.getMinAttributeValue() && (agility <= this.getMaxAttributeValue()))
