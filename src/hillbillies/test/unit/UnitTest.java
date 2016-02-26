@@ -41,6 +41,9 @@ public class UnitTest {
 				3 + halfCubeSideLength,
 				this.unit.position.getUnitCoordinates()
 		);
+
+		assertEquals(50, this.unit.getToughness());
+
 		fail("Constructor has not yet been implemented completely.");
 	}
 	
@@ -233,15 +236,29 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetToughness() {
-		fail("Not yet implemented");
+		this.unit.setToughness(55);
+		assertEquals(55, this.unit.getToughness());
 	}
 
 	/**
 	 * Test method for {@link hillbillies.model.Unit#setToughness(int)}.
 	 */
 	@Test
-	public void testSetToughness() {
-		fail("Not yet implemented");
+	public void SetToughness_LegalCase() {
+		this.unit.setToughness(67);
+		assertEquals(67, this.unit.getToughness());
+	}
+
+	@Test
+	public void SetToughness_InputLowerThanMinAttrValue() {
+		this.unit.setToughness(0);
+		assertEquals(1, this.unit.getToughness());
+	}
+
+	@Test
+	public void SetToughness_InputHigherThanMaxAttrValue() {
+		this.unit.setToughness(235);
+		assertEquals(36, this.unit.getToughness());
 	}
 
 	/**

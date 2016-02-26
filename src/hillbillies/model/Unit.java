@@ -1,8 +1,8 @@
 package hillbillies.model;
 
-import java.util.Arrays;
-
-import be.kuleuven.cs.som.annotate.*;
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 
 /**
  * A class for a cubical object that occupies a position in the game world.
@@ -33,59 +33,91 @@ public class Unit {
 	 * weight, agility, strength, toughness and whether default behavior
 	 * is enabled or not.
 	 *
-	 * @param name
-	 *            The name of the unit.
-	 * @param initialPosition
-	 *            The initial position of the unit, as an array with 3 elements
-	 *            {x, y, z}.
-	 * @param weight
-	 *            The initial weight of the unit
-	 * @param agility
-	 *            The initial agility of the unit
-	 * @param strength
-	 *            The initial strength of the unit
-	 * @param toughness
-	 *            The initial toughness of the unit
-	 * @param enableDefaultBehavior
-	 *            Whether the default behavior of the unit is enabled
-	 * @post 	  The new unit is initialized with the given name if it is valid.
-	 * 			| if (isValidName(name))
-	 * 			|	new.getName() == name
-	 * @post 	  the unit it's weight, agility, strength,toughness has to be in between MIN_START_PARAM and MAX_START_PARAM
-	 * @effect	  ...
-	 * @throws IllegalArgumentException
-	 * 			  the unit it's weight, agility, strength,toughness smaller then MIN_START_PARAM or grater then MAX_START_PARAM
-     */
-	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior)
-		throws IllegalArgumentException {
+	 * @param name                  The name of the unit.
+	 * @param initialPosition       The initial position of the unit, as an array with 3 elements
+	 *                              {x, y, z}.
+	 * @param weight                The initial weight of the unit
+	 * @param agility               The initial agility of the unit
+	 * @param strength              The initial strength of the unit
+	 * @param toughness             The initial toughness of the unit
+	 * @param enableDefaultBehavior Whether the default behavior of the unit is enabled
+	 * @post The new unit is initialized with the given name if it is valid.
+	 * | if (isValidName(name))
+	 * |	new.getName() == name
+	 * @post the unit it's weight, agility, strength,toughness has to be in between MIN_START_PARAM and MAX_START_PARAM
+	 * @post The unit's toughness is set to the given toughness if it is in range,
+	 * otherwise, toughness is
+	 * either set to the given toughness modulo the range
+	 * (when given toughness > this.getMaxInitialAttributeValue()),
+	 * or set to the minimum initial attribute value
+	 * (when given toughness < this.getMinInitialAttributeValue()).
+	 * | if (toughness >= this.getMinInitialAttributeValue()) && (toughness <= this.getMaxInitialAttributeValue())
+	 * | 	then new.getToughness() == toughness
+	 * | else if (toughness < this.getMinInitialAttributeValue())
+	 * | 	then new.getToughness() == this.getMinInitialAttributeValue()
+	 * | else if (toughness > this.getMaxInitialAttributeValue())
+	 * | 	then new.getToughness() == this.getMinInitialAttributeValue() + ((toughness - getMinInitialAttributeValue()) %
+	 * |									(this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue))
+	 * @effect ...
+	 */
+	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior) {
 		this.setName(name);
-		
+
 		this.position.setUnitCoordinates(initialPosition);
-		
-		//set the weight of the unit
-		if(weight < MIN_START_PARAM)
-			throw new IllegalArgumentException();
-		if(weight > MAX_START_PARAM)
-			throw new IllegalArgumentException();
-		this.setWeight(weight);		
-		
-		//set the agility of a unit
-		if(agility < MIN_START_PARAM)
-			throw new IllegalArgumentException();
-		if(agility > MAX_START_PARAM)
-			throw new IllegalArgumentException();
-		this.setAgility(agility);
-		
-		//set the strength of a unit
-		if(strength < MIN_START_PARAM)
-			throw new IllegalArgumentException();
-		if(strength > MAX_START_PARAM)
-			throw new IllegalArgumentException();
-		this.setStrength(strength);
-	}		
-	public static final int MIN_START_PARAM = 25;
-	public static final int MAX_START_PARAM = 100;
-	
+
+		/*
+		 * The implementation below of weight, agility and strength has to be total instead of defensive.
+		 */
+
+		if (toughness >= this.getMinInitialAttributeValue() &&
+				toughness <= this.getMaxInitialAttributeValue()) {
+			this.setToughness(toughness);
+		} else if (toughness < this.getMinInitialAttributeValue()) {
+			this.setToughness(this.getMinInitialAttributeValue());
+		} else if (toughness > this.getMaxInitialAttributeValue()) {
+			this.setToughness(
+					this.getMinInitialAttributeValue()
+							+ ((toughness - this.getMinInitialAttributeValue())
+							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
+			);
+		}
+
+//		//set the weight of the unit
+//		if (weight < MIN_START_PARAM)
+//			throw new IllegalArgumentException();
+//		if (weight > MAX_START_PARAM)
+//			throw new IllegalArgumentException();
+//		this.setWeight(weight);
+//
+//		//set the agility of a unit
+//		if (agility < MIN_START_PARAM)
+//			throw new IllegalArgumentException();
+//		if (agility > MAX_START_PARAM)
+//			throw new IllegalArgumentException();
+//		this.setAgility(agility);
+//
+//		//set the strength of a unit
+//		if (strength < MIN_START_PARAM)
+//			throw new IllegalArgumentException();
+//		if (strength > MAX_START_PARAM)
+//			throw new IllegalArgumentException();
+//		this.setStrength(strength);
+
+
+	}
+
+	public int getMinInitialAttributeValue() {
+		return this.MIN_INITIAL_ATTRIBUTE_VALUE;
+	}
+
+	private static final int MIN_INITIAL_ATTRIBUTE_VALUE = 25;
+
+	public int getMaxInitialAttributeValue() {
+		return this.MAX_INITIAL_ATTRIBUTE_VALUE;
+	}
+
+	private static final int MAX_INITIAL_ATTRIBUTE_VALUE = 100;
+
 	/**
 	 * A nested class in Unit for maintaining its position.
 	 *
@@ -644,14 +676,24 @@ public class Unit {
 	 * 			  the range established by the minimum and maximum attribute values of this unit.
 	 * 			| if (toughness > this.getMaxAttributeValue())
 	 * 			| 	then new.getToughness() ==
-	 * 			|		((toughness-getMinAttributeValue()) % (getMaxAttributeValue()-getMinAttributeValue()+1)) + getMinAttributeValue()
+	 * 			|			((toughness - this.getMinAttributeValue()) %
+	 * 			|			(this.getMaxAttributeValue()-this.getMinAttributeValue()))
+	 * 			|			+ this.getMinAttributeValue()
 	 * @post	  If the given toughness is lower than the minimum attribute value of this unit,
 	 * 			  then the toughness of this unit is equal to the minimum attribute value.
 	 * 			| if (toughness < this.getMinAttributeValue())
 	 * 			|	then new.getToughness() == this.getMinAttributeValue()
 	 */
 	public void setToughness(int toughness) {
-
+		if (toughness >= this.getMinAttributeValue()
+				&& toughness <= this.getMaxAttributeValue()) {
+			this.toughness = toughness;
+		} else if (toughness < this.getMinAttributeValue()) {
+			this.toughness = this.getMinAttributeValue();
+		} else if (toughness > this.getMaxAttributeValue()) {
+			this.toughness = ((toughness - this.getMinAttributeValue()) % (this.getMaxAttributeValue() - this.getMinAttributeValue())) +
+					this.getMinAttributeValue();
+		}
 	}
 
 	/**
