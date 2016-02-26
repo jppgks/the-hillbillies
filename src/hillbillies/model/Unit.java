@@ -738,7 +738,7 @@ public class Unit {
 		this.state = state;
 	}
 
-	private State state = State.RESTING;
+	private State state;
 	
 	/**
 	 * @post 	  choose a random state move, conduct a work task, rest unil it has full recovered hitpoints and stamina
