@@ -35,7 +35,7 @@ public class Unit {
 	 *
 	 * @param name                  The name of the unit.
 	 * @param initialPosition       The initial position of the unit, as an array with 3 elements
-	 *                              {x, y, z}.
+	 *                              {unitX, unitY, unitZ}.
 	 * @param weight                The initial weight of the unit
 	 * @param agility               The initial agility of the unit
 	 * @param strength              The initial strength of the unit
@@ -159,9 +159,9 @@ public class Unit {
 		 * 			| new.getUnitCoordinates() == {.5, .5, .5}
 		 */
 		public Position() {
-			this.x = cubeSideLength / 2;
-			this.y = cubeSideLength / 2;
-			this.z = cubeSideLength - 1;
+			this.unitX = cubeSideLength / 2;
+			this.unitY = cubeSideLength / 2;
+			this.unitZ = cubeSideLength - 1;
 		}
 
 		/**
@@ -200,7 +200,7 @@ public class Unit {
 		 */
 		@Basic @Raw
 		public double[] getUnitCoordinates() {
-			return new double[] {this.x, this.y, this.z};
+			return new double[] {this.unitX, this.unitY, this.unitZ};
 		}
 
 		/**
@@ -230,8 +230,8 @@ public class Unit {
 		 * @param cubeCoordinates
 		 *         	  The cube coordinates of this unit position.
 		 * @post 	  The unit coordinates of this new unit position are equal to
-		 *         	  the given cube coordinates + 1/2 of a cube side for x and y,
-		 *         	  equal to the given cube coordinate for z.
+		 *         	  the given cube coordinates + 1/2 of a cube side for unitX and unitY,
+		 *         	  equal to the given cube coordinate for unitZ.
 		 *        	| new.getUnitCoordinates() ==
 		 *        	|	{
 		 *        	|	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
@@ -245,14 +245,27 @@ public class Unit {
 		 */
 		@Raw
 		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
+			this.setCubeCoordinates(cubeCoordinates);
 			double[] unitCoordinates = getDoubleArrayFromIntArray(cubeCoordinates);
 			if (! isValidPosition(unitCoordinates))
 				throw new IllegalCoordinateException(unitCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
-			this.x = unitCoordinates[0] + halfCubeSideLength;
-			this.y = unitCoordinates[1] + halfCubeSideLength;
-			this.z = unitCoordinates[2];
+			this.unitX = unitCoordinates[0] + halfCubeSideLength;
+			this.unitY = unitCoordinates[1] + halfCubeSideLength;
+			this.unitZ = unitCoordinates[2];
 		}
+
+		private void setCubeCoordinates(int[] cubeCoordinates) {
+			this.cubeX = cubeCoordinates[0];
+			this.cubeY = cubeCoordinates[1];
+			this.cubeZ = cubeCoordinates[2];
+		}
+
+		private int[] getCubeCoordinates() {
+			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
+		}
+
+		private int cubeX, cubeY, cubeZ;
 
 		/**
 		 * Variable registering the length of a cube side in meters.
@@ -262,7 +275,7 @@ public class Unit {
 		/**
 		 * Variables registering the unit coordinates of this unit position.
 		 */
-		private double x, y, z;
+		private double unitX, unitY, unitZ;
 	}
 
 	/**
@@ -283,11 +296,26 @@ public class Unit {
 	 * 			| new.getOrientation() == atan2(vy,vx)
 	 * @throws IllegalStateException
 	 * 			  when the unit can't move when the it is attacked
+	 * @throws IllegalArgumentException
+	 * 			  When the given cube coordinates aren't from a neighbouring cube of this unit.
 	 * 
 	 */
-	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalStateException {
+	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalStateException, IllegalArgumentException {
+		if (! isNeighbouringCube(new int[]{dx, dy, dz})) {
+			throw new IllegalArgumentException();
+		}
+		if (this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
+			throw new IllegalStateException();
 		this.setState(State.MOVING);
+
 	}
+
+	private boolean isNeighbouringCube(int[] possibleNeighbouringCube) {
+		for (int i = 0; i < possibleNeighbouringCube.length; i++)
+			if (this.position.getCubeCoordinates()[i] + 1 != possibleNeighbouringCube[i]) return false;
+		return true;
+	}
+
 	/**
 	 * @param 	  targetposition
 	 * 
@@ -984,5 +1012,3 @@ public class Unit {
 
 	}
 }
-
-
