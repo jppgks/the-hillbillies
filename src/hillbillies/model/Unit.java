@@ -12,8 +12,8 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @note 	  A Unit is a basic type of in-game character with the ability to move around,
  * 			  interact with other such characters and manipulate the game world.
  * 
- * @invar 	  The activity is always equals to a valid activity.
- * 		  	| isValidAcivity(activity)
+ * @invar 	  The state is always equals to a valid state.
+ * 		  	| isValidAcivity(state)
  * @invar 	  The amount of hitpoints is always a valid amount
  * 		  	| isValidHitPoints(hitpoints)
  * @invar  	  The stamina of each Unit must be a valid stamina for any
@@ -271,18 +271,22 @@ public class Unit {
 	public Unit.Position position = new Unit.Position();
 
 	/**
-	 * @param 	  targetposition
-	 * 			  the adjacent field were the unit has to move
-	 * @post 	  the unit moves to an adjacent position of the current one
-	 * 			| new.posistion.getUnitCoordinates() == targetposition
-	 * @post 	  the orientation must set by atan2(vy,vx)
-	 * 			| new.getOrentation() == atan2(vy,vx)
+	 * @param dx
+	 * 			  X coordinate of neighbouring cube to move to.
+	 * @param dy
+	 * 			  Y coordinate of neighbouring cube to move to.
+	 * @param dz
+	 * 			  Z coordinate of neighbouring cube to move to.
+	 * @post 	  the unit moves to an adjacent cube of the current one
+	 * 			| new.position.getUnitCoordinates() == targetPosition
+	 * @post 	  the orientation must be set to atan2(vy,vx)
+	 * 			| new.getOrientation() == atan2(vy,vx)
 	 * @throws IllegalStateException
 	 * 			  when the unit can't move when the it is attacked
 	 * 
 	 */
-	public void moveToAdjacent(Position targetposition) throws IllegalStateException {
-
+	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalStateException {
+		this.setState(State.MOVING);
 	}
 	/**
 	 * @param 	  targetposition
@@ -356,11 +360,11 @@ public class Unit {
 	/**
 	 * @param 	  workActivity
 	 * 
-	 * @post 	  the activity of the unit is set to work
-	 * 			| new.setActivity(work) == work
+	 * @post 	  the state of the unit is set to work
+	 * 			| new.setState(work) == work
 	 * 
-	 * @effect 	  set the activity of the unit to work
-	 * 			| this.setActivity(work)
+	 * @effect 	  set the state of the unit to work
+	 * 			| this.setState(work)
 	 * 
 	 * @throws IllegalStateException
 	 * 			  The given workActivity is not a valid workActivity for work
@@ -393,7 +397,7 @@ public class Unit {
 	
 	/**
 	 * 
-	 * @return 	  gives the time its takes for a work activity
+	 * @return 	  gives the time its takes for a work state
 	 * 			| result == 500/this.strength
 	 * 
 	 * 		
@@ -404,14 +408,14 @@ public class Unit {
 	}
 	
 	/**
-	 * variable time that it takes for a work activity
+	 * variable time that it takes for a work state
 	 */
 	public float timeForWork;
 	
 	
 	/**
-	 * @post 	  the activity of the unit is set to work
-	 * 			| new.setActivity(rest) == rest
+	 * @post 	  the state of the unit is set to work
+	 * 			| new.setState(rest) == rest
 	 * @post 	  while the hitpoints not larger or equals the maxHitpoints then
 	 * 		 	  add every REGEN_REST_TIME second toughness/200 hitpoints
 	 * 		 	  else check the stamina points if they are not the
@@ -422,8 +426,8 @@ public class Unit {
 	 * 			|		then advaceTime(REGEN_REST_TIME)
 	 * 			|
 	 * 
-	 * @effect 	  set the activity of the unit to work
-	 * 			| this.setActivity(rest)
+	 * @effect 	  set the state of the unit to work
+	 * 			| this.setState(rest)
 	 * 
 	 * @throws IllegalStateException
 	 * 			  When a unit has the maximum hitpoints and the maximum of stamina
@@ -714,69 +718,44 @@ public class Unit {
 	private int toughness;
 
 	/**
-	 * @param 	  activity
-	 *
-	 * @return 	  Returns the current activity of this unit.
-	 * 			| result == this.activity
+	 * @return 	  Returns the current state of this unit.
+	 * 			| result == this.state
 	 */
-	public String getActivity(String activity){
-		return this.activity;
+	public State getState(){
+		return this.state;
 	}
 
 	/**
-	 * @param 	  activity
+	 * @param 	  state
 	 *
-	 * @pre 	  The given activity has to be a valid activity.
-	 * 			| isvalidAcivity(activity)
-	 * @post 	  The new activity is equal to the given activity.
-	 * 			| new.getActivity() == activity
+	 * @pre 	  The given state has to be a valid state.
+	 * 			| isvalidAcivity(state)
+	 * @post 	  The new state is equal to the given state.
+	 * 			| new.getState() == state
 	 *
 	 */
-	public void setActivity(String activity){
-		assert isValidActivity(activity);
-		this.activity = activity;
-	}
-	/**
-	 * @param 	  activity
-	 *
-	 *
-	 * @return 	  Returns true if the activity is equal to a valid activity.
-	 * 			| for each i in validActivities()
-	 * 			|	if( activity == j in validAcitivties())
-	 * 			|		then return true
-	 * 			| return false
-	 */
-	public static boolean isValidActivity(String activity){
-		return true;
+	public void setState(State state) {
+		this.state = state;
 	}
 
-	/**
-	 *
-	 * @return 	  All the activities a unit can perform
-	 */
-	public static String[] validActivities(){
-		String[] activities = {"work,attack","defend","rest","move",null};
-		return activities;
-	}
-
-	private String activity = null;
+	private State state = State.RESTING;
 	
 	/**
-	 * @post 	  choose a random activity move, conduct a work task, rest unil it has full recovered hitpoints and stamina
+	 * @post 	  choose a random state move, conduct a work task, rest unil it has full recovered hitpoints and stamina
 	 * 			
 	 * @post  	  if it is sprinting till it's exhausted
 	 * 
 	 * @throws IllegalStateException
-	 * 			  if the unit is doing an activity
+	 * 			  if the unit is doing an state
 	 */
 	public void startDefaultBehaviour() throws IllegalStateException{
 		
 	}
 	/**
-	 * @post 	  Stop the Default activity and set the current activity on null
+	 * @post 	  Stop the Default state and set the current state on null
 	 * 
 	 * @throws IllegalStateException
-	 * 			  if a unit doesn't conduct an activity
+	 * 			  if a unit doesn't conduct an state
 	 */
 	public void stopDefaultBehavior() throws IllegalStateException{
 		

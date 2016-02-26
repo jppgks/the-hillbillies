@@ -294,7 +294,7 @@ public class UnitTest {
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#setActivity(java.lang.String)}.
+	 * Test method for {@link hillbillies.model.Unit#setState(java.lang.String)}.
 	 */
 	@Test
 	public void testSetActivity() {
@@ -302,7 +302,7 @@ public class UnitTest {
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#isValidActivity(java.lang.String)}.
+	 * Test method for {@link hillbillies.model.Unit#isValidState(java.lang.String)}.
 	 */
 	@Test
 	public void testIsValidActivity() {
