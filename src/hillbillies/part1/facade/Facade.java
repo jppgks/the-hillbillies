@@ -99,8 +99,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void moveToAdjacent(Unit unit, int dx, int dy, int dz) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.moveToAdjacent(dx, dy, dz);
 	}
 
 	@Override
@@ -137,8 +136,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public void moveTo(Unit unit, int[] cube) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.moveTo(cube);
 	}
 
 	@Override
@@ -177,14 +175,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public void setDefaultBehaviorEnabled(Unit unit, boolean value) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.toggleDefaultBehavior(value);
 	}
 
 	@Override
 	public boolean isDefaultBehaviorEnabled(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getDefaultBehaviorEnabled();
 	}
 
 }
