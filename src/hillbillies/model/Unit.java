@@ -82,6 +82,9 @@ public class Unit {
 
 		// Initialize toughness
 		initializeAttribute("t", toughness);
+		
+		// Initialize HitPoints
+		this.setHitPoints(this.maxHitPoints());
 	}
 
 	private void initializeAttribute(String attributeKind, int attributeValue) {
@@ -853,18 +856,23 @@ public class Unit {
 	 *            and is smaller or equals to the maximum hitpoints the unit can have
 	 *         	| return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
 	 */
-	public static boolean isValidHitPoints(int hitpoints){
-		return true;
+	public boolean isValidHitPoints(int hitpoints){
+	if(hitpoints <= this.maxHitPoints() && hitpoints >=0)
+			return true;
+		return false;
 	}
 
 	/**
 	 * @return 	  returns the maximum hitpoints the unit can have
-	 * 			| 200.(weight/100).(toughness/100)
+	 * 			| 200.(this.weight/100).(this.toughness/100)
 	 */
 	public int maxHitPoints(){
-		return -1;
+		return (200*this.getWeight()/100*this.getToughness()/100);
 	}
-
+	public int minHitPoints(){
+		return 0;
+	}
+	
 	private int hitPoints;
 	
 	/**
