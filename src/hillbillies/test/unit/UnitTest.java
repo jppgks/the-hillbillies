@@ -38,10 +38,11 @@ public class UnitTest {
 		assertDoublePositionEquals(
 				1 + halfCubeSideLength,
 				2 + halfCubeSideLength,
-				3 + halfCubeSideLength,
+				3,
 				this.unit.position.getUnitCoordinates()
 		);
-
+		
+		assertEquals(this.unit.getMaxHitPoints(),this.unit.getHitPoints());
 		assertEquals(50, this.unit.getAgility());
 		assertEquals(50, this.unit.getStrength());
 		assertEquals(50, this.unit.getToughness());
@@ -153,7 +154,7 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetRegenHitPoints() {
-		fail("Not yet implemented");
+		assertEquals(this.unit.getToughness()/200, this.unit.getRegenHitPoints());
 	}
 
 	/**
@@ -161,7 +162,7 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetRegenStamina() {
-		fail("Not yet implemented");
+		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
 	}
 
 	/**
@@ -368,16 +369,16 @@ public class UnitTest {
 	}
 	@Test
 	public void IsValidHitPoints_IllegalCase() {
-		assertEquals(false,this.unit.isValidHitPoints(this.unit.maxHitPoints()+1));
+		assertEquals(false,this.unit.isValidHitPoints(this.unit.getMaxHitPoints()+1));
 		assertEquals(false,this.unit.isValidHitPoints(-17));
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#maxHitPoints()}.
+	 * Test method for {@link hillbillies.model.Unit#getMaxHitPoints()}.
 	 */
 	@Test
-	public void testMaxHitPoints() {
-		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.maxHitPoints());
+	public void testGetMaxHitPoints() {
+		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints());
 	}
 
 	/**
@@ -385,15 +386,25 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetStamina() {
-		fail("Not yet implemented");
+		assertEquals(50,this.unit.getStamina());
 	}
 
 	/**
 	 * Test method for {@link hillbillies.model.Unit#isValidStamina(int)}.
 	 */
 	@Test
-	public void testIsValidStamina() {
-		fail("Not yet implemented");
+	public void isValidStamina_LegalCase() {
+		assertEquals(true, this.unit.isValidStamina(50));
+		assertEquals(true, this.unit.isValidStamina(36));
+	}
+
+	/**
+	 * Test method for {@link hillbillies.model.Unit#isValidStamina(int)}.
+	 */
+	@Test
+	public void isValidStamina_IllegalCase() {
+		assertEquals(false, this.unit.isValidStamina(100));
+		assertEquals(false, this.unit.isValidStamina(-23));
 	}
 
 	/**
@@ -401,7 +412,9 @@ public class UnitTest {
 	 */
 	@Test
 	public void testSetStamina() {
-		fail("Not yet implemented");
+		this.unit.setStamina(15);
+		assertEquals(15, this.unit.getStamina());
+		
 	}
 
 	/**
@@ -409,7 +422,8 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetMaxStaminaPoints() {
-		fail("Not yet implemented");
+		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints());
+		
 	}
 
 	/**
