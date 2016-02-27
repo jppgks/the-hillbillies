@@ -1,5 +1,7 @@
 package hillbillies.model;
 
+import java.util.Arrays;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -88,6 +90,9 @@ public class Unit {
 		
 		// Initialize Stamina
 		this.setStamina(this.getMaxStaminaPoints());
+				
+		// Initialize State to NONE
+		this.setState(State.NONE);
 	}
 
 	private void initializeAttribute(String attributeKind, int attributeValue) {
@@ -329,18 +334,29 @@ public class Unit {
 	 * 
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalStateException, IllegalArgumentException {
-		if (! isNeighbouringCube(new int[]{dx, dy, dz})) {
+		if (! isNeighbouringCube(new int[]{dx, dy,dz})) {
 			throw new IllegalArgumentException();
 		}
 		if (this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
 			throw new IllegalStateException();
 		this.setState(State.MOVING);
-
+		position.setCubeCoordinates(new int[]{
+				position.getCubeCoordinates()[0]+dx, 
+				position.getCubeCoordinates()[1]+dy, 
+				position.getCubeCoordinates()[2]+dz});
+		position.setUnitCoordinates(new int[]{
+				position.getCubeCoordinates()[0], 
+				position.getCubeCoordinates()[1], 
+				position.getCubeCoordinates()[2]});
 	}
 
 	private boolean isNeighbouringCube(int[] possibleNeighbouringCube) {
-		for (int i = 0; i < possibleNeighbouringCube.length; i++)
-			if (this.position.getCubeCoordinates()[i] + 1 != possibleNeighbouringCube[i]) return false;
+		for (int i = 0; i < possibleNeighbouringCube.length;)
+			if(possibleNeighbouringCube[i] == 1 || possibleNeighbouringCube[i] == -1 
+				||possibleNeighbouringCube[i] == 0)
+				i++;
+			else
+				return false;
 		return true;
 	}
 
@@ -351,8 +367,39 @@ public class Unit {
 	 * 			| this.Position.getPositon() == targetposition
 	 * 
 	 */
-	public void moveTo(Position targetposition){
-		
+	public void moveTo(int[] targetposition){
+		int cubeX;
+		int cubeY;
+		int cubeZ;
+		while( !Arrays.equals(position.getCubeCoordinates(), targetposition)){
+			if(this.state != State.MOVING)
+				break;
+			if(position.getCubeCoordinates()[0]== targetposition[0]){
+				cubeX = 0;
+			}else if(position.getCubeCoordinates()[0]< targetposition[0]){
+				cubeX = 1;
+			}else{
+				cubeX = -1;
+			}
+			
+			if(position.getCubeCoordinates()[1]== targetposition[1]){
+				cubeY = 0;
+			}else if(position.getCubeCoordinates()[1]< targetposition[1]){
+				cubeY = 1;
+			}else{
+				cubeY = -1;
+			}
+			
+			if(position.getCubeCoordinates()[2]== targetposition[2]){
+				cubeZ = 0;
+			}else if(position.getCubeCoordinates()[2]< targetposition[2]){
+				cubeZ = 1;
+			}else{
+				cubeZ = -1;
+			}
+			
+			moveToAdjacent(cubeX, cubeY, cubeZ);
+		}
 	}
 	/**
 	 * @return 	  the base speed of a unit determined by the unit's weight, strength and agility
@@ -802,12 +849,12 @@ public class Unit {
 	 * @post  	  if it is sprinting till it's exhausted
 	 * 
 	 * @throws IllegalStateException
-	 * 			  if the unit is doing an state
+	 * 			  if the unit is doing a state
 	 * @throws IllegalStateException
 	 * 			  if toggleDefaultBehavior is false
 	 */
 	public void startDefaultBehaviour() throws IllegalStateException{
-		
+
 	}
 	/**
 	 * @post 	  Stop the Default state and set the current state on null
@@ -829,8 +876,12 @@ public class Unit {
 	 * 			|	then new.defaultBehaviorEnabled == true
 	 * 
 	 */
-	public void toggleDefaultBehavior(){
-		
+	
+	public void toggleDefaultBehavior(Boolean toggle){
+		this.defaultBehaviorEnabled= toggle;
+	}
+	public Boolean getDefaultBehaviorEnabled(){
+		return this.defaultBehaviorEnabled;
 	}
 	
 	private boolean defaultBehaviorEnabled;
