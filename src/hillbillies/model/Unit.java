@@ -84,7 +84,10 @@ public class Unit {
 		initializeAttribute("t", toughness);
 		
 		// Initialize HitPoints
-		this.setHitPoints(this.maxHitPoints());
+		this.setHitPoints(this.getMaxHitPoints());
+		
+		// Initialize Stamina
+		this.setStamina(this.getMaxStaminaPoints());
 	}
 
 	private void initializeAttribute(String attributeKind, int attributeValue) {
@@ -502,14 +505,14 @@ public class Unit {
 	 * 			| result == (this.toughness)/200
 	 */
 	public int getRegenHitPoints(){
-		return -1;
+		return (this.getToughness()/200);
 	}
 	/**
 	 * @return 	  gives the amount Stamina points need to regenerate per time unit of REGEN_REST_TIME
 	 * 			| restult == (this.toughness)/100
 	 */	
 	public int getRegenStamina(){
-		return -1;
+		return this.getToughness()/100;
 	}
 
 	/**
@@ -800,6 +803,8 @@ public class Unit {
 	 * 
 	 * @throws IllegalStateException
 	 * 			  if the unit is doing an state
+	 * @throws IllegalStateException
+	 * 			  if toggleDefaultBehavior is false
 	 */
 	public void startDefaultBehaviour() throws IllegalStateException{
 		
@@ -857,19 +862,19 @@ public class Unit {
 	 *         	| return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
 	 */
 	public boolean isValidHitPoints(int hitpoints){
-	if(hitpoints <= this.maxHitPoints() && hitpoints >=0)
+		if(hitpoints <= this.getMaxHitPoints() && hitpoints >=getMinHitPoints())
 			return true;
 		return false;
 	}
 
 	/**
 	 * @return 	  returns the maximum hitpoints the unit can have
-	 * 			| 200.(this.weight/100).(this.toughness/100)
+	 * 			| result == 200.(this.weight/100).(this.toughness/100)
 	 */
-	public int maxHitPoints(){
+	public int getMaxHitPoints(){
 		return (200*this.getWeight()/100*this.getToughness()/100);
 	}
-	public int minHitPoints(){
+	public int getMinHitPoints(){
 		return 0;
 	}
 	
@@ -892,10 +897,12 @@ public class Unit {
 	 * @param  	  stamina
 	 *         	  The stamina to check.
 	 * @return 
-	 *       	| result == (stamina >= 0) && (stamina < this.getMaxStaminaPoints())
+	 *       	| result == (stamina >= 0) && (stamina <= this.getMaxStaminaPoints())
 	 */
-	public static boolean isValidStamina(int stamina) {
-	  return false;
+	public boolean isValidStamina(int stamina) {
+		if(stamina <= this.getMaxStaminaPoints() && stamina >=getMinStaminaPoints())
+			return true;
+		return false;
 	}
 	
 	/**
@@ -919,11 +926,15 @@ public class Unit {
 	/**
 	 * Returns the maximum amount of stamina points for any Unit.
 	 *
-	 * @return 	| result == this.maxStamina
+	 * @return 	| result == 200*(this.weight/100)*(this.toughness/100)
      */
 	public int getMaxStaminaPoints() {
-		return -1;
+		return (200*this.getWeight()/100*this.getToughness()/100);
 	}
+	public int getMinStaminaPoints(){
+		return 0;
+	}
+	
 
 	private int maxStamina;
 	
