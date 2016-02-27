@@ -346,7 +346,7 @@ public class UnitTest {
 	 */
 	@Test
 	public void testGetHitPoints() {
-		fail("Not yet implemented");
+		assertEquals(50, this.unit.getHitPoints());
 	}
 
 	/**
@@ -354,15 +354,22 @@ public class UnitTest {
 	 */
 	@Test
 	public void testSetHitPoints() {
-		fail("Not yet implemented");
+		this.unit.setHitPoints(50);
+		assertEquals(50, this.unit.getHitPoints());
 	}
 
 	/**
 	 * Test method for {@link hillbillies.model.Unit#isValidHitPoints(int)}.
 	 */
 	@Test
-	public void testIsValidHitPoints() {
-		fail("Not yet implemented");
+	public void IsValidHitPoints_LegalCase() {
+		assertEquals(true,this.unit.isValidHitPoints(50));
+		assertEquals(true,this.unit.isValidHitPoints(17));
+	}
+	@Test
+	public void IsValidHitPoints_IllegalCase() {
+		assertEquals(false,this.unit.isValidHitPoints(this.unit.maxHitPoints()+1));
+		assertEquals(false,this.unit.isValidHitPoints(-17));
 	}
 
 	/**
@@ -370,7 +377,7 @@ public class UnitTest {
 	 */
 	@Test
 	public void testMaxHitPoints() {
-		fail("Not yet implemented");
+		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.maxHitPoints());
 	}
 
 	/**
