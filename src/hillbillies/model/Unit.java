@@ -1,10 +1,10 @@
 package hillbillies.model;
 
-import java.util.Arrays;
-
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
+
+import java.util.Arrays;
 
 /**
  * A class for a cubical object that occupies a position in the game world.
@@ -63,36 +63,21 @@ public class Unit {
 	 * @effect ...
 	 */
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior) {
-		// Initialize name
 		this.setName(name);
 
-		// Initialize position
 		this.position.setUnitCoordinates(initialPosition);
 
-		/*
-		 * TODO: Extract methods of the initializers below.
-		 */
+		this.initializeAttribute("w", weight);
 
-		// Initialize weight
-		initializeAttribute("w", weight);
+		this.initializeAttribute("a", agility);
 
-		// Initialize agility
-		initializeAttribute("a", agility);
+		this.initializeAttribute("s", strength);
 
-		// Initialize strength
-		initializeAttribute("s", strength);
+		this.initializeAttribute("t", toughness);
 
-		// Initialize toughness
-		initializeAttribute("t", toughness);
-		
-		// Initialize HitPoints
 		this.setHitPoints(this.getMaxHitPoints());
-		
-		// Initialize Stamina
+
 		this.setStamina(this.getMaxStaminaPoints());
-				
-		// Initialize State to NONE
-		this.setState(State.NONE);
 	}
 
 	private void initializeAttribute(String attributeKind, int attributeValue) {
@@ -841,7 +826,7 @@ public class Unit {
 		this.state = state;
 	}
 
-	private State state;
+	private State state = State.NONE;
 	
 	/**
 	 * @post 	  choose a random state move, conduct a work task, rest unil it has full recovered hitpoints and stamina
