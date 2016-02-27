@@ -173,8 +173,8 @@ public class Unit {
 		/**
 		 * Initialize this new unit position to default unit coordinates.
 		 *
-		 * @post 	  The unit coordinates of this new position are set to 0.5
-		 * 			| new.getUnitCoordinates() == {.5, .5, .5}
+		 * @post 	  The unit coordinates of this new position are set to 0.5*this.cubeSideLength
+		 * 			| new.getUnitCoordinates() == {.5*this.cubeSideLength, .5*this.cubeSideLength, .5*this.cubeSideLength}
 		 */
 		public Position() {
 			this.unitX = cubeSideLength / 2;
@@ -183,34 +183,23 @@ public class Unit {
 		}
 
 		/**
+		 * Variable registering the length of a cube side in meters.
+		 */
+		public final double cubeSideLength = 1;
+
+		/**
 		 * Initialize this new unit position with given cube coordinates.
 		 *
 		 * @param cubeCoordinates
 		 *            The cube coordinates of this new unit position.
-		 * @effect 	  Converts given array of ints to array of doubles
-		 * 			  before passing it on to the setter.
-		 * 			  The unit coordinates of this new unit position are set to
-		 *         	  the given cube coordinate + 1/2 of the cube side length
-		 *         	  for each coordinate.
+		 * @effect 	  Calls this.setUnitCoordinates and this.setCubeCoordinates
+		 * 			  with given cubeCoordinates.
+		 *       	| this.setCubeCoordinates(cubeCoordinates)
 		 *       	| this.setUnitCoordinates(cubeCoordinates)
 		 */
 		public Position(int[] cubeCoordinates) throws IllegalCoordinateException {
+			this.setCubeCoordinates(cubeCoordinates);
 			this.setUnitCoordinates(cubeCoordinates);
-		}
-
-		/**
-		 * Returns a copy of a given array of ints as an array of doubles.
-		 * 
-		 * @param arrayOfInts
-		 * 			  The int array to transform.
-         * @return	| (double[]) arrayOfInts
-         */
-		public double[] getDoubleArrayFromIntArray(int[] arrayOfInts) {
-			double[] doubleArrayFromIntArray = new double[arrayOfInts.length];
-			for (int i = 0; i < arrayOfInts.length; i++) {
-				doubleArrayFromIntArray[i] = (double) arrayOfInts[i];
-			}
-			return doubleArrayFromIntArray;
 		}
 
 		/**
@@ -219,26 +208,6 @@ public class Unit {
 		@Basic @Raw
 		public double[] getUnitCoordinates() {
 			return new double[] {this.unitX, this.unitY, this.unitZ};
-		}
-
-		/**
-		 * Check whether the given coordinates are valid coordinates for
-		 * any position.
-		 *
-		 * @param coordinates
-		 *         	  The coordinates to check.
-		 * @return 	  True if all coordinates are within range, false otherwise.
-		 *       	| result ==
-		 *       	|	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
-		 *       	|	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
-		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
-		 */
-		public boolean isValidPosition(double[] coordinates) {
-			return (
-					(coordinates[0] >= 0 && coordinates[0] < 50) &&
-					(coordinates[1] >= 0 && coordinates[1] < 50) &&
-					(coordinates[2] >= 0 && coordinates[2] < 50)
-			);
 		}
 
 		/**
@@ -273,27 +242,60 @@ public class Unit {
 			this.unitZ = unitCoordinates[2];
 		}
 
-		private void setCubeCoordinates(int[] cubeCoordinates) {
+		/**
+		 * Variables registering the unit coordinates of this unit position.
+		 */
+		private double unitX, unitY, unitZ;
+
+		/**
+		 * Check whether the given coordinates are valid coordinates for
+		 * any position.
+		 *
+		 * @param coordinates
+		 *         	  The coordinates to check.
+		 * @return 	  True if all coordinates are within range, false otherwise.
+		 *       	| result ==
+		 *       	|	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
+		 *       	|	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
+		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
+		 */
+		public boolean isValidPosition(double[] coordinates) {
+			return (
+					(coordinates[0] >= 0 && coordinates[0] < 50) &&
+							(coordinates[1] >= 0 && coordinates[1] < 50) &&
+							(coordinates[2] >= 0 && coordinates[2] < 50)
+			);
+		}
+
+		public int[] getCubeCoordinates() {
+			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
+		}
+
+		public void setCubeCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
+			if (!isValidPosition(this.getDoubleArrayFromIntArray(cubeCoordinates))) {
+				throw new IllegalCoordinateException(this.getDoubleArrayFromIntArray(cubeCoordinates));
+			}
 			this.cubeX = cubeCoordinates[0];
 			this.cubeY = cubeCoordinates[1];
 			this.cubeZ = cubeCoordinates[2];
 		}
 
-		private int[] getCubeCoordinates() {
-			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
-		}
-
 		private int cubeX, cubeY, cubeZ;
 
 		/**
-		 * Variable registering the length of a cube side in meters.
+		 * Returns a copy of a given array of ints as an array of doubles.
+		 *
+		 * @param arrayOfInts
+		 * 			  The int array to transform.
+		 * @return	| (double[]) arrayOfInts
 		 */
-		public final double cubeSideLength = 1;
-
-		/**
-		 * Variables registering the unit coordinates of this unit position.
-		 */
-		private double unitX, unitY, unitZ;
+		public double[] getDoubleArrayFromIntArray(int[] arrayOfInts) {
+			double[] doubleArrayFromIntArray = new double[arrayOfInts.length];
+			for (int i = 0; i < arrayOfInts.length; i++) {
+				doubleArrayFromIntArray[i] = (double) arrayOfInts[i];
+			}
+			return doubleArrayFromIntArray;
+		}
 	}
 
 	/**

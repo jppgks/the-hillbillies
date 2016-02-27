@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
+import static hillbillies.tests.util.PositionAsserts.assertIntegerPositionEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -52,13 +53,29 @@ public class UnitTest {
 	
 	@Test
 	public void CreatePosition_LegalCase() {
-		this.unit.position = unit.new Position(new int[] {1, 2, 3});
-		assertDoublePositionEquals(1, 2, 3, this.unit.position.getUnitCoordinates());
+		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 3});
+		assertDoublePositionEquals(1, 2, 3, testPosition.getUnitCoordinates());
 	}
 
 	@Test(expected = IllegalCoordinateException.class)
 	public void CreatePosition_IllegalCase() throws IllegalCoordinateException {
-		this.unit.position = unit.new Position(new int[] {1, 2, 50});
+		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 50});
+	}
+
+	@Test
+	public void testGetCubeCoordinates() {
+		assertIntegerPositionEquals(1, 2, 3, this.unit.position.getCubeCoordinates());
+	}
+
+	@Test
+	public void SetCubeCoordinates_LegalCase() {
+		unit.position.setCubeCoordinates(new int[]{6, 7, 8});
+		assertIntegerPositionEquals(6, 7, 8, unit.position.getCubeCoordinates());
+	}
+
+	@Test(expected = IllegalCoordinateException.class)
+	public void SetCubeCoordinates_IllegalCase() throws IllegalCoordinateException {
+		unit.position.setCubeCoordinates(new int[]{1, 2, 50});
 	}
 
 	/**
