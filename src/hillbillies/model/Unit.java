@@ -395,7 +395,7 @@ public class Unit {
 	 * 			| result == 1.5*((strength + agility)/(200*(weight/100))
 	 */
 	public double getUnitBaseSpeed(){
-		return (1.5*(this.getStrength()+this.getAgility())/200*(this.getWeight()/100));
+		return (1.5*(this.getStrength()+this.getAgility())/200*this.getWeight()/100);
 	}
 	/**
 	 * @param 	  targetposition
@@ -467,9 +467,6 @@ public class Unit {
 				(this.getUnitWalkSpeed(targetposition)*targetposition[1]/d),
 				(this.getUnitWalkSpeed(targetposition)*targetposition[2]/d)};
 	}
-	public double velocityX;
-	public double velocityY;
-	public double velocityZ;
 	
 	public static final double TIME_EXHAUSTSSPRINTNG = 0.1 ;
 	/**
