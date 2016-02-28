@@ -78,6 +78,7 @@ public class Unit {
 		this.setHitPoints(this.getMaxHitPoints());
 
 		this.setStamina(this.getMaxStaminaPoints());
+		
 	}
 
 	private void initializeAttribute(String attributeKind, int attributeValue) {
@@ -147,13 +148,13 @@ public class Unit {
 	}
 
 	public int getMinInitialAttributeValue() {
-		return this.MIN_INITIAL_ATTRIBUTE_VALUE;
+		return Unit.MIN_INITIAL_ATTRIBUTE_VALUE;
 	}
 
 	private static final int MIN_INITIAL_ATTRIBUTE_VALUE = 25;
 
 	public int getMaxInitialAttributeValue() {
-		return this.MAX_INITIAL_ATTRIBUTE_VALUE;
+		return Unit.MAX_INITIAL_ATTRIBUTE_VALUE;
 	}
 
 	private static final int MAX_INITIAL_ATTRIBUTE_VALUE = 100;
@@ -439,7 +440,8 @@ public class Unit {
 	 * 
 	 */
 	public void startSprinting() throws IllegalStateException{
-		this.isSprinting = true;
+		if(this.getState()==State.MOVING)
+			this.isSprinting = true;
 	}
 	/**
 	 * @post 	  if the unit isn't sprinting do nothing
@@ -479,51 +481,24 @@ public class Unit {
 	 * 			| this.setState(work)
 	 * 
 	 * @throws IllegalStateException
-	 * 			  The given workActivity is not a valid workActivity for work
-	 * 			| !isValidWorkActivity(workActivity)
-	 *
-	 * @throws IllegalArgumentException
-	 * 			  The given workActivity is not a valid workActivity for work
-	 * 			| !isValidWorkActivity(workActivity)
-	 */			
-	public void work(String workActivity) throws IllegalArgumentException{
+	 * 			  The unit is attacking or defending
+	 * 			|if(this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
+	 */	
+	public void work() throws IllegalStateException{
+		if(this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
+			throw new IllegalStateException();
+		this.setState(State.WORKING);
 		
 	}
 	/**
-	 * @param 	  workActivity
-	 * 			  the workActivity that we want to check
-	 * @return 	  true if workActivity is in VALID_WORKACTIVITIES else we return false
-	 * 			| for each i in VALID_WORKACTIVITIES
-	 * 			| 	if workActivity == VALID_WORKACTIVITIES[j]
-	 * 			|		then return true
-	 * 			| return false
-	 */
-	public boolean isValidWorkActivity(String workActivity){
-		return true;
-	}
-	/**
-	 *  variable list with all valid workActivities a unit can do
-	 *  
-	 */
-	private static String VALID_WORKACTIVITIES[]= {"write all available work activities"};
-	
-	/**
 	 * 
 	 * @return 	  gives the time its takes for a work state
-	 * 			| result == 500/this.strength
-	 * 
-	 * 		
+	 * 			| result == 500/this.strength 		
 	 * 
 	 */
 	public float getTimeForWork(){
-		return this.timeForWork;
+		return 500/this.getStrength();
 	}
-	
-	/**
-	 * variable time that it takes for a work state
-	 */
-	public float timeForWork;
-	
 	
 	/**
 	 * @post 	  the state of the unit is set to work
@@ -548,8 +523,8 @@ public class Unit {
 	 * 			| && ( this.getStamina == this.getMaxStaminaPoints())
 	 */
 	public void rest()throws IllegalStateException{
-//		if( this.getHitPoints() == this.getMaxHitPoints() && this.getStamina() == this.getMaxStaminaPoints())
-//			throw new IllegalStateException();
+		//if( this.getHitPoints() == this.getMaxHitPoints() && this.getStamina() == this.getMaxStaminaPoints())
+		//	throw new IllegalStateException();
 		this.setState(State.RESTING);
 		
 	}
@@ -601,6 +576,8 @@ public class Unit {
 	 * 			|		((orientation-getMinOrientation()) % (getMaxOrientation()-getMinOrientation()+1)) + getMinOrientation()
 	 */
 	private void setOrientation(float orientation) {
+		if( orientation < this.getMinOrientation() || orientation > this.getMaxOrientation())
+			this.orientation = ((orientation -getMinOrientation()) % (getMaxOrientation()-getMinOrientation()+1))+getMinOrientation();
 		this.orientation = orientation;
 	}
 
@@ -612,7 +589,7 @@ public class Unit {
 	 */
 	@Immutable
 	private float getMinOrientation() {
-		return this.MIN_ORIENTATION;
+		return Unit.MIN_ORIENTATION;
 	}
 
 	/**
@@ -628,7 +605,7 @@ public class Unit {
 	 */
 	@Immutable
 	private float getMaxOrientation() {
-		return this.MAX_ORIENTATION;
+		return Unit.MAX_ORIENTATION;
 	}
 
 	/**
@@ -999,7 +976,7 @@ public class Unit {
 	}
 	
 
-	private int maxStamina;
+
 	
 	/**
 	 * Variable registering the stamina of this Unit.
