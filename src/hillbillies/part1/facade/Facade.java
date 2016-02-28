@@ -19,8 +19,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int[] getCubeCoordinate(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.position.getCubeCoordinates();
 	}
 
 	@Override
@@ -140,14 +139,13 @@ public class Facade implements IFacade {
 
 	@Override
 	public void work(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
+		unit.work();
 
 	}
 
 	@Override
 	public boolean isWorking(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getState()== State.WORKING;
 	}
 
 	@Override
@@ -157,8 +155,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isAttacking(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getState()== State.ATTACKING;
 	}
 
 	@Override
