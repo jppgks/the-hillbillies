@@ -79,7 +79,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getCurrentHitPoints(Unit unit) throws ModelException {
-		return unit.getHitPoints();
+		return unit.getCurrentHitPoints();
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getCurrentStaminaPoints(Unit unit) throws ModelException {
-		return unit.getStamina();
+		return unit.getCurrentStaminaPoints();
 	}
 
 	@Override
@@ -104,12 +104,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getCurrentSpeed(Unit unit) throws ModelException {
-		return 0;
+		return 0; //unit.getCurrentSpeed();
 	}
 
 	@Override
 	public boolean isMoving(Unit unit) throws ModelException {
-		return unit.getState()== State.MOVING;
+		return unit.getState() == State.MOVING;
 	}
 
 	@Override
@@ -140,22 +140,21 @@ public class Facade implements IFacade {
 	@Override
 	public void work(Unit unit) throws ModelException {
 		unit.work();
-
 	}
 
 	@Override
 	public boolean isWorking(Unit unit) throws ModelException {
-		return unit.getState()== State.WORKING;
+		return unit.getState() == State.WORKING;
 	}
 
 	@Override
 	public void fight(Unit attacker, Unit defender) throws ModelException {
-		fight(attacker, defender);
+		attacker.attack(defender);
 	}
 
 	@Override
 	public boolean isAttacking(Unit unit) throws ModelException {
-		return unit.getState()== State.ATTACKING;
+		return unit.getState() == State.ATTACKING;
 	}
 
 	@Override
@@ -165,12 +164,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isResting(Unit unit) throws ModelException {
-		return( unit.getState()== State.RESTING);
+		return unit.getState() == State.RESTING;
 	}
 
 	@Override
 	public void setDefaultBehaviorEnabled(Unit unit, boolean value) throws ModelException {
-		unit.toggleDefaultBehavior(value);
+		unit.setDefaultBehaviorEnabled(value);
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class UnitTest {
 				this.unit.position.getUnitCoordinates()
 		);
 		
-		assertEquals(this.unit.getMaxHitPoints(),this.unit.getHitPoints());
+		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints());
 		assertEquals(50, this.unit.getAgility());
 		assertEquals(50, this.unit.getStrength());
 		assertEquals(50, this.unit.getToughness());
@@ -69,13 +69,13 @@ public class UnitTest {
 
 	@Test
 	public void SetCubeCoordinates_LegalCase() {
-		unit.position.setCubeCoordinates(new int[]{6, 7, 8});
+		unit.position.setOccupyingCubeCoordinates(new int[]{6, 7, 8});
 		assertIntegerPositionEquals(6, 7, 8, unit.position.getCubeCoordinates());
 	}
 
 	@Test(expected = IllegalCoordinateException.class)
 	public void SetCubeCoordinates_IllegalCase() throws IllegalCoordinateException {
-		unit.position.setCubeCoordinates(new int[]{1, 2, 50});
+		unit.position.setOccupyingCubeCoordinates(new int[]{1, 2, 50});
 	}
 
 	/**
@@ -360,11 +360,11 @@ public class UnitTest {
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#getHitPoints()}.
+	 * Test method for {@link hillbillies.model.Unit#getCurrentHitPoints()}.
 	 */
 	@Test
 	public void testGetHitPoints() {
-		assertEquals(50, this.unit.getHitPoints());
+		assertEquals(50, this.unit.getCurrentHitPoints());
 	}
 
 	/**
@@ -373,7 +373,7 @@ public class UnitTest {
 	@Test
 	public void testSetHitPoints() {
 		this.unit.setHitPoints(50);
-		assertEquals(50, this.unit.getHitPoints());
+		assertEquals(50, this.unit.getCurrentHitPoints());
 	}
 
 	/**
@@ -399,11 +399,11 @@ public class UnitTest {
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#getStamina()}.
+	 * Test method for {@link hillbillies.model.Unit#getCurrentStaminaPoints()}.
 	 */
 	@Test
 	public void testGetStamina() {
-		assertEquals(50,this.unit.getStamina());
+		assertEquals(50,this.unit.getCurrentStaminaPoints());
 	}
 
 	/**
@@ -430,7 +430,7 @@ public class UnitTest {
 	@Test
 	public void testSetStamina() {
 		this.unit.setStamina(15);
-		assertEquals(15, this.unit.getStamina());
+		assertEquals(15, this.unit.getCurrentStaminaPoints());
 		
 	}
 
