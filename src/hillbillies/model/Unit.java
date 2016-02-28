@@ -327,6 +327,7 @@ public class Unit {
 		if (this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
 			throw new IllegalStateException();
 		this.setState(State.MOVING);
+		this.setOrientation((float) Math.atan2(this.getUnitVelocity(new int[]{dx,dy,dz})[1],this.getUnitVelocity(new int[]{dx,dy,dz})[0]));
 		position.setCubeCoordinates(new int[]{
 				position.getCubeCoordinates()[0]+dx, 
 				position.getCubeCoordinates()[1]+dy, 
@@ -359,6 +360,7 @@ public class Unit {
 		int cubeY;
 		int cubeZ;
 		while( !Arrays.equals(position.getCubeCoordinates(), targetposition)){
+			this.setState(State.MOVING);
 			if(this.state != State.MOVING)
 				break;
 			if(position.getCubeCoordinates()[0]== targetposition[0]){
@@ -393,7 +395,7 @@ public class Unit {
 	 * 			| result == 1.5*((strength + agility)/(200*(weight/100))
 	 */
 	public double getUnitBaseSpeed(){
-		return -1;
+		return (1.5*(this.getStrength()+this.getAgility())/200*this.getWeight()/100);
 	}
 	/**
 	 * @param 	  targetposition
@@ -413,8 +415,17 @@ public class Unit {
 	 * 			|	then totalSpeed *2
 	 * 			| result == totalSpeed
 	 */
-	public double getUnitWalkSpeed(Position targetposition){
-		return -1;
+	public double getUnitWalkSpeed(int[] targetposition){
+		double moveSpeed;
+		if((targetposition[2] ) == -1)
+			moveSpeed = 0.5*getUnitBaseSpeed();
+		else if((targetposition[2]) == -1)
+			moveSpeed = 1.2* getUnitBaseSpeed();
+		else
+			moveSpeed = getUnitBaseSpeed();
+		if(isSprinting)
+			moveSpeed = 2*moveSpeed;
+		return moveSpeed;
 	}
 	/**
 	 * @post 	  if the unit is sprinting do nothing
@@ -428,7 +439,7 @@ public class Unit {
 	 * 
 	 */
 	public void startSprinting() throws IllegalStateException{
-		
+		this.isSprinting = true;
 	}
 	/**
 	 * @post 	  if the unit isn't sprinting do nothing
@@ -439,12 +450,23 @@ public class Unit {
 	 *  
 	 */
 	public void stopSprinting(){
-		
+		this.isSprinting = false;
 	}
 	public boolean isSprinting(){
 		return this.isSprinting;
 	}
 	private boolean isSprinting = false;
+	
+	public double[] getUnitVelocity(int[] targetposition){
+		double d = Math.sqrt(
+				Math.pow(targetposition[0], 2) +
+				Math.pow(targetposition[1], 2) +
+				Math.pow(targetposition[2], 2)
+						);
+		return new double[]{(this.getUnitWalkSpeed(targetposition)*targetposition[0]/d),
+				(this.getUnitWalkSpeed(targetposition)*targetposition[1]/d),
+				(this.getUnitWalkSpeed(targetposition)*targetposition[2]/d)};
+	}
 	
 	public static final double TIME_EXHAUSTSSPRINTNG = 0.1 ;
 	/**
@@ -526,6 +548,9 @@ public class Unit {
 	 * 			| && ( this.getStamina == this.getMaxStaminaPoints())
 	 */
 	public void rest()throws IllegalStateException{
+//		if( this.getHitPoints() == this.getMaxHitPoints() && this.getStamina() == this.getMaxStaminaPoints())
+//			throw new IllegalStateException();
+		this.setState(State.RESTING);
 		
 	}
 	/**
@@ -557,7 +582,7 @@ public class Unit {
 	 */
 	@Basic
 	public float getOrientation() {
-		return -1;
+		return this.orientation;
 	}
 
 	/**
@@ -576,7 +601,7 @@ public class Unit {
 	 * 			|		((orientation-getMinOrientation()) % (getMaxOrientation()-getMinOrientation()+1)) + getMinOrientation()
 	 */
 	private void setOrientation(float orientation) {
-
+		this.orientation = orientation;
 	}
 
 	/**
@@ -587,7 +612,7 @@ public class Unit {
 	 */
 	@Immutable
 	private float getMinOrientation() {
-		return -1;
+		return this.MIN_ORIENTATION;
 	}
 
 	/**
@@ -603,7 +628,7 @@ public class Unit {
 	 */
 	@Immutable
 	private float getMaxOrientation() {
-		return -1;
+		return this.MAX_ORIENTATION;
 	}
 
 	/**

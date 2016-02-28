@@ -1,5 +1,6 @@
 package hillbillies.part1.facade;
 
+import hillbillies.model.State;
 import hillbillies.model.Unit;
 import ogp.framework.util.ModelException;
 
@@ -104,14 +105,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getCurrentSpeed(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public boolean isMoving(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getState()== State.MOVING;
 	}
 
 	@Override
@@ -169,8 +168,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isResting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return( unit.getState()== State.RESTING);
 	}
 
 	@Override
