@@ -526,7 +526,8 @@ public class Unit {
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
 			throw new IllegalStateException();
-		this.setState(State.RESTING);
+		if( this.getState()==State.NONE)
+			this.setState(State.RESTING);
 	}
 	/**
 	 * variable time need the regen hp and stamina
