@@ -72,7 +72,7 @@ public class Unit {
 		this.initializeAttribute("t", toughness);
 		this.setCurrentHitPoints(this.getMaxHitPoints());
 		this.setStamina(this.getMaxStaminaPoints());
-		
+//		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
 	}
 
 	private void initializeAttribute(String attributeKind, int attributeValue) {
@@ -848,7 +848,7 @@ public class Unit {
 	 * 			  if a unit doesn't conduct an state
 	 */
 	public void stopDefaultBehavior() throws IllegalStateException{
-		
+		this.setState(State.NONE);
 	}
 	
 	/**
@@ -1094,6 +1094,7 @@ public class Unit {
 		} else {
 			this.setCurrentHitPoints(this.getCurrentHitPoints() - (attackerStrength / 10));
 		}
+		this.setState(State.NONE);
 	}
 
 	private void dodge() {
@@ -1116,6 +1117,7 @@ public class Unit {
 	private double restCounter = 0.2;
 	private double workCounter;
 	private double fightCounter;
+	private double needToRestCounter = 3000;
 
 	public void advanceTime(double dt) {
 		if (this.getState() == State.MOVING) {
@@ -1168,6 +1170,13 @@ public class Unit {
 			if (this.fightCounter <= 0) {
 				this.setState(State.NONE);
 				this.fightCounter = this.getFightTime();
+			}
+		}
+		needToRestCounter -= dt;
+		if (needToRestCounter <= 0) {
+			if (this.getState() != State.ATTACKING) {
+				this.setState(State.RESTING);
+				needToRestCounter = 3000;
 			}
 		}
 	}
