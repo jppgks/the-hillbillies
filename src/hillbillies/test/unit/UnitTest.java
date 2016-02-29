@@ -67,16 +67,16 @@ public class UnitTest {
 		assertIntegerPositionEquals(1, 2, 3, this.unit.position.getCubeCoordinates());
 	}
 
-	@Test
-	public void SetCubeCoordinates_LegalCase() {
-		unit.position.setOccupyingCubeCoordinates(new int[]{6, 7, 8});
-		assertIntegerPositionEquals(6, 7, 8, unit.position.getCubeCoordinates());
-	}
-
-	@Test(expected = IllegalCoordinateException.class)
-	public void SetCubeCoordinates_IllegalCase() throws IllegalCoordinateException {
-		unit.position.setOccupyingCubeCoordinates(new int[]{1, 2, 50});
-	}
+//	@Test
+//	public void SetCubeCoordinates_LegalCase() {
+//		unit.position.setOccupyingCubeCoordinates(new int[]{6, 7, 8});
+//		assertIntegerPositionEquals(6, 7, 8, unit.position.getCubeCoordinates());
+//	}
+//
+//	@Test(expected = IllegalCoordinateException.class)
+//	public void SetCubeCoordinates_IllegalCase() throws IllegalCoordinateException {
+//		unit.position.setOccupyingCubeCoordinates(new int[]{1, 2, 50});
+//	}
 
 	/**
 	 * Test method for {@link hillbillies.model.Unit#moveToAdjacent(hillbillies.model.Unit.Position)}.

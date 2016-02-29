@@ -210,7 +210,7 @@ public class Unit {
 			double[] unitCoordinates = getDoubleArrayFromIntArray(cubeCoordinates);
 			if (! isValidPosition(unitCoordinates))
 				throw new IllegalCoordinateException(unitCoordinates);
-			this.setOccupyingCubeCoordinates();
+			this.setOccupyingCubeCoordinates(cubeCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
 			this.unitX = unitCoordinates[0] + halfCubeSideLength;
 			this.unitY = unitCoordinates[1] + halfCubeSideLength;
@@ -251,13 +251,13 @@ public class Unit {
 			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
 		}
 
-		public void setOccupyingCubeCoordinates() {
-			this.cubeX = (int) this.unitX;
-			this.cubeY = (int) this.unitY;
-			this.cubeZ = (int) this.unitZ;
+		public void setOccupyingCubeCoordinates(int[] cubeCoordinates) {
+			this.cubeX = cubeCoordinates[0];
+			this.cubeY = cubeCoordinates[1];
+			this.cubeZ = cubeCoordinates[2];
 		}
 
-		private int cubeX, cubeY, cubeZ = 0;
+		private int cubeX, cubeY, cubeZ;
 
 		/**
 		 * Returns a copy of a given array of ints as an array of doubles.
@@ -280,6 +280,32 @@ public class Unit {
 	 */
 	public Unit.Position position;
 
+	private void updatePosition(double dt) {
+		this.position.unitX += this.getUnitVelocity()[0] * dt;
+		this.initialPosition[0] += this.getUnitVelocity()[0] * dt;
+		this.position.unitY += this.getUnitVelocity()[1] * dt;
+		this.initialPosition[1] += this.getUnitVelocity()[1] * dt;
+		this.position.unitZ += this.getUnitVelocity()[2] * dt;
+		this.initialPosition[2] += this.getUnitVelocity()[2] * dt;
+		if (Math.abs(targetPosition[0]) - Math.abs(initialPosition[0]) <= 0 &&
+				Math.abs(targetPosition[1]) - Math.abs(initialPosition[1]) <= 0 &&
+				Math.abs(targetPosition[2]) - Math.abs(initialPosition[2]) <= 0) {
+			this.setState(State.NONE);
+			this.position.setUnitCoordinates(new int[]{initialCube[0] + targetPosition[0],
+					initialCube[1] + targetPosition[1],
+					initialCube[2] + targetPosition[2]}
+			);
+			initialPosition = new double[]{0, 0, 0};
+			this.stopSprinting();
+		}
+	}
+
+	private double[] velocity;
+
+	private int[] targetPosition;
+	private double[] initialPosition = new double[]{0, 0, 0};
+	private int[] initialCube;
+
 	/**
 	 * @param dx
 	 * 			  X coordinate of neighbouring cube to move to.
@@ -297,60 +323,52 @@ public class Unit {
 	 * 			  When the given cube coordinates aren't from a neighbouring cube of this unit.
 	 * 
 	 */
-	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalStateException, IllegalArgumentException {
-		if (! position.isValidPosition(new double[]{dx, dy, dz})) {
-			throw new IllegalCoordinateException(new double[]{dx, dy, dz});
+	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
+		if (this.getState() != State.MOVING) {
+			initialCube = this.position.getCubeCoordinates();
+			if (this.getState() == State.DEFENDING)
+				return;
+			this.setState(State.MOVING);
+			targetPosition = new int[]{dx, dy, dz};
+			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
 		}
-		if (! isNeighboringCube(new int[]{dx, dy,dz})) {
-			throw new IllegalArgumentException();
-		}
-		if (this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
-			throw new IllegalStateException();
-		this.setState(State.MOVING);
-		this.setOrientation((float) Math.atan2(this.getUnitVelocity(new int[]{dx,dy,dz})[1],this.getUnitVelocity(new int[]{dx,dy,dz})[0]));
-		position.setOccupyingCubeCoordinates(new int[]{
-				position.getCubeCoordinates()[0]+dx, 
-				position.getCubeCoordinates()[1]+dy, 
-				position.getCubeCoordinates()[2]+dz});
-		position.setUnitCoordinates(new int[]{
-				position.getCubeCoordinates()[0], 
-				position.getCubeCoordinates()[1], 
-				position.getCubeCoordinates()[2]});
 	}
 
-	private boolean isNeighboringCube(int[] cubeCoordinatesOfPossibleNeighbor) {
-		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.position.getCubeCoordinates()[0]) == 1) {
-			if (Arrays.
-					stream(new int[]{-1, 0, 1}).
-					anyMatch(i -> i == cubeCoordinatesOfPossibleNeighbor[1] - this.position.getCubeCoordinates()[1])) {
-				return true;
-			}
-		}
-		if (cubeCoordinatesOfPossibleNeighbor[0] == this.position.getCubeCoordinates()[0]) {
-			if (Math.abs(cubeCoordinatesOfPossibleNeighbor[1] - this.position.getCubeCoordinates()[1]) == 1) {
-				if (cubeCoordinatesOfPossibleNeighbor[2] == this.position.getCubeCoordinates()[2]) {
-					return true;
-				}
-			} else if (cubeCoordinatesOfPossibleNeighbor[1] == this.position.getCubeCoordinates()[1]) {
-				if (Math.abs(cubeCoordinatesOfPossibleNeighbor[2] - this.position.getCubeCoordinates()[2]) == 1) {
-					return true;
-				}
-			}
-		}
-		return false;
+	private double[] getUnitVelocity() {
+		double distance =
+				Math.sqrt(
+						Math.pow(this.targetPosition[0], 2) +
+						Math.pow(this.targetPosition[1], 2) +
+						Math.pow(this.targetPosition[2], 2)
+				);
+
+		return new double[]
+				{
+					this.getUnitWalkSpeed() * (this.targetPosition[0])/ distance,
+					this.getUnitWalkSpeed() * (this.targetPosition[1])/ distance,
+					this.getUnitWalkSpeed() * (this.targetPosition[2])/ distance,
+				};
 	}
 
 	/**
 	 * @param 	  targetposition
-	 * 
+	 *
 	 * @post 	  the new position must be the target positon
 	 * 			| this.Position.getPositon() == targetposition
-	 * 
+	 *
 	 */
-	public void moveTo(int[] targetposition){
+	public void moveTo(int[] targetposition) throws IllegalCoordinateException {
+		if (! this.position.isValidPosition(this.position.getDoubleArrayFromIntArray(targetposition))) {
+			throw new IllegalCoordinateException(this.position.getDoubleArrayFromIntArray(targetposition));
+		}
+//		if (this.getState() == State.DEFENDING) {
+//			return;
+//		}
+
 		int cubeX;
 		int cubeY;
 		int cubeZ;
+
 		while(! Arrays.equals(position.getCubeCoordinates(), targetposition)){
 			this.setState(State.MOVING);
 			if(this.state != State.MOVING)
@@ -362,7 +380,7 @@ public class Unit {
 			}else{
 				cubeX = -1;
 			}
-			
+
 			if(position.getCubeCoordinates()[1]== targetposition[1]){
 				cubeY = 0;
 			}else if(position.getCubeCoordinates()[1]< targetposition[1]){
@@ -370,7 +388,7 @@ public class Unit {
 			}else{
 				cubeY = -1;
 			}
-			
+
 			if(position.getCubeCoordinates()[2]== targetposition[2]){
 				cubeZ = 0;
 			}else if(position.getCubeCoordinates()[2]< targetposition[2]){
@@ -378,10 +396,11 @@ public class Unit {
 			}else{
 				cubeZ = -1;
 			}
-			
+
 			moveToAdjacent(cubeX, cubeY, cubeZ);
 		}
 	}
+
 	/**
 	 * @return 	  the base speed of a unit determined by the unit's weight, strength and agility
 	 * 			| result == 1.5*((strength + agility)/(200*(weight/100))
@@ -390,7 +409,6 @@ public class Unit {
 		return (1.5*(this.getStrength()+this.getAgility())/200*this.getWeight()/100);
 	}
 	/**
-	 * @param 	  targetposition
 	 * 			  the position were the unit will go
 	 * @return 	  if the unit is lower than the targetposition then the speed will be
 	 * 			  0.5*getUnitBaseSpeed()
@@ -407,11 +425,11 @@ public class Unit {
 	 * 			|	then totalSpeed *2
 	 * 			| result == totalSpeed
 	 */
-	public double getUnitWalkSpeed(int[] targetposition){
+	public double getUnitWalkSpeed(){
 		double moveSpeed;
-		if((targetposition[2] ) == -1)
+		if((targetPosition[2]) == -1)
 			moveSpeed = 0.5*getUnitBaseSpeed();
-		else if((targetposition[2]) == -1)
+		else if((targetPosition[2]) == 1)
 			moveSpeed = 1.2* getUnitBaseSpeed();
 		else
 			moveSpeed = getUnitBaseSpeed();
@@ -419,6 +437,7 @@ public class Unit {
 			moveSpeed = 2*moveSpeed;
 		return moveSpeed;
 	}
+
 	/**
 	 * @post 	  if the unit is sprinting do nothing
 	 * 
@@ -450,16 +469,16 @@ public class Unit {
 	}
 	private boolean isSprinting = false;
 	
-	public double[] getUnitVelocity(int[] targetposition){
-		double d = Math.sqrt(
-				Math.pow(targetposition[0], 2) +
-				Math.pow(targetposition[1], 2) +
-				Math.pow(targetposition[2], 2)
-						);
-		return new double[]{(this.getUnitWalkSpeed(targetposition)*targetposition[0]/d),
-				(this.getUnitWalkSpeed(targetposition)*targetposition[1]/d),
-				(this.getUnitWalkSpeed(targetposition)*targetposition[2]/d)};
-	}
+//	public double[] getUnitVelocity(int[] targetposition){
+//		double d = Math.sqrt(
+//				Math.pow(targetposition[0], 2) +
+//				Math.pow(targetposition[1], 2) +
+//				Math.pow(targetposition[2], 2)
+//						);
+//		return new double[]{(this.getUnitWalkSpeed(targetposition)*targetposition[0]/d),
+//				(this.getUnitWalkSpeed(targetposition)*targetposition[1]/d),
+//				(this.getUnitWalkSpeed(targetposition)*targetposition[2]/d)};
+//	}
 	
 	public static final double TIME_EXHAUSTSSPRINTNG = 0.1 ;
 
@@ -901,7 +920,7 @@ public class Unit {
 	 * @return 	  returns the maximum hitpoints the unit can have
 	 * 			| result == 200.(this.weight/100).(this.toughness/100)
 	 */
-	public double getMaxHitPoints(){
+	public int getMaxHitPoints(){
 		return ((int) Math.ceil(200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0)));
 	}
 	public int getMinHitPoints(){
@@ -1033,6 +1052,7 @@ public class Unit {
 	 * @note 	  To-do: add orientation update.
 	 */
 	public void attack(Unit defender) throws IllegalStateException {
+		this.setState(State.ATTACKING);
 		defender.defend(this.getAgility(), this.getStrength());
 	}
 
@@ -1062,10 +1082,14 @@ public class Unit {
 	 * @note 	  To-do: add orientation update.
 	 */
 	public void defend(int attackerAgility, int attackerStrength) {
-
+		this.setState(State.DEFENDING);
+		// TODO: Write complete implementation
 	}
 
 	public void advanceTime(double dt) {
+		if (this.getState() == State.MOVING) {
+			this.updatePosition(dt);
+		}
 
 	}
 }
