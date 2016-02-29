@@ -69,7 +69,7 @@ public class Unit {
 		this.initializeAttribute("a", agility);
 		this.initializeAttribute("s", strength);
 		this.initializeAttribute("t", toughness);
-		this.setHitPoints(this.getMaxHitPoints());
+		this.setCurrentHitPoints(this.getMaxHitPoints());
 		this.setStamina(this.getMaxStaminaPoints());
 		
 	}
@@ -300,9 +300,7 @@ public class Unit {
 		}
 	}
 
-	private double[] velocity;
-
-	private int[] targetPosition;
+	private int[] targetPosition = new int[] {0, 0, 0};
 	private double[] initialPosition = new double[]{0, 0, 0};
 	private int[] initialCube;
 
@@ -328,9 +326,9 @@ public class Unit {
 			initialCube = this.position.getCubeCoordinates();
 			if (this.getState() == State.DEFENDING)
 				return;
-			this.setState(State.MOVING);
 			targetPosition = new int[]{dx, dy, dz};
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
+			this.setState(State.MOVING);
 		}
 	}
 
@@ -369,10 +367,9 @@ public class Unit {
 		int cubeY;
 		int cubeZ;
 
-		while(! Arrays.equals(position.getCubeCoordinates(), targetposition)){
-			this.setState(State.MOVING);
-			if(this.state != State.MOVING)
-				break;
+		while(! Arrays.equals(position.getCubeCoordinates(), targetposition)) {
+//			if(this.state != State.MOVING)
+//				break;
 			if(position.getCubeCoordinates()[0]== targetposition[0]){
 				cubeX = 0;
 			}else if(position.getCubeCoordinates()[0]< targetposition[0]){
@@ -398,6 +395,9 @@ public class Unit {
 			}
 
 			moveToAdjacent(cubeX, cubeY, cubeZ);
+			while (this.getState() == State.MOVING) {
+
+			}
 		}
 	}
 
@@ -468,19 +468,6 @@ public class Unit {
 		return this.isSprinting;
 	}
 	private boolean isSprinting = false;
-	
-//	public double[] getUnitVelocity(int[] targetposition){
-//		double d = Math.sqrt(
-//				Math.pow(targetposition[0], 2) +
-//				Math.pow(targetposition[1], 2) +
-//				Math.pow(targetposition[2], 2)
-//						);
-//		return new double[]{(this.getUnitWalkSpeed(targetposition)*targetposition[0]/d),
-//				(this.getUnitWalkSpeed(targetposition)*targetposition[1]/d),
-//				(this.getUnitWalkSpeed(targetposition)*targetposition[2]/d)};
-//	}
-	
-	public static final double TIME_EXHAUSTSSPRINTNG = 0.1 ;
 
 	/**
 	 * @post 	  the state of the unit is set to work
@@ -496,8 +483,8 @@ public class Unit {
 	public void work() throws IllegalStateException {
 		if(this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
 			throw new IllegalStateException();
+		workCounter = this.getTimeForWork();
 		this.setState(State.WORKING);
-		
 	}
 	/**
 	 * 
@@ -532,10 +519,9 @@ public class Unit {
 	 * 			| && ( this.getCurrentStaminaPoints == this.getMaxStaminaPoints())
 	 */
 	public void rest()throws IllegalStateException{
-		//if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
-		//	throw new IllegalStateException();
+		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
+			throw new IllegalStateException();
 		this.setState(State.RESTING);
-		
 	}
 	/**
 	 * variable time need the regen hp and stamina
@@ -547,15 +533,15 @@ public class Unit {
 	 * @return 	  gives the amount hitpoinst need to regenerate per time unit of REGEN_REST_TIME
 	 * 			| result == (this.toughness)/200
 	 */
-	public int getRegenHitPoints(){
-		return (this.getToughness()/200);
+	public double getRegenHitPoints(){
+		return (this.getToughness()/200.0);
 	}
 	/**
 	 * @return 	  gives the amount Stamina points need to regenerate per time unit of REGEN_REST_TIME
 	 * 			| restult == (this.toughness)/100
 	 */	
-	public int getRegenStamina(){
-		return this.getToughness()/100;
+	public double getRegenStamina(){
+		return this.getToughness()/100.0;
 	}
 
 	/**
@@ -898,7 +884,7 @@ public class Unit {
 	 * 			| isValidHitPoints(hitpoints)
 	 * 
 	 */
-	public void setHitPoints(int hitpoints){
+	public void setCurrentHitPoints(int hitpoints){
 		assert isValidHitPoints(hitpoints);
 		this.hitPoints = hitpoints;
 	}
@@ -949,7 +935,7 @@ public class Unit {
 	 *       	| result == (stamina >= 0) && (stamina <= this.getMaxStaminaPoints())
 	 */
 	public boolean isValidStamina(int stamina) {
-		if(stamina <= this.getMaxStaminaPoints() && stamina >=getMinStaminaPoints())
+		if(stamina <= this.getMaxStaminaPoints() && stamina >= this.getMinStaminaPoints())
 			return true;
 		return false;
 	}
@@ -1086,10 +1072,54 @@ public class Unit {
 		// TODO: Write complete implementation
 	}
 
+	private double sprintCounter = 0.1;
+	private double restCounter = 0.2;
+	private double workCounter;
+
 	public void advanceTime(double dt) {
 		if (this.getState() == State.MOVING) {
+			if (this.isSprinting()) {
+				this.sprintCounter -= dt;
+				if (this.sprintCounter <= 0) {
+					if (this.getCurrentStaminaPoints() <= 0) {
+						this.stopSprinting();
+					} else {
+						this.setStamina(this.getCurrentStaminaPoints() - 1);
+						this.sprintCounter = 0.1;
+					}
+				}
+			}
 			this.updatePosition(dt);
 		}
-
+		if (this.getState() == State.RESTING) {
+			if (this.getCurrentHitPoints() == this.getMaxHitPoints()) {
+				this.restCounter -= dt;
+				if (this.restCounter <= 0) {
+					this.setStamina(this.getCurrentStaminaPoints() + (int) Math.ceil(this.getRegenStamina()));
+					this.restCounter = 0.2;
+				}
+			} else {
+				this.restCounter -= dt;
+				if (this.restCounter <= 0) {
+					this.setCurrentHitPoints(this.getCurrentHitPoints() + (int) Math.ceil(this.getRegenHitPoints()));
+					this.restCounter = 0.2;
+				}
+				if (this.getCurrentHitPoints() == this.getMaxHitPoints()) {
+					if (this.restCounter <= 0) {
+						this.setStamina(this.getCurrentStaminaPoints() + (int) Math.ceil(this.getRegenStamina()));
+						this.restCounter = 0.2;
+					}
+				}
+			}
+			if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints()) {
+				this.setState(State.NONE);
+			}
+		}
+		if (this.getState() == State.WORKING) {
+			this.workCounter -= dt;
+			if (this.workCounter <= 0) {
+				this.setState(State.NONE);
+			}
+		}
 	}
 }

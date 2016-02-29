@@ -368,11 +368,11 @@ public class UnitTest {
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#setHitPoints(int)}.
+	 * Test method for {@link hillbillies.model.Unit#setCurrentHitPoints(int)}.
 	 */
 	@Test
 	public void testSetHitPoints() {
-		this.unit.setHitPoints(50);
+		this.unit.setCurrentHitPoints(50);
 		assertEquals(50, this.unit.getCurrentHitPoints());
 	}
 
