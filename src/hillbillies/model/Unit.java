@@ -5,6 +5,7 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * A class for a cubical object that occupies a position in the game world.
@@ -251,7 +252,7 @@ public class Unit {
 			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
 		}
 
-		public void setOccupyingCubeCoordinates(int[] cubeCoordinates) {
+		private void setOccupyingCubeCoordinates(int[] cubeCoordinates) {
 			this.cubeX = cubeCoordinates[0];
 			this.cubeY = cubeCoordinates[1];
 			this.cubeZ = cubeCoordinates[2];
@@ -1038,9 +1039,21 @@ public class Unit {
 	 * @note 	  To-do: add orientation update.
 	 */
 	public void attack(Unit defender) throws IllegalStateException {
+		this.fightCounter = this.getFightTime();
 		this.setState(State.ATTACKING);
-		defender.defend(this.getAgility(), this.getStrength());
+		this.setOrientation((float) Math.atan2(
+				defender.position.getCubeCoordinates()[1] - this.position.getCubeCoordinates()[1],
+				defender.position.getCubeCoordinates()[0] - this.position.getCubeCoordinates()[0])
+		);
+		defender.defend(this.getAgility(), this.getStrength(), this.position.getCubeCoordinates()[0], this.position.getCubeCoordinates()[1]);
 	}
+
+	@Basic @Immutable
+	private double getFightTime() {
+		return fightTime;
+	}
+
+	private static final double fightTime = 1;
 
 	/**
 	 * When being attacked, this unit defends itself by either
@@ -1067,14 +1080,42 @@ public class Unit {
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
 	 * @note 	  To-do: add orientation update.
 	 */
-	public void defend(int attackerAgility, int attackerStrength) {
+	public void defend(int attackerAgility, int attackerStrength, int attackerX, int attackerY) {
 		this.setState(State.DEFENDING);
-		// TODO: Write complete implementation
+		this.setOrientation((float) Math.atan2(
+				attackerY - this.position.getCubeCoordinates()[1],
+				attackerX - this.position.getCubeCoordinates()[0])
+		);
+		if (.20 * this.getAgility() / attackerAgility >= 1) {
+			this.dodge();
+		} else if (.25 * (this.getStrength() + this.getAgility()) /
+				(attackerStrength + attackerAgility) >=1) {
+			return; // Attack is blocked
+		} else {
+			this.setCurrentHitPoints(this.getCurrentHitPoints() - (attackerStrength / 10));
+		}
+	}
+
+	private void dodge() {
+		int[] randomNeighboringCube = calculateRandomNeighboringCube();
+		while (! this.position.isValidPosition(this.position.getDoubleArrayFromIntArray(randomNeighboringCube))) {
+			randomNeighboringCube = calculateRandomNeighboringCube();
+		}
+		this.position.setUnitCoordinates(randomNeighboringCube);
+	}
+
+	private int[] calculateRandomNeighboringCube() {
+		return new int[] {
+				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)] /*+/- 1*/,
+				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)] /*+/- 1*/,
+				this.position.getCubeCoordinates()[2]
+		};
 	}
 
 	private double sprintCounter = 0.1;
 	private double restCounter = 0.2;
 	private double workCounter;
+	private double fightCounter;
 
 	public void advanceTime(double dt) {
 		if (this.getState() == State.MOVING) {
@@ -1119,6 +1160,14 @@ public class Unit {
 			this.workCounter -= dt;
 			if (this.workCounter <= 0) {
 				this.setState(State.NONE);
+				this.workCounter = this.getTimeForWork();
+			}
+		}
+		if (this.getState() == State.ATTACKING) {
+			this.fightCounter -= dt;
+			if (this.fightCounter <= 0) {
+				this.setState(State.NONE);
+				this.fightCounter = this.getFightTime();
 			}
 		}
 	}
