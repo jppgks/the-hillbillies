@@ -306,11 +306,11 @@ public class Unit {
 			});
 			if (Arrays.equals(this.position.getCubeCoordinates(), targetPosition)) {
 				this.setState(State.NONE);
+				this.stopSprinting();
 			}
 			if(newTargetPosition != null)
 				targetPosition = newTargetPosition;
 				newTargetPosition = null;
-			this.stopSprinting();
 			initialPosition = new double[]{0, 0, 0};
 		}
 	}
