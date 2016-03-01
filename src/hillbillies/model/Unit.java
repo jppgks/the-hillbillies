@@ -209,8 +209,7 @@ public class Unit {
 		@Raw
 		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
 			double[] unitCoordinates = getDoubleArrayFromIntArray(cubeCoordinates);
-			if (! isValidPosition(unitCoordinates))
-				throw new IllegalCoordinateException(unitCoordinates);
+			assert isValidPosition(unitCoordinates);
 			this.setOccupyingCubeCoordinates(cubeCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
 			this.unitX = unitCoordinates[0] + halfCubeSideLength;
@@ -288,24 +287,35 @@ public class Unit {
 		this.initialPosition[1] += this.getUnitVelocity()[1] * dt;
 		this.position.unitZ += this.getUnitVelocity()[2] * dt;
 		this.initialPosition[2] += this.getUnitVelocity()[2] * dt;
-		if (Math.abs(targetPosition[0]) - Math.abs(initialPosition[0]) <= 0 &&
-				Math.abs(targetPosition[1]) - Math.abs(initialPosition[1]) <= 0 &&
-				Math.abs(targetPosition[2]) - Math.abs(initialPosition[2]) <= 0) {
-			if(Arrays.equals(this.position.getCubeCoordinates(),cubeToMove))
-				cubeToMove=new int[]{0, 0, 0};
-			this.setState(State.NONE);
-			this.position.setUnitCoordinates(new int[]{initialCube[0] + targetPosition[0],
-					initialCube[1] + targetPosition[1],
-					initialCube[2] + targetPosition[2]}
-			);
+		if (Math.abs(neighboringCubeToMoveTo[0]) - Math.abs(initialPosition[0]) <= 0 &&
+				Math.abs(neighboringCubeToMoveTo[1]) - Math.abs(initialPosition[1]) <= 0 &&
+				Math.abs(neighboringCubeToMoveTo[2]) - Math.abs(initialPosition[2]) <= 0) {
+			this.position.setUnitCoordinates(new int[]{
+					this.position.getCubeCoordinates()[0] + neighboringCubeToMoveTo[0],
+					this.position.getCubeCoordinates()[1] + neighboringCubeToMoveTo[1],
+					this.position.getCubeCoordinates()[2] + neighboringCubeToMoveTo[2]
+			});
+			if (Arrays.equals(this.position.getCubeCoordinates(), targetPosition)) {
+				this.setState(State.NONE);
+				this.stopSprinting();
+			}
 			initialPosition = new double[]{0, 0, 0};
 		}
 	}
 
+	// Rommelhoop
 	private int[] targetPosition = new int[] {0, 0, 0};
+	/*
+	 * Relative difference in current position vs target position.
+	 *
+	 */
 	private double[] initialPosition = new double[]{0, 0, 0};
+	/*
+	 * Registers the cube coordinates of the position when started to move.
+	 *
+	 */
 	private int[] initialCube;
-	private int[]cubeToMove =new int[]{0, 0, 0};
+	private int[] neighboringCubeToMoveTo = new int[]{0, 0, 0};
 
 	/**
 	 * @param dx
@@ -325,33 +335,39 @@ public class Unit {
 	 * 
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
-		if(!this.position.isValidPosition(new double[]{this.position.getCubeCoordinates()[0]+dx,
-													this.position.getCubeCoordinates()[1]+dy,
-													this.position.getCubeCoordinates()[2]+dz}))
+		if(!this.position.isValidPosition(new double[]{
+				this.position.getCubeCoordinates()[0]+dx,
+				this.position.getCubeCoordinates()[1]+dy,
+				this.position.getCubeCoordinates()[2]+dz})) {
 			throw new IllegalArgumentException();
-		if (this.getState() != State.MOVING) {
-			initialCube = this.position.getCubeCoordinates();
-			targetPosition = new int[]{dx, dy, dz};
-			if (Arrays.equals(new int[] {0,0,0},this.targetPosition))
-					return;
-			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
-			this.setState(State.MOVING);
 		}
+
+		if (dx == 0 && dy == 0 && dz == 0) {
+			return;
+		}
+
+		// Absolute target position
+		this.targetPosition = new int[]{
+				this.position.getCubeCoordinates()[0] + dx,
+				this.position.getCubeCoordinates()[1] + dy,
+				this.position.getCubeCoordinates()[2] + dz
+		};
+		this.setState(State.MOVING);
 	}
 
 	private double[] getUnitVelocity() {
 		double distance =
 				Math.sqrt(
-						Math.pow(this.targetPosition[0], 2) +
-						Math.pow(this.targetPosition[1], 2) +
-						Math.pow(this.targetPosition[2], 2)
+						Math.pow(this.neighboringCubeToMoveTo[0], 2) +
+						Math.pow(this.neighboringCubeToMoveTo[1], 2) +
+						Math.pow(this.neighboringCubeToMoveTo[2], 2)
 				);
 
 		return new double[]
 				{
-					this.getUnitWalkSpeed() * (this.targetPosition[0])/ distance,
-					this.getUnitWalkSpeed() * (this.targetPosition[1])/ distance,
-					this.getUnitWalkSpeed() * (this.targetPosition[2])/ distance,
+					this.getUnitWalkSpeed() * (this.neighboringCubeToMoveTo[0])/ distance,
+					this.getUnitWalkSpeed() * (this.neighboringCubeToMoveTo[1])/ distance,
+					this.getUnitWalkSpeed() * (this.neighboringCubeToMoveTo[2])/ distance,
 				};
 	}
 
@@ -366,35 +382,8 @@ public class Unit {
 		if (! this.position.isValidPosition(this.position.getDoubleArrayFromIntArray(targetposition))) {
 			throw new IllegalCoordinateException(this.position.getDoubleArrayFromIntArray(targetposition));
 		}
-
-		int cubeX;
-		int cubeY;
-		int cubeZ;
-		if(position.getCubeCoordinates()[0]== targetposition[0]){
-			cubeX = 0;
-		}else if(position.getCubeCoordinates()[0]< targetposition[0]){
-			cubeX = 1;
-		}else{
-			cubeX = -1;
-		}
-
-		if(position.getCubeCoordinates()[1]== targetposition[1]){
-			cubeY = 0;
-		}else if(position.getCubeCoordinates()[1]< targetposition[1]){
-			cubeY = 1;
-		}else{
-			cubeY = -1;
-		}
-
-		if(position.getCubeCoordinates()[2]== targetposition[2]){
-			cubeZ = 0;
-		}else if(position.getCubeCoordinates()[2]< targetposition[2]){
-			cubeZ = 1;
-		}else{
-			cubeZ = -1;
-		}
-
-		moveToAdjacent(cubeX, cubeY, cubeZ);
+		targetPosition = targetposition;
+		this.setState(State.MOVING);
 	}
 
 	/**
@@ -477,7 +466,7 @@ public class Unit {
 	 * 			| if(this.getState() == State.ATTACKING)
 	 */	
 	public void work() throws IllegalStateException {
-		if(this.getState() == State.ATTACKING)
+		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
 		workCounter = this.getTimeForWork();
 		this.setState(State.WORKING);
@@ -837,9 +826,11 @@ public class Unit {
 	public void startDefaultBehaviour() throws IllegalStateException{
 		if(this.getState()== State.NONE){
 			int randomBehaviourNumber =new Random().nextInt(5);
-			if(randomBehaviourNumber== 0)
-				moveTo(new int[]{new Random().nextInt(50),new Random().nextInt(50),new Random().nextInt(50)});
-			else if(randomBehaviourNumber== 1||randomBehaviourNumber== 3){
+			if(randomBehaviourNumber== 0) {
+				moveTo(new int[]{new Random().nextInt(50), new Random().nextInt(50), new Random().nextInt(50)});
+				startSprinting();
+			}
+			else if(randomBehaviourNumber== 1||randomBehaviourNumber== 3) {
 				work();
 			}
 			else
@@ -1137,8 +1128,35 @@ public class Unit {
 					}
 				}
 			}
+			int dx;
+			int dy;
+			int dz;
+			if(position.getCubeCoordinates()[0]== this.targetPosition[0]){
+				dx = 0;
+			}else if(position.getCubeCoordinates()[0]< this.targetPosition[0]){
+				dx = 1;
+			}else{
+				dx = -1;
+			}
+
+			if(position.getCubeCoordinates()[1]== this.targetPosition[1]){
+				dy = 0;
+			}else if(position.getCubeCoordinates()[1]< this.targetPosition[1]){
+				dy = 1;
+			}else{
+				dy = -1;
+			}
+
+			if(position.getCubeCoordinates()[2]== this.targetPosition[2]){
+				dz = 0;
+			}else if(position.getCubeCoordinates()[2]< this.targetPosition[2]){
+				dz = 1;
+			}else{
+				dz = -1;
+			}
+			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
+			this.neighboringCubeToMoveTo = new int[]{dx, dy, dz};
 			this.updatePosition(dt);
-			moveTo(this.cubeToMove);
 		}
 		if (this.getState() == State.RESTING) {	
 			if (this.getCurrentHitPoints() != this.getMaxHitPoints()) {
