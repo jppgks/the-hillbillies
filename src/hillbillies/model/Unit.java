@@ -291,19 +291,21 @@ public class Unit {
 		if (Math.abs(targetPosition[0]) - Math.abs(initialPosition[0]) <= 0 &&
 				Math.abs(targetPosition[1]) - Math.abs(initialPosition[1]) <= 0 &&
 				Math.abs(targetPosition[2]) - Math.abs(initialPosition[2]) <= 0) {
+			if(Arrays.equals(this.position.getCubeCoordinates(),cubeToMove))
+				cubeToMove=new int[]{0, 0, 0};
 			this.setState(State.NONE);
 			this.position.setUnitCoordinates(new int[]{initialCube[0] + targetPosition[0],
 					initialCube[1] + targetPosition[1],
 					initialCube[2] + targetPosition[2]}
 			);
 			initialPosition = new double[]{0, 0, 0};
-			this.stopSprinting();
 		}
 	}
 
 	private int[] targetPosition = new int[] {0, 0, 0};
 	private double[] initialPosition = new double[]{0, 0, 0};
 	private int[] initialCube;
+	private int[]cubeToMove =new int[]{0, 0, 0};
 
 	/**
 	 * @param dx
@@ -323,11 +325,17 @@ public class Unit {
 	 * 
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
-		if (this.getState() != State.MOVING) {
-			initialCube = this.position.getCubeCoordinates();
+		if(!this.position.isValidPosition(new double[]{this.position.getCubeCoordinates()[0]+dx,
+													this.position.getCubeCoordinates()[1]+dy,
+													this.position.getCubeCoordinates()[2]+dz}))
+			throw new IllegalArgumentException();
+		if (this.getState() != State.MOVING) {			
 			if (this.getState() == State.DEFENDING)
 				return;
+			initialCube = this.position.getCubeCoordinates();
 			targetPosition = new int[]{dx, dy, dz};
+			if (Arrays.equals(new int[] {0,0,0},this.targetPosition))
+					return;
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
 			this.setState(State.MOVING);
 		}
@@ -367,39 +375,36 @@ public class Unit {
 		int cubeX;
 		int cubeY;
 		int cubeZ;
-
-		while(! Arrays.equals(position.getCubeCoordinates(), targetposition)) {
+		this.cubeToMove=targetposition;
+		if(Arrays.equals(cubeToMove, new int[]{0,0,0}))
+			return;
 //			if(this.state != State.MOVING)
 //				break;
-			if(position.getCubeCoordinates()[0]== targetposition[0]){
-				cubeX = 0;
-			}else if(position.getCubeCoordinates()[0]< targetposition[0]){
-				cubeX = 1;
-			}else{
-				cubeX = -1;
-			}
-
-			if(position.getCubeCoordinates()[1]== targetposition[1]){
-				cubeY = 0;
-			}else if(position.getCubeCoordinates()[1]< targetposition[1]){
-				cubeY = 1;
-			}else{
-				cubeY = -1;
-			}
-
-			if(position.getCubeCoordinates()[2]== targetposition[2]){
-				cubeZ = 0;
-			}else if(position.getCubeCoordinates()[2]< targetposition[2]){
-				cubeZ = 1;
-			}else{
-				cubeZ = -1;
-			}
-
-			moveToAdjacent(cubeX, cubeY, cubeZ);
-			while (this.getState() == State.MOVING) {
-
-			}
+		if(position.getCubeCoordinates()[0]== targetposition[0]){
+			cubeX = 0;
+		}else if(position.getCubeCoordinates()[0]< targetposition[0]){
+			cubeX = 1;
+		}else{
+			cubeX = -1;
 		}
+
+		if(position.getCubeCoordinates()[1]== targetposition[1]){
+			cubeY = 0;
+		}else if(position.getCubeCoordinates()[1]< targetposition[1]){
+			cubeY = 1;
+		}else{
+			cubeY = -1;
+		}
+
+		if(position.getCubeCoordinates()[2]== targetposition[2]){
+			cubeZ = 0;
+		}else if(position.getCubeCoordinates()[2]< targetposition[2]){
+			cubeZ = 1;
+		}else{
+			cubeZ = -1;
+		}
+
+		moveToAdjacent(cubeX, cubeY, cubeZ);
 	}
 
 	/**
@@ -522,7 +527,8 @@ public class Unit {
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
 			throw new IllegalStateException();
-		this.setState(State.RESTING);
+		if( this.getState()==State.NONE)
+			this.setState(State.RESTING);
 	}
 	/**
 	 * variable time need the regen hp and stamina
@@ -1128,11 +1134,13 @@ public class Unit {
 						this.stopSprinting();
 					} else {
 						this.setStamina(this.getCurrentStaminaPoints() - 1);
+						
 						this.sprintCounter = 0.1;
 					}
 				}
 			}
 			this.updatePosition(dt);
+			moveTo(this.cubeToMove);
 		}
 		if (this.getState() == State.RESTING) {
 			if (this.getCurrentHitPoints() == this.getMaxHitPoints()) {
