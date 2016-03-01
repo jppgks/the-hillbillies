@@ -329,9 +329,7 @@ public class Unit {
 													this.position.getCubeCoordinates()[1]+dy,
 													this.position.getCubeCoordinates()[2]+dz}))
 			throw new IllegalArgumentException();
-		if (this.getState() != State.MOVING) {			
-			if (this.getState() == State.DEFENDING)
-				return;
+		if (this.getState() != State.MOVING) {
 			initialCube = this.position.getCubeCoordinates();
 			targetPosition = new int[]{dx, dy, dz};
 			if (Arrays.equals(new int[] {0,0,0},this.targetPosition))
@@ -368,18 +366,10 @@ public class Unit {
 		if (! this.position.isValidPosition(this.position.getDoubleArrayFromIntArray(targetposition))) {
 			throw new IllegalCoordinateException(this.position.getDoubleArrayFromIntArray(targetposition));
 		}
-//		if (this.getState() == State.DEFENDING) {
-//			return;
-//		}
 
 		int cubeX;
 		int cubeY;
 		int cubeZ;
-		this.cubeToMove=targetposition;
-		if(Arrays.equals(cubeToMove, new int[]{0,0,0}))
-			return;
-//			if(this.state != State.MOVING)
-//				break;
 		if(position.getCubeCoordinates()[0]== targetposition[0]){
 			cubeX = 0;
 		}else if(position.getCubeCoordinates()[0]< targetposition[0]){
@@ -484,10 +474,10 @@ public class Unit {
 	 * 
 	 * @throws IllegalStateException
 	 * 			  The unit is attacking or defending
-	 * 			| if(this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
+	 * 			| if(this.getState() == State.ATTACKING)
 	 */	
 	public void work() throws IllegalStateException {
-		if(this.getState() == State.ATTACKING || this.getState() == State.DEFENDING)
+		if(this.getState() == State.ATTACKING)
 			throw new IllegalStateException();
 		workCounter = this.getTimeForWork();
 		this.setState(State.WORKING);
@@ -1096,7 +1086,6 @@ public class Unit {
 	 * @note 	  To-do: add orientation update.
 	 */
 	public void defend(int attackerAgility, int attackerStrength, int attackerX, int attackerY) {
-		this.setState(State.DEFENDING);
 		this.setOrientation((float) Math.atan2(
 				attackerY - this.position.getCubeCoordinates()[1],
 				attackerX - this.position.getCubeCoordinates()[0])
