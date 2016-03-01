@@ -1085,6 +1085,7 @@ public class Unit {
 		defender.defend(this.getAgility(), this.getStrength(), this.position.getUnitCoordinates()[0], this.position.getUnitCoordinates()[1]);
 	}
 	Unit theDefender;
+	private boolean isDefending = false;
 	@Basic @Immutable
 	private double getFightTime() {
 		return fightTime;
@@ -1117,6 +1118,7 @@ public class Unit {
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
 	 */
 	public void defend(double attackerAgility, double attackerStrength, double attackerX, double attackerY) {
+		this.isDefending = true;
 		if (.20 * this.getAgility() / attackerAgility >= 1) {
 			this.dodge();
 		} else if (.25 * (this.getStrength() + this.getAgility()) /
@@ -1193,7 +1195,8 @@ public class Unit {
 			}else{
 				dz = -1;
 			}
-			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
+			if(!isDefending)
+				this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
 			this.neighboringCubeToMoveTo = new int[]{dx, dy, dz};
 			this.updatePosition(dt);
 		}
@@ -1233,6 +1236,7 @@ public class Unit {
 			this.fightCounter -= dt;
 			if (this.fightCounter <= 0) {
 				this.setState(State.NONE);
+				this.theDefender.isDefending= false;
 				this.fightCounter = this.getFightTime();
 			}
 		}
