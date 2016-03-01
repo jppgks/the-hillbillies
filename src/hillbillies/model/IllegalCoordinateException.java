@@ -14,7 +14,7 @@ public class IllegalCoordinateException extends IllegalArgumentException {
      * @effect  This new IllegalCoordinateException is initialized in the same way
      *          an IllegalArgumentException with error message is initialized.
      */
-    public IllegalCoordinateException(double[] coordinates) {
+    public IllegalCoordinateException(int[] coordinates) {
         super(String.format("One of the following coordinates is invalid:%s", coordinates.toString()));
     }
 
