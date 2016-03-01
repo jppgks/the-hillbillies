@@ -1082,10 +1082,9 @@ public class Unit {
 		this.fightCounter = this.getFightTime();
 		this.setState(State.ATTACKING);
 		this.theDefender=defender;
-		
-		defender.defend(this.getAgility(), this.getStrength(), this.position.getCubeCoordinates()[0], this.position.getCubeCoordinates()[1]);
+		defender.defend(this.getAgility(), this.getStrength(), this.position.getUnitCoordinates()[0], this.position.getUnitCoordinates()[1]);
 	}
-	private Unit theDefender;
+	Unit theDefender;
 	@Basic @Immutable
 	private double getFightTime() {
 		return fightTime;
@@ -1117,9 +1116,7 @@ public class Unit {
 	 * 			  relative to the strength of the attacker.
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
 	 */
-	public void defend(double attackerAgility, double attackerStrength, int attackerX, int attackerY) {
-		this.attackerX = attackerX;
-		this.attackerY = attackerY;
+	public void defend(double attackerAgility, double attackerStrength, double attackerX, double attackerY) {
 		if (.20 * this.getAgility() / attackerAgility >= 1) {
 			this.dodge();
 		} else if (.25 * (this.getStrength() + this.getAgility()) /
@@ -1133,8 +1130,7 @@ public class Unit {
 		else
 			this.setState(State.NONE);
 	}
-	private int attackerX;
-	private int attackerY;
+
 	private void dodge() {
 		int[] randomNeighboringCube = calculateRandomNeighboringCube();
 		while (! this.position.isValidPosition(randomNeighboringCube)) {
@@ -1228,11 +1224,11 @@ public class Unit {
 		}
 		if (this.getState() == State.ATTACKING) {
 			this.setOrientation((float) Math.atan2(
-					this.theDefender.position.getCubeCoordinates()[1] - this.position.getCubeCoordinates()[1],
-					this.theDefender.position.getCubeCoordinates()[0] - this.position.getCubeCoordinates()[0]));
+					this.theDefender.position.getUnitCoordinates()[1] - this.position.getUnitCoordinates()[1],
+					this.theDefender.position.getUnitCoordinates()[0] - this.position.getUnitCoordinates()[0]));
 			this.theDefender.setOrientation((float) Math.atan2(
-					this.attackerY - this.position.getCubeCoordinates()[1],
-					this.attackerX - this.position.getCubeCoordinates()[0])
+					this.position.getUnitCoordinates()[1] - this.theDefender.position.getUnitCoordinates()[1],
+					this.position.getUnitCoordinates()[0] - this.theDefender.position.getUnitCoordinates()[0])
 			);
 			this.fightCounter -= dt;
 			if (this.fightCounter <= 0) {
