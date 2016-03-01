@@ -306,8 +306,11 @@ public class Unit {
 			});
 			if (Arrays.equals(this.position.getCubeCoordinates(), targetPosition)) {
 				this.setState(State.NONE);
-				this.stopSprinting();
 			}
+			if(newTargetPosition != null)
+				targetPosition = newTargetPosition;
+				newTargetPosition = null;
+			this.stopSprinting();
 			initialPosition = new double[]{0, 0, 0};
 		}
 	}
@@ -325,6 +328,7 @@ public class Unit {
 	 */
 	private int[] initialCube;
 	private int[] neighboringCubeToMoveTo = new int[]{0, 0, 0};
+	private int[] newTargetPosition = null;
 
 	/**
 	 * @param dx
@@ -393,8 +397,10 @@ public class Unit {
 		if (! this.position.isValidPosition(targetposition)) {
 			throw new IllegalCoordinateException(targetposition);
 		}
-		if(this.getState()== State.MOVING)
+		if(this.getState()== State.MOVING){
+			newTargetPosition = targetposition;
 			return;
+		}
 		targetPosition = targetposition;
 		this.setState(State.MOVING);
 	}
@@ -1075,13 +1081,11 @@ public class Unit {
 			throw new IllegalStateException();
 		this.fightCounter = this.getFightTime();
 		this.setState(State.ATTACKING);
-		this.setOrientation((float) Math.atan2(
-				defender.position.getCubeCoordinates()[1] - this.position.getCubeCoordinates()[1],
-				defender.position.getCubeCoordinates()[0] - this.position.getCubeCoordinates()[0])
-		);
+		this.theDefender=defender;
+		
 		defender.defend(this.getAgility(), this.getStrength(), this.position.getCubeCoordinates()[0], this.position.getCubeCoordinates()[1]);
 	}
-
+	private Unit theDefender;
 	@Basic @Immutable
 	private double getFightTime() {
 		return fightTime;
@@ -1114,10 +1118,8 @@ public class Unit {
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
 	 */
 	public void defend(double attackerAgility, double attackerStrength, int attackerX, int attackerY) {
-		this.setOrientation((float) Math.atan2(
-				attackerY - this.position.getCubeCoordinates()[1],
-				attackerX - this.position.getCubeCoordinates()[0])
-		);
+		this.attackerX = attackerX;
+		this.attackerY = attackerY;
 		if (.20 * this.getAgility() / attackerAgility >= 1) {
 			this.dodge();
 		} else if (.25 * (this.getStrength() + this.getAgility()) /
@@ -1126,9 +1128,13 @@ public class Unit {
 		} else {
 			this.setCurrentHitPoints(this.getCurrentHitPoints() - (attackerStrength / 10));
 		}
-		this.setState(State.NONE);
+		if(this.getState()==State.MOVING)
+			this.setState(State.MOVING);
+		else
+			this.setState(State.NONE);
 	}
-
+	private int attackerX;
+	private int attackerY;
 	private void dodge() {
 		int[] randomNeighboringCube = calculateRandomNeighboringCube();
 		while (! this.position.isValidPosition(randomNeighboringCube)) {
@@ -1221,6 +1227,13 @@ public class Unit {
 			}
 		}
 		if (this.getState() == State.ATTACKING) {
+			this.setOrientation((float) Math.atan2(
+					this.theDefender.position.getCubeCoordinates()[1] - this.position.getCubeCoordinates()[1],
+					this.theDefender.position.getCubeCoordinates()[0] - this.position.getCubeCoordinates()[0]));
+			this.theDefender.setOrientation((float) Math.atan2(
+					this.attackerY - this.position.getCubeCoordinates()[1],
+					this.attackerX - this.position.getCubeCoordinates()[0])
+			);
 			this.fightCounter -= dt;
 			if (this.fightCounter <= 0) {
 				this.setState(State.NONE);
@@ -1239,7 +1252,6 @@ public class Unit {
 				this.startDefaultBehaviour();
 			} catch (IllegalStateException exc) {
 	
-			}
-			
+			}	
 	}
 }
