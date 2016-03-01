@@ -412,7 +412,7 @@ public class Unit {
 	 * 			| result == 1.5*((strength + agility)/(200*(weight/100))
 	 */
 	public double getUnitBaseSpeed(){
-		return (1.5*(this.getStrength()+this.getAgility())/200*this.getWeight()/100);
+		return 1.5*((this.getStrength()+this.getAgility())/(200*this.getWeight()/100));
 	}
 	/**
 	 * 			  the position were the unit will go
@@ -436,7 +436,7 @@ public class Unit {
 		if((targetPosition[2]) == -1)
 			moveSpeed = 0.5*getUnitBaseSpeed();
 		else if((targetPosition[2]) == 1)
-			moveSpeed = 1.2* getUnitBaseSpeed();
+			moveSpeed =1.2* getUnitBaseSpeed();
 		else
 			moveSpeed = getUnitBaseSpeed();
 		if(isSprinting)
