@@ -845,7 +845,16 @@ public class Unit {
 	 * 			  if setDefaultBehaviorEnabled is false
 	 */
 	public void startDefaultBehaviour() throws IllegalStateException{
-
+		if(this.getState()== State.NONE){
+			int randomBehaviourNumber =new Random().nextInt(5);
+			if(randomBehaviourNumber== 0)
+				moveTo(new int[]{new Random().nextInt(50),new Random().nextInt(50),new Random().nextInt(50)});
+			else if(randomBehaviourNumber== 1||randomBehaviourNumber== 3){
+				work();
+			}
+			else
+				rest();
+		}
 	}
 	/**
 	 * @post 	  Stop the Default state and set the current state on null
@@ -1142,27 +1151,21 @@ public class Unit {
 			this.updatePosition(dt);
 			moveTo(this.cubeToMove);
 		}
-		if (this.getState() == State.RESTING) {
-			if (this.getCurrentHitPoints() == this.getMaxHitPoints()) {
-				this.restCounter -= dt;
-				if (this.restCounter <= 0) {
-					this.setStamina(this.getCurrentStaminaPoints() + (int) Math.ceil(this.getRegenStamina()));
-					this.restCounter = 0.2;
-				}
-			} else {
+		if (this.getState() == State.RESTING) {	
+			if (this.getCurrentHitPoints() != this.getMaxHitPoints()) {
 				this.restCounter -= dt;
 				if (this.restCounter <= 0) {
 					this.setCurrentHitPoints(this.getCurrentHitPoints() + (int) Math.ceil(this.getRegenHitPoints()));
 					this.restCounter = 0.2;
 				}
-				if (this.getCurrentHitPoints() == this.getMaxHitPoints()) {
-					if (this.restCounter <= 0) {
-						this.setStamina(this.getCurrentStaminaPoints() + (int) Math.ceil(this.getRegenStamina()));
-						this.restCounter = 0.2;
-					}
+			} else {
+				this.restCounter -= dt;
+				if (this.restCounter <= 0) {
+					this.setStamina(this.getCurrentStaminaPoints() + (int) Math.ceil(this.getRegenStamina()));
+					this.restCounter = 0.2;
 				}
 			}
-			if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints()) {
+			if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints() && this.getCurrentHitPoints() == this.getMaxHitPoints()) {
 				this.setState(State.NONE);
 			}
 		}
@@ -1187,5 +1190,7 @@ public class Unit {
 				needToRestCounter = 3000;
 			}
 		}
+		if(this.getDefaultBehaviorEnabled())
+			this.startDefaultBehaviour();
 	}
 }
