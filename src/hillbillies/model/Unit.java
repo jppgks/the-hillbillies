@@ -64,7 +64,11 @@ public class Unit {
 	 * @effect ...
 	 */
 	public Unit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness, boolean enableDefaultBehavior) {
-		this.setName(name);
+		try {
+			this.setName(name);
+		} catch (IllegalArgumentException exc) {
+			this.setName("\"Billy The Hill\"");
+		}
 		this.position = this.new Position(initialPosition);
 		this.initializeAttribute("w", weight);
 		this.initializeAttribute("a", agility);
@@ -72,7 +76,7 @@ public class Unit {
 		this.initializeAttribute("t", toughness);
 		this.setCurrentHitPoints(this.getMaxHitPoints());
 		this.setStamina(this.getMaxStaminaPoints());
-//		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
+		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
 	}
 
 	private void initializeAttribute(String attributeKind, int attributeValue) {
@@ -174,8 +178,12 @@ public class Unit {
 		 *       	| this.setOccupyingCubeCoordinates(cubeCoordinates)
 		 *       	| this.setUnitCoordinates(cubeCoordinates)
 		 */
-		public Position(int[] cubeCoordinates) throws IllegalCoordinateException {
-			this.setUnitCoordinates(cubeCoordinates);
+		public Position(int[] cubeCoordinates){
+			try {
+				this.setUnitCoordinates(cubeCoordinates);
+			} catch (IllegalCoordinateException exc) {
+				System.out.println("++++++++++ "+exc.getMessage()+" ++++++++++");
+			}
 		}
 
 		/**
@@ -208,8 +216,9 @@ public class Unit {
 		 */
 		@Raw
 		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
+			if(!isValidPosition(cubeCoordinates))
+				throw new IllegalCoordinateException(cubeCoordinates);
 			double[] unitCoordinates = getDoubleArrayFromIntArray(cubeCoordinates);
-			assert isValidPosition(unitCoordinates);
 			this.setOccupyingCubeCoordinates(cubeCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
 			this.unitX = unitCoordinates[0] + halfCubeSideLength;
@@ -231,7 +240,7 @@ public class Unit {
 		 * Check whether the given coordinates are valid coordinates for
 		 * any position.
 		 *
-		 * @param coordinates
+		 * @param cubeCoordinates
 		 *         	  The coordinates to check.
 		 * @return 	  True if all coordinates are within range, false otherwise.
 		 *       	| result ==
@@ -239,11 +248,11 @@ public class Unit {
 		 *       	|	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
 		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
 		 */
-		public boolean isValidPosition(double[] coordinates) {
+		public boolean isValidPosition(int[] cubeCoordinates) {
 			return (
-					(coordinates[0] >= 0 && coordinates[0] < 50) &&
-							(coordinates[1] >= 0 && coordinates[1] < 50) &&
-							(coordinates[2] >= 0 && coordinates[2] < 50)
+					(cubeCoordinates[0] >= 0 && cubeCoordinates[0] < 50) &&
+							(cubeCoordinates[1] >= 0 && cubeCoordinates[1] < 50) &&
+							(cubeCoordinates[2] >= 0 && cubeCoordinates[2] < 50)
 			);
 		}
 
@@ -335,7 +344,7 @@ public class Unit {
 	 * 
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
-		if(!this.position.isValidPosition(new double[]{
+		if(!this.position.isValidPosition(new int[]{
 				this.position.getCubeCoordinates()[0]+dx,
 				this.position.getCubeCoordinates()[1]+dy,
 				this.position.getCubeCoordinates()[2]+dz})) {
@@ -345,6 +354,8 @@ public class Unit {
 		if (dx == 0 && dy == 0 && dz == 0) {
 			return;
 		}
+		if (this.getState()== State.MOVING)
+			return;
 
 		// Absolute target position
 		this.targetPosition = new int[]{
@@ -379,9 +390,11 @@ public class Unit {
 	 *
 	 */
 	public void moveTo(int[] targetposition) throws IllegalCoordinateException {
-		if (! this.position.isValidPosition(this.position.getDoubleArrayFromIntArray(targetposition))) {
-			throw new IllegalCoordinateException(this.position.getDoubleArrayFromIntArray(targetposition));
+		if (! this.position.isValidPosition(targetposition)) {
+			throw new IllegalCoordinateException(targetposition);
 		}
+		if(this.getState()== State.MOVING)
+			return;
 		targetPosition = targetposition;
 		this.setState(State.MOVING);
 	}
@@ -429,12 +442,9 @@ public class Unit {
 	 * @post 	  if the unit isn't sprinting set sprinting to true
 	 * 			| if(! isSprinting)
 	 * 			|	then new.isSprinting == true
-	 * @throws IllegalStateException
-	 * 			  if the unit's stamina is lower or equals to zero
-	 * 			| if (!(this.getCurrentStaminaPoints >= 0))
 	 * 
 	 */
-	public void startSprinting() throws IllegalStateException{
+	public void startSprinting(){
 		if(this.getState()==State.MOVING)
 			this.isSprinting = true;
 	}
@@ -478,7 +488,7 @@ public class Unit {
 	 * 
 	 */
 	public float getTimeForWork(){
-		return 500/this.getStrength();
+		return (float) (500/this.getStrength());
 	}
 	
 	/**
@@ -502,12 +512,17 @@ public class Unit {
 	 * 			  the unit can't rest
 	 * 			| if(this.getCurrentHitPoints() == this.maxHitPoints())
 	 * 			| && ( this.getCurrentStaminaPoints == this.getMaxStaminaPoints())
+	 * @throws IllegalStateException
+	 *			  If the unit is currently executing an activity
+	 *			| if(this.getState() != State.NONE)
+	 *			  
 	 */
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
 			throw new IllegalStateException();
-		if( this.getState()==State.NONE)
-			this.setState(State.RESTING);
+		if(this.getState() != State.NONE)
+			throw new IllegalStateException();
+		this.setState(State.RESTING);
 	}
 	/**
 	 * variable time need the regen hp and stamina
@@ -606,7 +621,7 @@ public class Unit {
 	 * 			| result == this.strength
 	 */
 	@Basic
-	public int getStrength() {
+	public double getStrength() {
 		return this.strength;
 	}
 
@@ -629,7 +644,7 @@ public class Unit {
 	 * 			| if (strength < this.getMinAttributeValue())
 	 * 			|	then new.getStrength() == this.getMinAttributeValue()
 	 */
-	public void setStrength(int strength) {
+	public void setStrength(double strength) {
 		if (strength >= this.getMinAttributeValue()
 				&& strength <= this.getMaxAttributeValue()) {
 			this.strength = strength;
@@ -643,21 +658,21 @@ public class Unit {
 	/**
 	 * @return	  the minimum number of weight, agility, strength,toughness
 	 */
-	public int getMinAttributeValue(){
+	private double getMinAttributeValue(){
 		return 1;
 	}
 	
 	/**
 	 * @return	  the maximum number of weight, agility, strength,toughness
 	 */
-	public int getMaxAttributeValue(){
+	private double getMaxAttributeValue(){
 		return 200;
 	}
 	
 	/**
 	 * Variable registering the strength of this unit.
 	 */
-	private int strength;
+	private double strength;
 
 	/**
 	 * Returns the current agility of this unit.
@@ -666,7 +681,7 @@ public class Unit {
 	 * 			| result == this.agility
 	 */
 	@Basic
-	public int getAgility() {
+	public double getAgility() {
 		return this.agility;
 	}
 
@@ -689,7 +704,7 @@ public class Unit {
 	 * 			| if (agility < this.getMinAttributeValue())
 	 * 			|	then new.getAgility() == this.getMinAttributeValue()
 	 */
-	public void setAgility(int agility) {
+	public void setAgility(double agility) {
 		if (agility > this.getMaxAttributeValue())
 			this.agility= this.getMaxAttributeValue();
 		if (agility < this.getMinAttributeValue())
@@ -701,13 +716,13 @@ public class Unit {
 	/**
 	 * Variable registering the agility of this unit.
 	 */
-	private int agility;
+	private double agility;
 
 	/**
 	 * @return 	  Returns the current weight of the unit.
 	 * 			| result == this.weight
 	 */
-	public int getWeight(){
+	public double getWeight(){
 		return this.weight;
 	}
 
@@ -728,7 +743,7 @@ public class Unit {
 	 * 			| new.weight == weight
 	 *
 	 */
-	public void setWeight(int weight){
+	public void setWeight(double weight){
 		if(weight <= minWeight())
 			weight = minWeight();
 		this.weight = weight;
@@ -738,11 +753,11 @@ public class Unit {
 	 * @return 	  the minWeight of a unit
 	 * 			| (strength+agility)/2
 	 */
-	public int minWeight(){
+	public double minWeight(){
 		return (this.strength+this.agility)/2;
 	}
 
-	private int weight;
+	private double weight;
 
 	/**
 	 * Returns the current toughness of this unit.
@@ -751,7 +766,7 @@ public class Unit {
 	 * 			| result == this.toughness
 	 */
 	@Basic
-	public int getToughness() {
+	public double getToughness() {
 		return this.toughness;
 	}
 
@@ -774,7 +789,7 @@ public class Unit {
 	 * 			| if (toughness < this.getMinAttributeValue())
 	 * 			|	then new.getToughness() == this.getMinAttributeValue()
 	 */
-	public void setToughness(int toughness) {
+	public void setToughness(double toughness) {
 		if (toughness >= this.getMinAttributeValue()
 				&& toughness <= this.getMaxAttributeValue()) {
 			this.toughness = toughness;
@@ -788,7 +803,7 @@ public class Unit {
 	/**
 	 * Variable registering the toughness of this unit.
 	 */
-	private int toughness;
+	private double toughness;
 
 	/**
 	 * @return 	  Returns the current state of this unit.
@@ -820,30 +835,30 @@ public class Unit {
 	 * 
 	 * @throws IllegalStateException
 	 * 			  if the unit is doing a state
-	 * @throws IllegalStateException
-	 * 			  if setDefaultBehaviorEnabled is false
 	 */
 	public void startDefaultBehaviour() throws IllegalStateException{
-		if(this.getState()== State.NONE){
-			int randomBehaviourNumber =new Random().nextInt(5);
-			if(randomBehaviourNumber== 0) {
-				moveTo(new int[]{new Random().nextInt(50), new Random().nextInt(50), new Random().nextInt(50)});
-				startSprinting();
-			}
-			else if(randomBehaviourNumber== 1||randomBehaviourNumber== 3) {
-				work();
-			}
-			else
-				rest();
+		if(this.getState()!= State.NONE)
+			throw new IllegalStateException();
+		int randomBehaviourNumber =new Random().nextInt(5);
+		if(randomBehaviourNumber== 0) {
+			moveTo(new int[]{new Random().nextInt(50), new Random().nextInt(50), new Random().nextInt(50)});
+			startSprinting();
 		}
+		else if(randomBehaviourNumber== 1||randomBehaviourNumber== 3) {
+			work();
+		}
+		else
+			try {
+				rest();
+			} catch (IllegalStateException exc) {
+				startDefaultBehaviour();
+			}
 	}
 	/**
 	 * @post 	  Stop the Default state and set the current state on null
 	 * 
-	 * @throws IllegalStateException
-	 * 			  if a unit doesn't conduct an state
 	 */
-	public void stopDefaultBehavior() throws IllegalStateException{
+	public void stopDefaultBehavior(){
 		this.setState(State.NONE);
 	}
 	
@@ -870,7 +885,7 @@ public class Unit {
 	/**
 	 * @return 	  return the current hitpoints of the unit
 	 */
-	public int getCurrentHitPoints(){
+	public double getCurrentHitPoints(){
 		return this.hitPoints;
 	}
 
@@ -881,7 +896,7 @@ public class Unit {
 	 * 			| isValidHitPoints(hitpoints)
 	 * 
 	 */
-	public void setCurrentHitPoints(int hitpoints){
+	public void setCurrentHitPoints(double hitpoints){
 		assert isValidHitPoints(hitpoints);
 		this.hitPoints = hitpoints;
 	}
@@ -893,7 +908,7 @@ public class Unit {
 	 *            and is smaller or equals to the maximum hitpoints the unit can have
 	 *         	| return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
 	 */
-	public boolean isValidHitPoints(int hitpoints){
+	public boolean isValidHitPoints(double hitpoints){
 		if(hitpoints <= this.getMaxHitPoints() && hitpoints >=getMinHitPoints())
 			return true;
 		return false;
@@ -903,14 +918,14 @@ public class Unit {
 	 * @return 	  returns the maximum hitpoints the unit can have
 	 * 			| result == 200.(this.weight/100).(this.toughness/100)
 	 */
-	public int getMaxHitPoints(){
-		return ((int) Math.ceil(200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0)));
+	public double getMaxHitPoints(){
+		return (200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
-	public int getMinHitPoints(){
+	public double getMinHitPoints(){
 		return 0;
 	}
 	
-	private int hitPoints;
+	private double hitPoints;
 	
 	/**
 	 * Return the stamina of this Unit.
@@ -918,7 +933,7 @@ public class Unit {
 	 * @return	| result == this.stamina
 	 */
 	@Basic @Raw
-	public int getCurrentStaminaPoints() {
+	public double getCurrentStaminaPoints() {
 	  return this.stamina;
 	}
 	
@@ -931,7 +946,7 @@ public class Unit {
 	 * @return 
 	 *       	| result == (stamina >= 0) && (stamina <= this.getMaxStaminaPoints())
 	 */
-	public boolean isValidStamina(int stamina) {
+	public boolean isValidStamina(double stamina) {
 		if(stamina <= this.getMaxStaminaPoints() && stamina >= this.getMinStaminaPoints())
 			return true;
 		return false;
@@ -950,7 +965,7 @@ public class Unit {
 	 *       	| new.getCurrentStaminaPoints() == stamina
 	 */
 	@Raw
-	public void setStamina(int stamina) {
+	public void setStamina(double stamina) {
 	  assert isValidStamina(stamina);
 	  this.stamina = stamina;
 	}
@@ -960,11 +975,11 @@ public class Unit {
 	 *
 	 * @return 	| result == 200*(this.weight/100)*(this.toughness/100)
      */
-	public int getMaxStaminaPoints() {
-		return ((int) Math.ceil(200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0)));
+	public double getMaxStaminaPoints() {
+		return ( 200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
-	public int getMinStaminaPoints(){
-		return 0;
+	public double getMinStaminaPoints(){
+		return 0.0;
 	}
 	
 
@@ -973,7 +988,7 @@ public class Unit {
 	/**
 	 * Variable registering the stamina of this Unit.
 	 */
-	private int stamina;
+	private double stamina;
 
 	/**
 	 * Return the name of this Unit.
@@ -1021,6 +1036,27 @@ public class Unit {
 	 */
 	private String name;
 
+	private boolean isNeighboringCube(int[] cubeCoordinatesOfPossibleNeighbor) {
+		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.position.getCubeCoordinates()[0]) == 1) {
+			if (Arrays.
+					stream(new int[]{-1, 0, 1}).
+					anyMatch(i -> i == cubeCoordinatesOfPossibleNeighbor[1] - this.position.getCubeCoordinates()[1])) {
+				return true;
+			}
+		}
+		if (cubeCoordinatesOfPossibleNeighbor[0] == this.position.getCubeCoordinates()[0]) {
+			if (Math.abs(cubeCoordinatesOfPossibleNeighbor[1] - this.position.getCubeCoordinates()[1]) == 1) {
+				if (cubeCoordinatesOfPossibleNeighbor[2] == this.position.getCubeCoordinates()[2]) {
+					return true;
+				}
+			} else if (cubeCoordinatesOfPossibleNeighbor[1] == this.position.getCubeCoordinates()[1]) {
+				if (Math.abs(cubeCoordinatesOfPossibleNeighbor[2] - this.position.getCubeCoordinates()[2]) == 1) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	/**
 	 * Attack other unit that occupies the same or a neighbouring cube
 	 * of the game world.
@@ -1035,6 +1071,8 @@ public class Unit {
 	 * @note 	  To-do: add orientation update.
 	 */
 	public void attack(Unit defender) throws IllegalStateException {
+		if(!(this.isNeighboringCube(defender.position.getCubeCoordinates())))
+			throw new IllegalStateException();
 		this.fightCounter = this.getFightTime();
 		this.setState(State.ATTACKING);
 		this.setOrientation((float) Math.atan2(
@@ -1074,9 +1112,8 @@ public class Unit {
 	 * 			  this unit's hitpoints are lowered,
 	 * 			  relative to the strength of the attacker.
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
-	 * @note 	  To-do: add orientation update.
 	 */
-	public void defend(int attackerAgility, int attackerStrength, int attackerX, int attackerY) {
+	public void defend(double attackerAgility, double attackerStrength, int attackerX, int attackerY) {
 		this.setOrientation((float) Math.atan2(
 				attackerY - this.position.getCubeCoordinates()[1],
 				attackerX - this.position.getCubeCoordinates()[0])
@@ -1094,7 +1131,7 @@ public class Unit {
 
 	private void dodge() {
 		int[] randomNeighboringCube = calculateRandomNeighboringCube();
-		while (! this.position.isValidPosition(this.position.getDoubleArrayFromIntArray(randomNeighboringCube))) {
+		while (! this.position.isValidPosition(randomNeighboringCube)) {
 			randomNeighboringCube = calculateRandomNeighboringCube();
 		}
 		this.position.setUnitCoordinates(randomNeighboringCube);
@@ -1162,13 +1199,13 @@ public class Unit {
 			if (this.getCurrentHitPoints() != this.getMaxHitPoints()) {
 				this.restCounter -= dt;
 				if (this.restCounter <= 0) {
-					this.setCurrentHitPoints(this.getCurrentHitPoints() + (int) Math.ceil(this.getRegenHitPoints()));
+					this.setCurrentHitPoints(this.getCurrentHitPoints() + this.getRegenHitPoints());
 					this.restCounter = 0.2;
 				}
 			} else {
 				this.restCounter -= dt;
 				if (this.restCounter <= 0) {
-					this.setStamina(this.getCurrentStaminaPoints() + (int) Math.ceil(this.getRegenStamina()));
+					this.setStamina(this.getCurrentStaminaPoints() + this.getRegenStamina());
 					this.restCounter = 0.2;
 				}
 			}
@@ -1198,6 +1235,11 @@ public class Unit {
 			}
 		}
 		if(this.getDefaultBehaviorEnabled())
-			this.startDefaultBehaviour();
+			try {
+				this.startDefaultBehaviour();
+			} catch (IllegalStateException exc) {
+	
+			}
+			
 	}
 }

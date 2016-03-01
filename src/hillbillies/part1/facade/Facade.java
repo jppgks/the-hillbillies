@@ -29,12 +29,17 @@ public class Facade implements IFacade {
 
 	@Override
 	public void setName(Unit unit, String newName) throws ModelException {
-		unit.setName(newName);
+		try {
+			unit.setName(newName);
+		} catch (IllegalArgumentException exc) {
+			unit.setName("\"Billy The Hill\"");
+		}
+		
 	}
 
 	@Override
 	public int getWeight(Unit unit) throws ModelException {
-		return unit.getWeight();
+		return (int) unit.getWeight();
 	}
 
 	@Override
@@ -44,7 +49,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getStrength(Unit unit) throws ModelException {
-		return unit.getStrength();
+		return (int) unit.getStrength();
 	}
 
 	@Override
@@ -54,7 +59,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getAgility(Unit unit) throws ModelException {
-		return unit.getAgility();
+		return (int) unit.getAgility();
 	}
 
 	@Override
@@ -64,7 +69,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getToughness(Unit unit) throws ModelException {
-		return unit.getToughness();
+		return (int) unit.getToughness();
 	}
 
 	@Override
@@ -74,22 +79,22 @@ public class Facade implements IFacade {
 
 	@Override
 	public int getMaxHitPoints(Unit unit) throws ModelException {
-		return unit.getMaxHitPoints();
+		return (int) unit.getMaxHitPoints();
 	}
 
 	@Override
 	public int getCurrentHitPoints(Unit unit) throws ModelException {
-		return unit.getCurrentHitPoints();
+		return (int) unit.getCurrentHitPoints();
 	}
 
 	@Override
 	public int getMaxStaminaPoints(Unit unit) throws ModelException {
-		return unit.getMaxStaminaPoints();
+		return (int) unit.getMaxStaminaPoints();
 	}
 
 	@Override
 	public int getCurrentStaminaPoints(Unit unit) throws ModelException {
-		return unit.getCurrentStaminaPoints();
+		return (int) unit.getCurrentStaminaPoints();
 	}
 
 	@Override
@@ -99,7 +104,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void moveToAdjacent(Unit unit, int dx, int dy, int dz) throws ModelException {
-		unit.moveToAdjacent(dx, dy, dz);
+		try {
+			unit.moveToAdjacent(dx, dy, dz);
+		} catch (IllegalArgumentException exc) {
+			
+		}
 	}
 
 	@Override
@@ -134,12 +143,21 @@ public class Facade implements IFacade {
 
 	@Override
 	public void moveTo(Unit unit, int[] cube) throws ModelException {
-		unit.moveTo(cube);
+		try {
+			unit.moveTo(cube);
+		} catch (IllegalArgumentException exc) {
+				
+		}
 	}
 
 	@Override
 	public void work(Unit unit) throws ModelException {
-		unit.work();
+		try {
+			unit.work();
+		} catch (IllegalStateException exc){
+			
+		}
+		
 	}
 
 	@Override
@@ -149,7 +167,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void fight(Unit attacker, Unit defender) throws ModelException {
-		attacker.attack(defender);
+		try {
+			attacker.attack(defender);
+		} catch (IllegalStateException exc) {
+	
+		}
 	}
 
 	@Override
@@ -159,7 +181,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public void rest(Unit unit) throws ModelException {
-		unit.rest();
+		try {
+			unit.rest();
+		} catch (IllegalStateException exc) {
+			
+		}
+		
 	}
 
 	@Override
