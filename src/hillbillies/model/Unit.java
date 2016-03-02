@@ -1357,7 +1357,7 @@ public class Unit {
 		case "SPRINT_COUNTER":
 			this.SPRINT_COUNTER = 0.1;
 			break;
-		case "RESR_COUNTER":
+		case "REST_COUNTER":
 			this.REST_COUNTER = 0.2;
 			break;
 		case "WORK_COUNTER":
@@ -1367,14 +1367,14 @@ public class Unit {
 			this.FIGHT_COUNTER = this.getFightTime();
 			break;
 		case "NEEDTOREST_COUNTER":
-			this.NEEDTOREST_COUNTER = 3000;
+			this.NEEDTOREST_COUNTER = 180;
 		}
 	}
 	private double SPRINT_COUNTER = 0.1;
 	private double REST_COUNTER = 0.2;
 	private double WORK_COUNTER;
 	private double FIGHT_COUNTER;
-	private double NEEDTOREST_COUNTER = 3000;
+	private double NEEDTOREST_COUNTER = 180;
 
 	public void advanceTime(double dt) {
 		if (this.getState() == State.MOVING) {
