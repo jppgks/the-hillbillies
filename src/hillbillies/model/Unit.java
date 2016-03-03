@@ -1290,6 +1290,7 @@ public class Unit {
 		double chance = Math.random();
 		if(chance < this.chanceForDodging(attackerAgility)){
 			this.dodge();
+			return;
 		}else{
 			chance = Math.random();
 			if(chance< this.chanceForBlocking(attackerAgility,attackerStrength)){
@@ -1585,7 +1586,7 @@ public class Unit {
 		this.setNeedToRestCounter(this.getNeedToRestCounter()-dt);
 		if (this.getNeedToRestCounter() <= 0) {
 			if (this.getState() != State.ATTACKING) {
-				this.setState(State.RESTING);
+				this.rest();				
 				//reset the NEEDTOREST_COUNTER
 				this.resetCounter("NEEDTOREST_COUNTER");
 			}
