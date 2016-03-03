@@ -4,6 +4,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 
+import java.security.KeyStore.PrivateKeyEntry;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -308,8 +309,8 @@ public class Unit {
 	 *
 	 */
 	public void setWeight(double weight){
-		if(weight <= minWeight())
-			weight = minWeight();
+		if(weight <= getMinWeight())
+			weight = getMinWeight();
 		this.weight = weight;
 	}
 
@@ -318,7 +319,7 @@ public class Unit {
 	 * 			| (this.getStrength()+this.getAgility())/2
 	 */
 
-	public double minWeight(){
+	public double getMinWeight(){
 		return (this.getStrength()+this.getAgility())/2;
 	}
 
@@ -391,8 +392,10 @@ public class Unit {
 		return (200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 	public double getMinHitPoints(){
-		return 0;
+		return MIN_HITPOINTS;
 	}
+	
+	private static final double MIN_HITPOINTS =0.0;
 
 	/**
 	 * Set the stamina of this Unit to the given stamina.
@@ -436,8 +439,10 @@ public class Unit {
 		return ( 200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 	public double getMinStaminaPoints(){
-		return 0.0;
+		return MIN_STAMINAPOINTS;
 	}
+	
+	private static final double MIN_STAMINAPOINTS = 0.0;
 
 	/**
 	 *
@@ -460,31 +465,62 @@ public class Unit {
 
 	private void updatePosition(double dt) {
 		this.position.unitX += this.getUnitVelocity()[0] * dt;
-		this.initialPosition[0] += this.getUnitVelocity()[0] * dt;
+		this.getInitialPosition()[0] += this.getUnitVelocity()[0] * dt;
 		this.position.unitY += this.getUnitVelocity()[1] * dt;
-		this.initialPosition[1] += this.getUnitVelocity()[1] * dt;
+		this.getInitialPosition()[1] += this.getUnitVelocity()[1] * dt;
 		this.position.unitZ += this.getUnitVelocity()[2] * dt;
-		this.initialPosition[2] += this.getUnitVelocity()[2] * dt;
-		if (Math.abs(neighboringCubeToMoveTo[0]) - Math.abs(initialPosition[0]) <= 0 &&
-				Math.abs(neighboringCubeToMoveTo[1]) - Math.abs(initialPosition[1]) <= 0 &&
-				Math.abs(neighboringCubeToMoveTo[2]) - Math.abs(initialPosition[2]) <= 0) {
+		this.getInitialPosition()[2] += this.getUnitVelocity()[2] * dt;
+		if (Math.abs(neighboringCubeToMoveTo[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
+				Math.abs(neighboringCubeToMoveTo[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
+				Math.abs(neighboringCubeToMoveTo[2]) - Math.abs(getInitialPosition()[2]) <= 0) {
 			this.position.setUnitCoordinates(new int[]{
 					this.position.getCubeCoordinates()[0] + neighboringCubeToMoveTo[0],
 					this.position.getCubeCoordinates()[1] + neighboringCubeToMoveTo[1],
 					this.position.getCubeCoordinates()[2] + neighboringCubeToMoveTo[2]
 			});
-			if (Arrays.equals(this.position.getCubeCoordinates(), targetPosition)) {
+			if (Arrays.equals(this.position.getCubeCoordinates(), this.getTargetPosition())) {
 				this.setState(State.NONE);
 				this.stopSprinting();
 			}
-			if(newTargetPosition != null)
-				targetPosition = newTargetPosition;
-				newTargetPosition = null;
-			initialPosition = new double[]{0, 0, 0};
+			if(this.getNewTargetPosition() != null)
+				this.setTargetPosition(this.getNewTargetPosition());
+				this.setNewTargetPosition(null);
+			this.setInitialPosition(new double[]{0, 0, 0});
 		}
 	}
-
-	// Rommelhoop
+	
+	private int[] getTargetPosition(){
+		return this.targetPosition;
+	}
+	
+	private void setTargetPosition(int[] targertPosition){
+		this.targetPosition = targertPosition;
+	}
+	
+	private double[] getInitialPosition(){
+		return this.initialPosition;
+	}
+	
+	private void setInitialPosition(double[] initialPosition){
+		this.initialPosition = initialPosition;
+	}
+	
+	private int[] getNeighboringCubeToMoveTo(){
+		return this.neighboringCubeToMoveTo;
+	}
+	
+	private void setNeighboringCubeToMoveTo(int[] neighboringCubeToMoveTo){
+		this.neighboringCubeToMoveTo = neighboringCubeToMoveTo;
+	}
+	
+	private int[] getNewTargetPosition(){
+		return this.newTargetPosition;
+	}
+	
+	private void setNewTargetPosition(int[] newTargetPosition){
+		this.newTargetPosition = newTargetPosition;
+	}
+	
 	private int[] targetPosition = new int[] {0, 0, 0};
 	/*
 	 * Relative difference in current position vs target position.
@@ -524,27 +560,27 @@ public class Unit {
 			return;
 
 		// Absolute target position
-		this.targetPosition = new int[]{
+		this.setTargetPosition(new int[]{
 				this.position.getCubeCoordinates()[0] + dx,
 				this.position.getCubeCoordinates()[1] + dy,
 				this.position.getCubeCoordinates()[2] + dz
-		};
+		});
 		this.setState(State.MOVING);
 	}
 
 	private double[] getUnitVelocity() {
 		double distance =
 				Math.sqrt(
-						Math.pow(this.neighboringCubeToMoveTo[0], 2) +
-						Math.pow(this.neighboringCubeToMoveTo[1], 2) +
-						Math.pow(this.neighboringCubeToMoveTo[2], 2)
+						Math.pow(this.getNeighboringCubeToMoveTo()[0], 2) +
+						Math.pow(this.getNeighboringCubeToMoveTo()[1], 2) +
+						Math.pow(this.getNeighboringCubeToMoveTo()[2], 2)
 				);
 
 		return new double[]
 				{
-					this.getUnitWalkSpeed() * (this.neighboringCubeToMoveTo[0])/ distance,
-					this.getUnitWalkSpeed() * (this.neighboringCubeToMoveTo[1])/ distance,
-					this.getUnitWalkSpeed() * (this.neighboringCubeToMoveTo[2])/ distance,
+					this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[0])/ distance,
+					this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[1])/ distance,
+					this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[2])/ distance,
 				};
 	}
 
@@ -562,11 +598,11 @@ public class Unit {
 			throw new IllegalCoordinateException(targetposition);
 		}
 		if(this.getState()== State.MOVING){
-			this.newTargetPosition = targetposition;
-			return;
+			this.setNewTargetPosition(targetposition);
+		}else{
+			this.setTargetPosition(targetposition);
+			this.setState(State.MOVING);
 		}
-		this.targetPosition = targetposition;
-		this.setState(State.MOVING);
 	}
 
 	/**
@@ -595,9 +631,9 @@ public class Unit {
 	 */
 	public double getUnitWalkSpeed(){
 		double moveSpeed;
-		if((targetPosition[2]) == -1)
+		if((getNeighboringCubeToMoveTo()[2]) == 1)
 			moveSpeed = 0.5*getUnitBaseSpeed();
-		else if((targetPosition[2]) == 1)
+		else if((getNeighboringCubeToMoveTo()[2]) == -1)
 			moveSpeed =1.2* getUnitBaseSpeed();
 		else
 			moveSpeed = getUnitBaseSpeed();
@@ -614,7 +650,6 @@ public class Unit {
 	 * 			|	then new.isSprinting == true
 	 *
 	 */
-	
 	public void startSprinting(){
 		if(this.getState()==State.MOVING)
 			this.isSprinting = true;
@@ -627,7 +662,6 @@ public class Unit {
 	 * 			| new.isSprinting == false
 	 *
 	 */
-	
 	public void stopSprinting(){
 		this.isSprinting = false;
 	}
@@ -637,7 +671,6 @@ public class Unit {
 	 * 			| result == this.isSprinting
 	 * 
 	 */
-	
 	public boolean isSprinting(){
 		return this.isSprinting;
 	}
@@ -687,8 +720,7 @@ public class Unit {
 	 *			  If the unit is currently executing an activity
 	 *			| if(this.getState() != State.NONE)
 	 *
-	 */
-	
+	 */	
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
 			throw new IllegalStateException();
@@ -701,14 +733,12 @@ public class Unit {
 	 * variable time need the regen hp and stamina
 	 *
 	 */
-	
 	public static final double REGEN_REST_TIME = 0.2;
 
 	/**
 	 * @return 	  gives the amount hitpoinst need to regenerate per time unit of REGEN_REST_TIME
 	 * 			| result == (this.getToughness)/200
-	 */
-	
+	 */	
 	public double getRegenHitPoints(){
 		return (this.getToughness()/200.0);
 	}
@@ -726,8 +756,7 @@ public class Unit {
 	 *
 	 * @return 	  Current orientation of this unit.
 	 * 			| result == this.orientation
-	 */
-	
+	 */	
 	@Basic
 	public float getOrientation() {
 		return this.orientation;
@@ -748,7 +777,6 @@ public class Unit {
 	 * 			| 	then new.getOrientation() ==
 	 * 			|		((orientation-getMinOrientation()) % (getMaxOrientation()-getMinOrientation()+1)) + getMinOrientation()
 	 */
-	
 	private void setOrientation(float orientation) {
 		if( orientation < this.getMinOrientation() || orientation > this.getMaxOrientation())
 			this.orientation = ((orientation -getMinOrientation()) % (getMaxOrientation()-getMinOrientation()+1))+getMinOrientation();
@@ -760,8 +788,7 @@ public class Unit {
 	 *
 	 * @return 	  Minimum orientation value of this unit.
 	 *  		| result == this.MIN_ORIENTATION
-	 */
-	
+	 */	
 	@Immutable
 	private float getMinOrientation() {
 		return Unit.MIN_ORIENTATION;
@@ -770,7 +797,6 @@ public class Unit {
 	/**
 	 * Constant reflecting the lowest possible value for the orientation of this unit.
 	 */
-	
 	private static final float MIN_ORIENTATION = (float) (- Math.PI / 2);
 
 	/**
@@ -778,8 +804,7 @@ public class Unit {
 	 *
 	 * @return 	  Maximum orientation value of this unit.
 	 *  		| result == this.MAX_ORIENTATION
-	 */
-	
+	 */	
 	@Immutable
 	private float getMaxOrientation() {
 		return Unit.MAX_ORIENTATION;
@@ -788,13 +813,11 @@ public class Unit {
 	/**
 	 * Constant reflecting the highest possible value for the orientation of this unit.
 	 */
-	
 	private static final float MAX_ORIENTATION = (float) (Math.PI / 2);
 
 	/**
 	 * Variable registering the orientation of this unit.
 	 */
-	
 	private float orientation = (float) (Math.PI / 2);
 
 	/**
@@ -802,8 +825,7 @@ public class Unit {
 	 *
 	 * @return	  Current strength of this unit.
 	 * 			| result == this.strength
-	 */
-	
+	 */	
 	@Basic
 	public double getStrength() {
 		return this.strength;
@@ -827,8 +849,7 @@ public class Unit {
 	 * 			  then the strength of this unit is equal to the minimum attribute value.
 	 * 			| if (strength < this.getMinAttributeValue())
 	 * 			|	then new.getStrength() == this.getMinAttributeValue()
-	 */
-	
+	 */	
 	public void setStrength(double strength) {
 		if (strength >= this.getMinAttributeValue()
 				&& strength <= this.getMaxAttributeValue()) {
@@ -843,9 +864,8 @@ public class Unit {
 	/**
 	 * @return	  the minimum number of weight, agility, strength,toughness
 	 */
-	
 	private double getMinAttributeValue(){
-		return 1;
+		return MIN_ATTRIBUTE_VALUE;
 	}
 
 	/**
@@ -855,12 +875,18 @@ public class Unit {
 		return MAX_ATTRIBUTE_VALUE;
 	}
 
-	private static final double MAX_ATTRIBUTE_VALUE = 200;
+	/**
+	 * 
+	 *			  Variables that contain the min and max attribute value
+	 * 
+	 */
+	private static final double MAX_ATTRIBUTE_VALUE = 200;	
+	private static final double MIN_ATTRIBUTE_VALUE = 1.0;
+	
 
 	/**
 	 * Variable registering the strength of this unit.
-	 */
-	
+	 */	
 	private double strength;
 
 	/**
@@ -868,8 +894,7 @@ public class Unit {
 	 *
 	 * @return	  Current agility of this unit.
 	 * 			| result == this.agility
-	 */
-	
+	 */	
 	@Basic
 	public double getAgility() {
 		return this.agility;
@@ -883,8 +908,7 @@ public class Unit {
 	/**
 	 * @return 	  Returns the current weight of the unit.
 	 * 			| result == this.weight
-	 */
-	
+	 */	
 	public double getWeight(){
 		return this.weight;
 	}
@@ -952,7 +976,6 @@ public class Unit {
 	 * 			| new.getState() == state
 	 *
 	 */
-	
 	public void setState(State state) {
 		this.state = state;
 	}
@@ -960,7 +983,7 @@ public class Unit {
 	private State state = State.NONE;
 
 	/**
-	 * @post 	  choose a random state move, conduct a work task, rest unil it has full recovered hitpoints and stamina
+	 * @post 	  choose a random state move, conduct a work task, rest until it has full recovered hitPoints and stamina
 	 * 			
 	 * @post  	  if is moving sprinting till it's exhausted
 	 *
@@ -988,12 +1011,19 @@ public class Unit {
 	
 	/**
 	 * @post 	  Stop the Default state and set the current state on NONE
+	 * 			| new.setState(State.None)
 	 *
 	 */
 	public void stopDefaultBehavior(){
 		this.setState(State.NONE);
 	}
 
+	/**
+	 * 
+	 * @return		  Gives the current value of defaultBehaviorEnabled
+	 * 				| Result == this.defaultBehaviorEnabled  
+	 * 
+	 */
 	public Boolean getDefaultBehaviorEnabled(){
 		return this.defaultBehaviorEnabled;
 	}
@@ -1001,8 +1031,8 @@ public class Unit {
 	private boolean defaultBehaviorEnabled;
 
 	/**
-	 * @return 	  return the current hitpoints of the unit
-	 * 			| Result == this.hitPoints
+	 * @return 	  	  return the current hitpoints of the unit
+	 * 				| Result == this.hitPoints
 	 */
 	public double getCurrentHitPoints(){
 		return this.hitPoints;
@@ -1011,9 +1041,8 @@ public class Unit {
 	private double hitPoints;
 
 	/**
-	 * Return the stamina of this Unit.
-	 *
-	 * @return	| result == this.stamina
+	 * 				  Return the stamina of this Unit.
+	 * @return		| result == this.stamina
 	 */
 	@Basic @Raw
 	public double getCurrentStaminaPoints() {
@@ -1021,12 +1050,13 @@ public class Unit {
 	}
 
 	/**
-	 * Variable registering the stamina of this Unit.
+	 * 				  Variable registering the stamina of this Unit.
 	 */
 	private double stamina;
 
 	/**
-	 * Return the name of this Unit.
+	 *@return		  Return the name of this Unit.
+	 *				| Result == this.name
 	 */
 	@Basic @Raw
 	public String getName() {
@@ -1061,7 +1091,7 @@ public class Unit {
 	 *
 	 * @param 	  defender
 	 * 			  The defending unit.
-	 * @effect	  This unit fights defender.
+	 * @effect	  This unit fights the defender.
 	 * 			| fight(this, defender)
 	 * @throws IllegalStateException
 	 * 			  When the victim is not within reach.
@@ -1080,9 +1110,20 @@ public class Unit {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param 		  defender
+	 * 				  Set the unit that will be defending against this unit
+	 * 				| this.theDefender == defender
+	 * 
+	 */
 	private void setDefender(Unit defender){
 		this.theDefender= defender;
 	}
+	/**
+	 * @return		  The unit that's current defending against this unit
+	 * 				| Result == this.defender
+	 */
 	private Unit getDefender(){
 		return this.theDefender;
 	}
@@ -1098,6 +1139,7 @@ public class Unit {
 	 * 			  Variable that gives if a unit is defending
 	 * 
 	 */
+	
 	private boolean isDefending = false;
 
 	@Basic @Immutable
@@ -1304,69 +1346,170 @@ public class Unit {
 		if(this.getState()!=State.NONE)
 			this.setOrientation(this.getPreviousOrientation());
 	}
-	private static final double SPRINT_TIME = 0.1;
-	private static final double REST_TIME = 0.2;
+	
+	/**
+	 * 
+	 *			  Variables for the units of when something must happen(stop activity, gain hitPoints or stamina,
+	 *			  reduce the hitPoints or stamina)
+	 * 
+	 */
+	private static final double SPRINT_TIME = 0.1;	
+	private static final double REST_TIME = 0.2;	
 	private static final double NEEDTOREST_TIME = 180;
 	
+	/**
+	 * 
+	 * 
+	 * @return		  Gives the current value of sprintCounter
+	 * 				| Result == this.sprintCounter
+	 * 
+	 */
 	public double getSprintCounter() {
 		return this.sprintCounter;
 	}
 	
+	/**
+	 * @param		  time
+	 * 
+	 * @post		  Set the sprintCounter equals to the given time
+	 * 				| new.sprintCounter == time
+	 * 
+	 */
 	private void setSprintCounter(double time){
 		this.sprintCounter = time;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @return		  Gives the current value of restCounter
+	 * 				| Result == this.restCounter
+	 * 
+	 */
 	private double getRestCounter(){
 		return this.restCounter;
 	}
+	
+	/**
+	 * @param		  time
+	 * 
+	 * @post		  Set the restCounter equals to the given time
+	 * 				| new.restCounter == time
+	 * 
+	 */
 	private void setRestCounter(double time){
 		this.restCounter = time;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @return		  Gives the current value of workCounter
+	 * 				| Result == this.workCounter
+	 * 
+	 */
 	public double getWorkCounter() {
 		return this.workCounter;
 	}
 	
+	/**
+	 * @param		  time
+	 * 
+	 * @post		  Set the workCounter equals to the given time
+	 * 				| new.workCounter == time
+	 * 
+	 */
 	private void setWorkCounter(double time){
 		this.workCounter = time;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @return		  Gives the current value of fightCounter
+	 * 				| Result == this.fightCounter
+	 * 
+	 */
 	public double getFightCounter() {
 		return this.fightCounter;
 	}
 	
+	/**
+	 * @param		  time
+	 * 
+	 * @post		  Set the fightCounter equals to the given time
+	 * 				| new.fightCounter == time
+	 * 
+	 */
 	private void setFightCounter(double time){
 		this.fightCounter = time;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @return		  Gives the current value of needToRestCounter
+	 * 				| Result == this.needToRestCounter
+	 * 
+	 */
 	public double getNeedToRestCounter() {
 		return this.needToRestCounter;
 	}
 	
+	/**
+	 * @param		  time
+	 * 
+	 * @post		  Set the needToRestCounter equals to the given time
+	 * 				| new.needToRestCounter == time
+	 * 
+	 */
 	private void setNeedToRestCounter(double time){
 		this.needToRestCounter = time;
 	}
 	
+	// each SPRINT_TIME seconds reduce the stamina with 1
 	private double sprintCounter= SPRINT_TIME;
 	
+	// each SPRINT_TIME seconds add 1 stamina or HitPoint
 	private double restCounter = REST_TIME;
 	
+	//Is initialize when the method work() is called
+	//This is variable form the units strength
 	private double workCounter;
 	
+	//Is initialize when the method attack() is called
 	private double fightCounter;
 	
+	//Each NEEDTOREST_TIME seconds a unit mandatory need to rest
 	private double needToRestCounter = NEEDTOREST_TIME;
 
+	/**
+	 * 				  A method that update the units state, orientation and position
+	 * 
+	 * @param		  dt
+	 * 				  Time interval
+	 * 
+	 */
 	public void advanceTime(double dt) {
+		
+		//When the unit State is MOVING then to this
 		if (this.getState() == State.MOVING)
 			advanceWhileMoving(dt);
+		
+		//When the unit State is RESTING then to this
 		if (this.getState() == State.RESTING)
 			advaceWhileResting(dt);
+		
+		//When the unit State is WORKING then to this
 		if (this.getState() == State.WORKING)
 			advanceWhileWorking(dt);
+		
+		//When the unit State is ATTACKING then to this
 		if (this.getState() == State.ATTACKING) {
 			advacedWhileAttacking(dt);
 		}
+		
+		//When NeedToRestCounter is smaller then 0 the unit needs to rest
 		this.setNeedToRestCounter(this.getNeedToRestCounter()-dt);
 		if (this.getNeedToRestCounter() <= 0) {
 			if (this.getState() != State.ATTACKING) {
@@ -1375,6 +1518,8 @@ public class Unit {
 				this.resetCounter("NEEDTOREST_COUNTER");
 			}
 		}
+		
+		//If the units default behavior is enabled start a new behavior
 		if(this.getDefaultBehaviorEnabled()){
 			try {
 				this.startDefaultBehaviour();
@@ -1384,6 +1529,24 @@ public class Unit {
 		}
 	}
 
+	/**
+	 * @param 	  counter
+	 * 			  the counter that need to be reseted
+	 * 
+	 * @post	  The given counter is set to it's default value
+	 * 			| if( counter== SPRINT_COUNTER)
+	 * 			|	then new.setSprintCounter(SPRINT_TIME)
+	 * 			| else if(counter == REST_COUNTER)
+	 * 			|	then new.setRestCounter(REST_TIME)
+	 * 			| else if(counter == WORK_COUNTER)
+	 * 			|	then new.setWorkCounter(this.getTimeForWork())
+	 * 			| else if(counter == FIGHT_COUNTER)
+	 * 			|	then new.setFightCounter(this.getFightTime())
+	 * 			| else if( counter == NEEDTOREST_COUNTER)
+	 * 			|	then new.setNeedToRestCounter(NEEDTOREST_TIME)
+	 * 			| else
+	 * 			|	then return
+	 */
 	private void resetCounter(String counter){
 		switch (counter) {
 		case "SPRINT_COUNTER":
@@ -1404,7 +1567,11 @@ public class Unit {
 	}
 	
 	/**
-	 * @param dt
+	 * 
+	 * @param		  dt
+	 * 				  Time interval  
+	 * 
+	 * 
 	 */
 	private void advacedWhileAttacking(double dt) {
 		this.setOrientation((float) Math.atan2(
@@ -1426,7 +1593,8 @@ public class Unit {
 	}
 
 	/**
-	 * @param dt
+	 * @param		  dt
+	 * 				  Time interval
 	 */
 	private void advanceWhileWorking(double dt) {
 		this.setWorkCounter(this.getWorkCounter()-dt);
@@ -1438,7 +1606,9 @@ public class Unit {
 	}
 
 	/**
-	 * @param dt
+	 * @param		  dt
+	 * 				  Time interval
+	 *				   				
 	 */
 	private void advaceWhileResting(double dt) {
 		if (this.getCurrentHitPoints() != this.getMaxHitPoints()) {
@@ -1462,7 +1632,10 @@ public class Unit {
 	}
 
 	/**
+	 * @param		  dt	
+	 * 				  Time interval
 	 * 
+	 * 				  
 	 */
 	private void advanceWhileMoving(double dt) {
 		if (this.isSprinting()) {
@@ -1479,37 +1652,38 @@ public class Unit {
 		}
 		if(!isDefending)
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
-		this.neighboringCubeToMoveTo = getMovementChange();
+		this.setNeighboringCubeToMoveTo(getMovementChange());
 		this.updatePosition(dt);
 		
 	}
 
 	/**
-	 * @return
+	 * @return		  The the displacement a unit has to do
+	 * 
 	 */
 	private int[] getMovementChange() {
 		int dx;
 		int dy;
 		int dz;
-		if(position.getCubeCoordinates()[0]== this.targetPosition[0]){
+		if(position.getCubeCoordinates()[0]== this.getTargetPosition()[0]){
 			dx = 0;
-		}else if(position.getCubeCoordinates()[0]< this.targetPosition[0]){
+		}else if(position.getCubeCoordinates()[0]< this.getTargetPosition()[0]){
 			dx = 1;
 		}else{
 			dx = -1;
 		}
 
-		if(position.getCubeCoordinates()[1]== this.targetPosition[1]){
+		if(position.getCubeCoordinates()[1]== this.getTargetPosition()[1]){
 			dy = 0;
-		}else if(position.getCubeCoordinates()[1]< this.targetPosition[1]){
+		}else if(position.getCubeCoordinates()[1]< this.getTargetPosition()[1]){
 			dy = 1;
 		}else{
 			dy = -1;
 		}
 
-		if(position.getCubeCoordinates()[2]== this.targetPosition[2]){
+		if(position.getCubeCoordinates()[2]== this.getTargetPosition()[2]){
 			dz = 0;
-		}else if(position.getCubeCoordinates()[2]< this.targetPosition[2]){
+		}else if(position.getCubeCoordinates()[2]< this.getTargetPosition()[2]){
 			dz = 1;
 		}else{
 			dz = -1;

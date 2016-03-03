@@ -258,11 +258,11 @@ public class UnitTest {
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#minWeight()}.
+	 * Test method for {@link hillbillies.model.Unit#getMinWeight()}.
 	 */
 	@Test
 	public void testMinWeight() {
-		assertEquals((unit.getStrength()+ unit.getAgility())/2, unit.minWeight());
+		assertEquals((unit.getStrength()+ unit.getAgility())/2, unit.getMinWeight());
 	}
 
 	/**
