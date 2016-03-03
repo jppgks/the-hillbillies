@@ -486,7 +486,7 @@ public class Unit {
 	public void work() throws IllegalStateException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
-		WORK_COUNTER = this.getTimeForWork();
+		this.setWorkCounter(this.getTimeForWork());
 		this.setState(State.WORKING);
 	}
 	/**
@@ -869,7 +869,7 @@ public class Unit {
 			moveTo(new int[]{new Random().nextInt(50), new Random().nextInt(50), new Random().nextInt(50)});
 			startSprinting();
 		}
-		else if(randomBehaviourNumber== 1||randomBehaviourNumber== 3) {
+		else if(randomBehaviourNumber == 1) {
 			work();
 		}
 		else
@@ -954,8 +954,9 @@ public class Unit {
 		return (200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 	public double getMinHitPoints(){
-		return 0;
+		return MIN_HITPOITNS;
 	}
+	private static final double MIN_HITPOITNS = 0.0;
 	
 	private double hitPoints;
 	
@@ -1015,8 +1016,10 @@ public class Unit {
 		return ( 200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 	public double getMinStaminaPoints(){
-		return 0.0;
+		return MIN_STAMINAPOINTS;
 	}
+	
+	private static final double MIN_STAMINAPOINTS =0.0;
 	
 	/**
 	 * Variable registering the stamina of this Unit.
@@ -1115,13 +1118,19 @@ public class Unit {
 		if(defender.getCurrentHitPoints()<=0)
 			this.setState(State.NONE);
 		else{
-		this.FIGHT_COUNTER = this.getFightTime();
+		this.setFightCounter(this.getFightTime());
 		this.setState(State.ATTACKING);
-		this.theDefender=defender;
-		defender.defend(this.getAgility(), this.getStrength());
+		this.setDefender(defender);
+		this.getDefender().defend(this.getAgility(), this.getStrength());
 		}
 	}
 	
+	private void setDefender(Unit defender){
+		this.theDefender= defender;
+	}
+	private Unit getDefender(){
+		return this.theDefender;
+	}
 	/**
 	 * 
 	 *			  Variable that saves the unit who is defending
@@ -1138,10 +1147,10 @@ public class Unit {
 
 	@Basic @Immutable
 	private double getFightTime() {
-		return fightTime;
+		return FIGHT_TIME;
 	}
 
-	private static final double fightTime = 1;
+	private static final double FIGHT_TIME = 1;
 
 	/**
 	 * When being attacked, this unit defends itself by either
@@ -1327,7 +1336,7 @@ public class Unit {
 	 * 
 	 */
 	
-	public void saveUnitSate(){
+	private void saveUnitSate(){
 		this.setPreviousState(this.getState());
 		if(this.getState()!=State.NONE)
 			this.setPreviousOrientation(this.getOrientation());
@@ -1346,128 +1355,79 @@ public class Unit {
 	 * 
 	 */
 	
-	public void updateUnitState(){
-		this.setState(this.getPreviousState());
+	private void updateUnitState(){
+		if(this.getPreviousState() == State.WORKING)
+			this.setState(State.NONE);
+		else
+			this.setState(this.getPreviousState());
 		if(this.getState()!=State.NONE)
 			this.setOrientation(this.getPreviousOrientation());
 	}
+	private static final double SPRINT_TIME = 0.1;
+	private static final double REST_TIME = 0.2;
+	private static final double NEEDTOREST_TIME = 180;
 	
-	private void resetCounter(String counter){
-		switch (counter) {
-		case "SPRINT_COUNTER":
-			this.SPRINT_COUNTER = 0.1;
-			break;
-		case "REST_COUNTER":
-			this.REST_COUNTER = 0.2;
-			break;
-		case "WORK_COUNTER":
-			this.WORK_COUNTER= this.getTimeForWork();
-			break;
-		case "FIGHT_COUNTER":
-			this.FIGHT_COUNTER = this.getFightTime();
-			break;
-		case "NEEDTOREST_COUNTER":
-			this.NEEDTOREST_COUNTER = 180;
-		}
+	public double getSprintCounter() {
+		return this.sprintCounter;
 	}
-	private double SPRINT_COUNTER = 0.1;
-	private double REST_COUNTER = 0.2;
-	private double WORK_COUNTER;
-	private double FIGHT_COUNTER;
-	private double NEEDTOREST_COUNTER = 180;
+	
+	private void setSprintCounter(double time){
+		this.sprintCounter = time;
+	}
+	
+	private double getRestCounter(){
+		return this.restCounter;
+	}
+	private void setRestCounter(double time){
+		this.restCounter = time;
+	}
+	
+	public double getWorkCounter() {
+		return this.workCounter;
+	}
+	
+	private void setWorkCounter(double time){
+		this.workCounter = time;
+	}
+	
+	public double getFightCounter() {
+		return this.fightCounter;
+	}
+	
+	private void setFightCounter(double time){
+		this.fightCounter = time;
+	}
+	
+	public double getNeedToRestCounter() {
+		return this.needToRestCounter;
+	}
+	
+	private void setNeedToRestCounter(double time){
+		this.needToRestCounter = time;
+	}
+	
+	private double sprintCounter= SPRINT_TIME;
+	
+	private double restCounter = REST_TIME;
+	
+	private double workCounter;
+	
+	private double fightCounter;
+	
+	private double needToRestCounter = NEEDTOREST_TIME;
 
 	public void advanceTime(double dt) {
-		if (this.getState() == State.MOVING) {
-			if (this.isSprinting()) {
-				this.SPRINT_COUNTER -= dt;
-				if (this.SPRINT_COUNTER <= 0) {
-					if (this.getCurrentStaminaPoints() <= 0) {
-						this.stopSprinting();
-					} else {
-						this.setStamina(this.getCurrentStaminaPoints() - 1);
-						//Reset the SPRINT_COUNTER
-						this.resetCounter("SPRINT_COUNTER");
-					}
-				}
-			}
-			int dx;
-			int dy;
-			int dz;
-			if(position.getCubeCoordinates()[0]== this.targetPosition[0]){
-				dx = 0;
-			}else if(position.getCubeCoordinates()[0]< this.targetPosition[0]){
-				dx = 1;
-			}else{
-				dx = -1;
-			}
-
-			if(position.getCubeCoordinates()[1]== this.targetPosition[1]){
-				dy = 0;
-			}else if(position.getCubeCoordinates()[1]< this.targetPosition[1]){
-				dy = 1;
-			}else{
-				dy = -1;
-			}
-
-			if(position.getCubeCoordinates()[2]== this.targetPosition[2]){
-				dz = 0;
-			}else if(position.getCubeCoordinates()[2]< this.targetPosition[2]){
-				dz = 1;
-			}else{
-				dz = -1;
-			}
-			if(!isDefending)
-				this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
-			this.neighboringCubeToMoveTo = new int[]{dx, dy, dz};
-			this.updatePosition(dt);
-		}
-		if (this.getState() == State.RESTING) {	
-			if (this.getCurrentHitPoints() != this.getMaxHitPoints()) {
-				this.REST_COUNTER -= dt;
-				if (this.REST_COUNTER <= 0) {
-					this.setCurrentHitPoints(this.getCurrentHitPoints() + this.getRegenHitPoints());
-					// reset the REST_COUNTER
-					this.resetCounter("REST_COUNTER");
-				}
-			} else {
-				this.REST_COUNTER -= dt;
-				if (this.REST_COUNTER <= 0) {
-					this.setStamina(this.getCurrentStaminaPoints() + this.getRegenStamina());
-					// reset the REST_COUNTER
-					this.resetCounter("REST_COUNTER");
-				}
-			}
-			if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints() && this.getCurrentHitPoints() == this.getMaxHitPoints()) {
-				this.setState(State.NONE);
-			}
-		}
-		if (this.getState() == State.WORKING) {
-			this.WORK_COUNTER -= dt;
-			if (this.WORK_COUNTER <= 0) {
-				this.setState(State.NONE);
-				// reset the WORK_COUNTER
-				this.resetCounter("WORK_COUNTER");
-			}
-		}
+		if (this.getState() == State.MOVING)
+			advanceWhileMoving(dt);
+		if (this.getState() == State.RESTING)
+			advaceWhileResting(dt);
+		if (this.getState() == State.WORKING)
+			advanceWhileWorking(dt);
 		if (this.getState() == State.ATTACKING) {
-			this.setOrientation((float) Math.atan2(
-					this.theDefender.position.getUnitCoordinates()[1] - this.position.getUnitCoordinates()[1],
-					this.theDefender.position.getUnitCoordinates()[0] - this.position.getUnitCoordinates()[0]));
-			this.theDefender.setOrientation((float) Math.atan2(
-					this.position.getUnitCoordinates()[1] - this.theDefender.position.getUnitCoordinates()[1],
-					this.position.getUnitCoordinates()[0] - this.theDefender.position.getUnitCoordinates()[0])
-			);
-			this.FIGHT_COUNTER -= dt;
-			if (this.FIGHT_COUNTER <= 0) {
-				this.setState(State.NONE);
-				this.theDefender.updateUnitState();
-				this.theDefender.isDefending= false;
-				//reset the FIGHT_COUNTER
-				this.resetCounter("FIGHT_COUNTER");
-			}
+			advacedWhileAttacking(dt);
 		}
-		NEEDTOREST_COUNTER -= dt;
-		if (NEEDTOREST_COUNTER <= 0) {
+		this.setNeedToRestCounter(this.getNeedToRestCounter()-dt);
+		if (this.getNeedToRestCounter() <= 0) {
 			if (this.getState() != State.ATTACKING) {
 				this.setState(State.RESTING);
 				//reset the NEEDTOREST_COUNTER
@@ -1481,5 +1441,138 @@ public class Unit {
 	
 			}
 		}
+	}
+
+	private void resetCounter(String counter){
+		switch (counter) {
+		case "SPRINT_COUNTER":
+			this.setSprintCounter(SPRINT_TIME);
+			break;
+		case "REST_COUNTER":
+			this.setRestCounter(REST_TIME);
+			break;
+		case "WORK_COUNTER":
+			this.setWorkCounter(this.getTimeForWork());
+			break;
+		case "FIGHT_COUNTER":
+			this.setFightCounter(this.getFightTime());
+			break;
+		case "NEEDTOREST_COUNTER":
+			this.setNeedToRestCounter(NEEDTOREST_TIME);
+		}
+	}
+	
+	/**
+	 * @param dt
+	 */
+	private void advacedWhileAttacking(double dt) {
+		this.setOrientation((float) Math.atan2(
+				this.getDefender().position.getUnitCoordinates()[1] - this.position.getUnitCoordinates()[1],
+				this.getDefender().position.getUnitCoordinates()[0] - this.position.getUnitCoordinates()[0]));
+		this.getDefender().setOrientation((float) Math.atan2(
+				this.position.getUnitCoordinates()[1] - this.getDefender().position.getUnitCoordinates()[1],
+				this.position.getUnitCoordinates()[0] - this.getDefender().position.getUnitCoordinates()[0])
+		);
+		this.setFightCounter(this.getFightCounter() -dt);
+		if (this.getFightCounter() <= 0) {
+			this.setState(State.NONE);
+			this.getDefender().updateUnitState();
+			this.getDefender().isDefending= false;
+			//reset the FIGHT_COUNTER
+			this.resetCounter("FIGHT_COUNTER");
+		}
+		
+	}
+
+	/**
+	 * @param dt
+	 */
+	private void advanceWhileWorking(double dt) {
+		this.setWorkCounter(this.getWorkCounter()-dt);
+		if (this.getWorkCounter() <= 0) {
+			this.setState(State.NONE);
+			// reset the WORK_COUNTER
+			this.resetCounter("WORK_COUNTER");
+		}
+	}
+
+	/**
+	 * @param dt
+	 */
+	private void advaceWhileResting(double dt) {
+		if (this.getCurrentHitPoints() != this.getMaxHitPoints()) {
+			this.setRestCounter(this.getRestCounter()-dt);
+			if (this.getRestCounter() <= 0) {
+				this.setCurrentHitPoints(this.getCurrentHitPoints() + this.getRegenHitPoints());
+				// reset the REST_COUNTER
+				this.resetCounter("REST_COUNTER");
+			}
+		} else {
+			this.setRestCounter(this.getRestCounter()-dt);
+			if (this.getRestCounter() <= 0) {
+				this.setStamina(this.getCurrentStaminaPoints() + this.getRegenStamina());
+				// reset the REST_COUNTER
+				this.resetCounter("REST_COUNTER");
+			}
+		}
+		if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints() && this.getCurrentHitPoints() == this.getMaxHitPoints()) {
+			this.setState(State.NONE);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void advanceWhileMoving(double dt) {
+		if (this.isSprinting()) {
+			this.setSprintCounter(this.getSprintCounter()-dt);
+			if (this.getSprintCounter() <= 0) {
+				if (this.getCurrentStaminaPoints() <= 0) {
+					this.stopSprinting();
+				} else {
+					this.setStamina(this.getCurrentStaminaPoints() - 1);
+					//Reset the SPRINT_COUNTER
+					this.resetCounter("SPRINT_COUNTER");
+				}
+			}
+		}
+		if(!isDefending)
+			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
+		this.neighboringCubeToMoveTo = getMovementChange();
+		this.updatePosition(dt);
+		
+	}
+
+	/**
+	 * @return
+	 */
+	private int[] getMovementChange() {
+		int dx;
+		int dy;
+		int dz;
+		if(position.getCubeCoordinates()[0]== this.targetPosition[0]){
+			dx = 0;
+		}else if(position.getCubeCoordinates()[0]< this.targetPosition[0]){
+			dx = 1;
+		}else{
+			dx = -1;
+		}
+
+		if(position.getCubeCoordinates()[1]== this.targetPosition[1]){
+			dy = 0;
+		}else if(position.getCubeCoordinates()[1]< this.targetPosition[1]){
+			dy = 1;
+		}else{
+			dy = -1;
+		}
+
+		if(position.getCubeCoordinates()[2]== this.targetPosition[2]){
+			dz = 0;
+		}else if(position.getCubeCoordinates()[2]< this.targetPosition[2]){
+			dz = 1;
+		}else{
+			dz = -1;
+		}
+		return new int[]{dx,dy,dz};
 	}
 }
