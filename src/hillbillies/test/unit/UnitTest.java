@@ -4,6 +4,9 @@ import hillbillies.model.Unit;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
 import static hillbillies.tests.util.PositionAsserts.assertIntegerPositionEquals;
 import static org.junit.Assert.*;
@@ -17,10 +20,13 @@ import static org.junit.Assert.*;
 public class UnitTest {
 	
 	private Unit unit;
+	private Class unitClass;
+	private Method method;
 
 	@Before
 	public void setUp() {
 		this.unit = new Unit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
+		unitClass = Unit.class;
 	}
 
 	@Test
@@ -448,12 +454,34 @@ public class UnitTest {
 	 */
 	@Test
 	public void isValidName_LegalCase() {
-		assertEquals(true, Unit.isValidName("\"Test 'Name\""));
+		try {
+			method = unitClass.getDeclaredMethod("isValidName", String.class);
+			method.setAccessible(true);
+			assertEquals(true, method.invoke(null, "\"Test 'Name\""));
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		//assertEquals(true, Unit.isValidName("\"Test 'Name\""));
 	}
 	
 	@Test
 	public void isValidName_IllegalCase() {
-		assertEquals(false, Unit.isValidName("|Test name 12"));
+		try {
+			method = unitClass.getDeclaredMethod("isValidName", String.class);
+			method.setAccessible(true);
+			assertEquals(false, method.invoke(null, "|Test name 12"));
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		//assertEquals(false, Unit.isValidName("|Test name 12"));
 	}
 
 	/**

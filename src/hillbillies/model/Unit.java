@@ -317,8 +317,8 @@ public class Unit {
 	 * @return
 	 *       	| result == name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?")
 	 */
-	public static boolean isValidName(String name) {
-		return name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]+\"?");
+	private static boolean isValidName(String name) {
+		return name.matches("\"?[A-Z][a-zA-Z'\\s]+\"?");
 	}
 
 	/**
