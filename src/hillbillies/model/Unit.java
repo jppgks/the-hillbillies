@@ -79,84 +79,6 @@ public class Unit {
 		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
 	}
 
-	private void initializeAttribute(String attributeKind, int attributeValue) {
-		if (attributeValue >= this.getMinInitialAttributeValue() &&
-				attributeValue <= this.getMaxInitialAttributeValue()) {
-			switch (attributeKind) {
-				case "w":
-					this.setWeight(attributeValue);
-					break;
-				case "a":
-					this.setAgility(attributeValue);
-					break;
-				case "s":
-					this.setStrength(attributeValue);
-					break;
-				case "t":
-					this.setToughness(attributeValue);
-					break;
-			}
-		} else if (attributeValue < this.getMinInitialAttributeValue()) {
-			switch (attributeKind) {
-				case "w":
-					this.setWeight(this.getMinInitialAttributeValue());
-					break;
-				case "a":
-					this.setAgility(this.getMinInitialAttributeValue());
-					break;
-				case "s":
-					this.setStrength(this.getMinInitialAttributeValue());
-					break;
-				case "t":
-					this.setToughness(this.getMinInitialAttributeValue());
-					break;
-			}
-		} else if (attributeValue > this.getMaxInitialAttributeValue()) {
-			switch (attributeKind) {
-				case "w":
-					this.setWeight(
-							this.getMinInitialAttributeValue()
-							+ ((attributeValue - this.getMinInitialAttributeValue())
-							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-					);
-					break;
-				case "a":
-					this.setAgility(
-							this.getMinInitialAttributeValue()
-							+ ((attributeValue - this.getMinInitialAttributeValue())
-							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-					);
-					break;
-				case "s":
-					this.setStrength(
-							this.getMinInitialAttributeValue()
-							+ ((attributeValue - this.getMinInitialAttributeValue())
-							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-					);
-					break;
-				case "t":
-					this.setToughness(
-							this.getMinInitialAttributeValue()
-							+ ((attributeValue - this.getMinInitialAttributeValue())
-							% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue()))
-					);
-					break;
-			}
-		}
-	}
-
-	public int getMinInitialAttributeValue() {
-		return Unit.MIN_INITIAL_ATTRIBUTE_VALUE;
-	}
-
-	private static final int MIN_INITIAL_ATTRIBUTE_VALUE = 25;
-
-	public int getMaxInitialAttributeValue() {
-		return Unit.MAX_INITIAL_ATTRIBUTE_VALUE;
-	}
-
-	private static final int MAX_INITIAL_ATTRIBUTE_VALUE = 100;
-
 	/**
 	 * A nested class in Unit for maintaining its position.
 	 *
@@ -218,12 +140,11 @@ public class Unit {
 		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
 			if(!isValidPosition(cubeCoordinates))
 				throw new IllegalCoordinateException(cubeCoordinates);
-			double[] unitCoordinates = getDoubleArrayFromIntArray(cubeCoordinates);
 			this.setOccupyingCubeCoordinates(cubeCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
-			this.unitX = unitCoordinates[0] + halfCubeSideLength;
-			this.unitY = unitCoordinates[1] + halfCubeSideLength;
-			this.unitZ = unitCoordinates[2];
+			this.unitX = cubeCoordinates[0] + halfCubeSideLength;
+			this.unitY = cubeCoordinates[1] + halfCubeSideLength;
+			this.unitZ = cubeCoordinates[2];
 		}
 
 		/**
@@ -267,27 +188,83 @@ public class Unit {
 		}
 
 		private int cubeX, cubeY, cubeZ;
-
-		/**
-		 * Returns a copy of a given array of ints as an array of doubles.
-		 *
-		 * @param arrayOfInts
-		 * 			  The int array to transform.
-		 * @return	| (double[]) arrayOfInts
-		 */
-		public double[] getDoubleArrayFromIntArray(int[] arrayOfInts) {
-			double[] doubleArrayFromIntArray = new double[arrayOfInts.length];
-			for (int i = 0; i < arrayOfInts.length; i++) {
-				doubleArrayFromIntArray[i] = (double) arrayOfInts[i];
-			}
-			return doubleArrayFromIntArray;
-		}
 	}
 
 	/**
 	 * Variable registering the current unit position of this unit.
 	 */
 	public Unit.Position position;
+
+	/**
+	 * Initalize the given attribute with the given value if its in range.
+	 *
+	 * @param attributeKind
+	 * 			  The attribute of this unit to initialize.
+	 * @param attributeValue
+	 * 			  The value to initialize this unit's attribute with.
+	 * @effect 	  If the given value is within the minimum and maximum
+	 * 			  attribute value range, the attribute's value is set
+	 * 			  to the given value.
+	 * 			| this.setAttribute(attributeKind, attributeValue)
+	 * @effect 	  If the given value is smaller than the minimum initial
+	 * 			  attribute value, the attribute's value is set to the
+	 * 			  minimum initial attribute value.
+	 * 			| this.setAttribute(attributeKind, this.getMinInitialAttributeValue())
+	 * @effect 	  If the given value is larger than the maximum initial
+	 * 			  attribute value, the attribute's value is set to the
+	 * 			  maximum initial attribute value.
+	 * 			| this.setAttribute(attributeKind, this.getMaxInitialAttributeValue())
+     */
+	private void initializeAttribute(String attributeKind, int attributeValue) {
+		if (this.isWithinInitialAttributeValueRange(attributeValue)) {
+			this.setAttribute(attributeKind, attributeValue);
+		} else if (attributeValue < this.getMinInitialAttributeValue()) {
+			this.setAttribute(attributeKind, this.getMinInitialAttributeValue());
+		} else if (attributeValue > this.getMaxInitialAttributeValue()) {
+			this.setAttribute(attributeKind, this.getAttributeValueWithinInitialRangeFromTooLargeValue(attributeValue));
+		}
+	}
+
+	private boolean isWithinInitialAttributeValueRange(int attributeValue) {
+		return (attributeValue >= this.getMinInitialAttributeValue()) && (attributeValue <= this.getMaxInitialAttributeValue());
+	}
+
+	private int getAttributeValueWithinInitialRangeFromTooLargeValue(int attributeValue) {
+		return this.getMinInitialAttributeValue()
+				+ (attributeValue - this.getMinInitialAttributeValue())
+				% (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue());
+	}
+
+	private void setAttribute(String attributeKind, int attributeValue) {
+		switch (attributeKind) {
+			case "w":
+				this.setWeight(attributeValue);
+				break;
+			case "a":
+				this.setAgility(attributeValue);
+				break;
+			case "s":
+				this.setStrength(attributeValue);
+				break;
+			case "t":
+				this.setToughness(attributeValue);
+				break;
+			default:
+				break;
+		}
+	}
+
+	public int getMinInitialAttributeValue() {
+		return Unit.MIN_INITIAL_ATTRIBUTE_VALUE;
+	}
+
+	private static final int MIN_INITIAL_ATTRIBUTE_VALUE = 25;
+
+	public int getMaxInitialAttributeValue() {
+		return Unit.MAX_INITIAL_ATTRIBUTE_VALUE;
+	}
+
+	private static final int MAX_INITIAL_ATTRIBUTE_VALUE = 100;
 
 	private void updatePosition(double dt) {
 		this.position.unitX += this.getUnitVelocity()[0] * dt;
@@ -444,11 +421,11 @@ public class Unit {
 
 	/**
 	 * @post 	  if the unit is sprinting do nothing
-	 * 
+	 *
 	 * @post 	  if the unit isn't sprinting set sprinting to true
 	 * 			| if(! isSprinting)
 	 * 			|	then new.isSprinting == true
-	 * 
+	 *
 	 */
 	public void startSprinting(){
 		if(this.getState()==State.MOVING)
@@ -456,11 +433,11 @@ public class Unit {
 	}
 	/**
 	 * @post 	  if the unit isn't sprinting do nothing
-	 * 
+	 *
 	 * @post 	  if the unit is sprinting set sprinting to true
 	 * 			| if(! isSprinting)
 	 * 			|	then new.isSprinting == false
-	 *  
+	 *
 	 */
 	public void stopSprinting(){
 		this.isSprinting = false;
@@ -473,14 +450,14 @@ public class Unit {
 	/**
 	 * @post 	  the state of the unit is set to work
 	 * 			| new.setState(work) == work
-	 * 
+	 *
 	 * @effect 	  set the state of the unit to work
 	 * 			| this.setState(work)
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 * 			  The unit is attacking or defending
 	 * 			| if(this.getState() == State.ATTACKING)
-	 */	
+	 */
 	public void work() throws IllegalStateException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
@@ -488,15 +465,15 @@ public class Unit {
 		this.setState(State.WORKING);
 	}
 	/**
-	 * 
+	 *
 	 * @return 	  gives the time its takes for a work state
-	 * 			| result == 500/this.strength 		
-	 * 
+	 * 			| result == 500/this.strength
+	 *
 	 */
 	public float getTimeForWork(){
 		return (float) (500/this.getStrength());
 	}
-	
+
 	/**
 	 * @post 	  the state of the unit is set to work
 	 * 			| new.setState(rest) == rest
@@ -509,10 +486,10 @@ public class Unit {
 	 * 			| while (this.getCurrentStaminaPoints <= this.maxStaminaPoints())
 	 * 			|		then advaceTime(REGEN_REST_TIME)
 	 * 			|
-	 * 
+	 *
 	 * @effect 	  set the state of the unit to work
 	 * 			| this.setState(rest)
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 * 			  When a unit has the maximum hitpoints and the maximum of stamina
 	 * 			  the unit can't rest
@@ -521,7 +498,7 @@ public class Unit {
 	 * @throws IllegalStateException
 	 *			  If the unit is currently executing an activity
 	 *			| if(this.getState() != State.NONE)
-	 *			  
+	 *
 	 */
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
@@ -532,7 +509,7 @@ public class Unit {
 	}
 	/**
 	 * variable time need the regen hp and stamina
-	 * 
+	 *
 	 */
 	public static final double REGEN_REST_TIME = 0.2;
 
@@ -546,7 +523,7 @@ public class Unit {
 	/**
 	 * @return 	  gives the amount Stamina points need to regenerate per time unit of REGEN_REST_TIME
 	 * 			| restult == (this.toughness)/100
-	 */	
+	 */
 	public double getRegenStamina(){
 		return this.getToughness()/100.0;
 	}
@@ -660,21 +637,21 @@ public class Unit {
 			this.strength = this.getMaxAttributeValue();
 		}
 	}
-	
+
 	/**
 	 * @return	  the minimum number of weight, agility, strength,toughness
 	 */
 	private double getMinAttributeValue(){
 		return 1;
 	}
-	
+
 	/**
 	 * @return	  the maximum number of weight, agility, strength,toughness
 	 */
 	private double getMaxAttributeValue(){
 		return 200;
 	}
-	
+
 	/**
 	 * Variable registering the strength of this unit.
 	 */
@@ -716,7 +693,7 @@ public class Unit {
 		if (agility < this.getMinAttributeValue())
 			this.agility= this.getMinAttributeValue();
 		if(agility >= this.getMinAttributeValue() && (agility <= this.getMaxAttributeValue()))
-				this.agility=agility;			
+				this.agility=agility;
 	}
 
 	/**
@@ -754,7 +731,7 @@ public class Unit {
 			weight = minWeight();
 		this.weight = weight;
 	}
-	
+
 	/**
 	 * @return 	  the minWeight of a unit
 	 * 			| (strength+agility)/2
@@ -833,12 +810,12 @@ public class Unit {
 	}
 
 	private State state = State.NONE;
-	
+
 	/**
 	 * @post 	  choose a random state move, conduct a work task, rest unil it has full recovered hitpoints and stamina
-	 * 			
+	 *
 	 * @post  	  if it is sprinting till it's exhausted
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 * 			  if the unit is doing a state
 	 */
@@ -862,32 +839,32 @@ public class Unit {
 	}
 	/**
 	 * @post 	  Stop the Default state and set the current state on null
-	 * 
+	 *
 	 */
 	public void stopDefaultBehavior(){
 		this.setState(State.NONE);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @post 	  Set defaultBehaviorEnabled true if defaultBehaviorEnabled
 	 * 			  is false, set to false otherwise.
 	 * 			| if this.defaultBehaviorEnabled
 	 * 			|	then new.defaultBehaviorEnabled == false
-	 * 			| else 
+	 * 			| else
 	 * 			|	then new.defaultBehaviorEnabled == true
-	 * 
+	 *
 	 */
-	
+
 	public void setDefaultBehaviorEnabled(Boolean toggle){
 		this.defaultBehaviorEnabled= toggle;
 	}
 	public Boolean getDefaultBehaviorEnabled(){
 		return this.defaultBehaviorEnabled;
 	}
-	
+
 	private boolean defaultBehaviorEnabled;
-	
+
 	/**
 	 * @return 	  return the current hitpoints of the unit
 	 */
@@ -900,7 +877,7 @@ public class Unit {
 	 * 			  the amount of hitpoints need to be set
 	 * @post 	  the hitpoints must be valid
 	 * 			| isValidHitPoints(hitpoints)
-	 * 
+	 *
 	 */
 	public void setCurrentHitPoints(double hitpoints){
 		assert isValidHitPoints(hitpoints);
@@ -909,7 +886,7 @@ public class Unit {
 
 	/**
 	 * @param 	  hitpoints
-	 * 
+	 *
 	 * @return 	  true if the amounts of hitpoints larger or equals to zero
 	 *            and is smaller or equals to the maximum hitpoints the unit can have
 	 *         	| return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
@@ -930,9 +907,9 @@ public class Unit {
 	public double getMinHitPoints(){
 		return 0;
 	}
-	
+
 	private double hitPoints;
-	
+
 	/**
 	 * Return the stamina of this Unit.
 	 *
@@ -942,14 +919,14 @@ public class Unit {
 	public double getCurrentStaminaPoints() {
 	  return this.stamina;
 	}
-	
+
 	/**
 	 * Check whether the given stamina is a valid stamina for
 	 * any Unit.
-	 *  
+	 *
 	 * @param  	  stamina
 	 *         	  The stamina to check.
-	 * @return 
+	 * @return
 	 *       	| result == (stamina >= 0) && (stamina <= this.getMaxStaminaPoints())
 	 */
 	public boolean isValidStamina(double stamina) {
@@ -957,10 +934,10 @@ public class Unit {
 			return true;
 		return false;
 	}
-	
+
 	/**
 	 * Set the stamina of this Unit to the given stamina.
-	 * 
+	 *
 	 * @param  	  stamina
 	 *         	  The new stamina for this Unit.
 	 * @pre    	  The given stamina must be a valid stamina for any
@@ -987,10 +964,10 @@ public class Unit {
 	public double getMinStaminaPoints(){
 		return 0.0;
 	}
-	
 
 
-	
+
+
 	/**
 	 * Variable registering the stamina of this Unit.
 	 */
