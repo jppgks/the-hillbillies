@@ -4,7 +4,6 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 
-import java.security.KeyStore.PrivateKeyEntry;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -20,7 +19,7 @@ import java.util.Random;
  * 		  	| isValidAcivity(state)
  * @invar 	  The amount of hitpoints is always a valid amount
  * 		  	| isValidHitPoints(hitpoints)
- * @invar  	  The stamina of each Unit must be a valid stamina for any
+ * @invar  	  The currentStaminaPoints of each Unit must be a valid currentStaminaPoints for any
  *         	  Unit.
  *        	| isValidStamina(getCurrentStaminaPoints())
  * @invar  	  The name of each Unit must be a valid name for any
@@ -29,9 +28,217 @@ import java.util.Random;
  */
 public class Unit {
 	/**
-	 * Variable registering the name of this Unit.
+	 * Variable registering the current name of this Unit.
 	 */
 	private String name;
+
+	/**
+	 * Variable registering the current unit position of this unit.
+	 */
+	public Unit.Position position;
+
+	/**
+	 * Variable registering the target cube this unit is
+	 * moving towards when moving.
+	 */
+	private int[] targetPosition = new int[] {0, 0, 0};
+
+	/*
+	 * Variable registering the relative difference
+	 * of the unit's current position and the target position.
+	 */
+	private double[] initialPosition = new double[]{0, 0, 0};
+
+	/**
+	 * Variable registering the next neighboring cube to move to.
+	 */
+	private int[] neighboringCubeToMoveTo = new int[]{0, 0, 0};
+
+	/**
+	 * Variable registering the target position when a new
+	 * movement is initialized, while already moving.
+	 */
+	private int[] newTargetPosition = null;
+
+	/**
+	 * Variable registering whether this unit is
+	 * conducting a sprint.
+	 */
+	private boolean isSprinting = false;
+
+	/**
+	 * Variable registering the current orientation of this unit.
+	 */
+	private float orientation = (float) (Math.PI / 2);
+
+	/**
+	 * Variable registering the current strength of this unit.
+	 */
+	private double strength;
+
+	/**
+	 * Variable registering the current agility of this unit.
+	 */
+	private double agility;
+
+	/**
+	 * Variable registering the current weight of this unit.
+	 */
+	private double weight;
+
+	/**
+	 * Variable registering the current toughness of this unit.
+	 */
+	private double toughness;
+
+	/**
+	 * Variable registering the current state of this unit.
+	 */
+	private State state = State.NONE;
+
+	/**
+	 * Variable registering whether or not this unit's
+	 * default behavior is currently enabled.
+	 */
+	private boolean defaultBehaviorEnabled;
+
+	/**
+	 * Variable registering the current hitpoints of this unit.
+	 */
+	private double currentHitPoints;
+
+	/**
+	 * Variable registering the current currentStaminaPoints of this Unit.
+	 */
+	private double currentStaminaPoints;
+
+	/**
+	 * Variable registering the victim when this unit is conducting an attack.
+	 */
+	private Unit theDefender;
+
+	/**
+	 * Variable registering whether or not a unit is currently defending.
+	 */
+	private boolean isDefending = false;
+
+	/**
+	 * Variable registering the state of a unit,
+	 * before being attacked.
+	 */
+	private State previousState;
+
+	/**
+	 * Variable registering the orientation of a unit,
+	 * before being attacked.
+	 */
+	private float previousOrientation;
+
+	/**
+	 * Variable registering the number of seconds until
+	 * this unit loses another stamina point due to sprinting.
+	 */
+	private double sprintCounter = SPRINT_TIME;
+
+	/**
+	 * Variable registering the number of seconds until
+	 * this unit gains a new stamina or hit point from resting.
+	 */
+	private double restCounter = REST_TIME;
+
+	/**
+	 * Variable registering the number of seconds until
+	 * this unit is done working.
+	 */
+	private double workCounter;
+
+	/**
+	 * Variable registering the number of seconds until
+	 * this unit is done attacking another.
+	 */
+	private double fightCounter;
+
+	/**
+	 * Variable registering the number of seconds until
+	 * this unit is forced to rest.
+	 */
+	private double needToRestCounter = NEED_TO_REST_TIME;
+
+	/**
+	 * Constant reflecting the lowest possible initial value for
+	 * this unit's attributes, being:
+	 * weight, agility, strength and toughness.
+	 */
+	private static final int MIN_INITIAL_ATTRIBUTE_VALUE = 25;
+
+	/**
+	 * Constant reflecting the highest possible initial value for
+	 * this unit's attributes, being:
+	 * weight, agility, strength and toughness.
+	 */
+	private static final int MAX_INITIAL_ATTRIBUTE_VALUE = 100;
+
+	/**
+	 * Constant reflecting the lowest possible value for
+	 * this unit's hit points.
+	 */
+	private static final double MIN_HIT_POINTS =0.0;
+
+	/**
+	 * Constant reflecting the lowest possible value for
+	 * this unit's stamina points.
+	 */
+	private static final double MIN_STAMINA_POINTS = 0.0;
+
+	/**
+	 * Constant reflecting the lowest possible value for
+	 * this unit's orientation.
+	 */
+	private static final float MIN_ORIENTATION = (float) (- Math.PI / 2);
+
+	/**
+	 * Constant reflecting the highest possible value for
+	 * this unit's orientation.
+	 */
+	private static final float MAX_ORIENTATION = (float) (Math.PI / 2);
+
+	/**
+	 * Constant reflecting the highest possible value for
+	 * this unit's attributes, being:
+	 * weight, agility, strength and toughness.
+	 */
+	private static final double MAX_ATTRIBUTE_VALUE = 200;
+
+	/**
+	 * Constant reflecting the lowest possible value for
+	 * this unit's attributes, being:
+	 * weight, agility, strength and toughness.
+	 */
+	private static final double MIN_ATTRIBUTE_VALUE = 1.0;
+
+	/**
+	 * Constant reflecting the time needed for this unit to
+	 * conduct an attack.
+	 */
+	private static final double FIGHT_TIME = 1;
+
+	/**
+	 * Constant reflecting the time needed for this unit to
+	 * loses a stamina point due to sprinting.
+	 */
+	private static final double SPRINT_TIME = 0.1;
+
+	/**
+	 * Constant reflecting the time needed for this unit to
+	 * gain a stamina or hit point from resting.
+	 */
+	private static final double REST_TIME = 0.2;
+
+	/**
+	 * Constant reflecting the time needed for this unit to
+	 * be forced to rest.
+	 */
+	private static final double NEED_TO_REST_TIME = 180;
 
 	/**
 	 * Initialize this new unit with a name, initial position,
@@ -226,11 +433,6 @@ public class Unit {
 	}
 
 	/**
-	 * Variable registering the current unit position of this unit.
-	 */
-	public Unit.Position position;
-
-	/**
 	 * Initalize the given attribute with the given value if its in range.
 	 *
 	 * @param attributeKind
@@ -351,6 +553,80 @@ public class Unit {
 			this.agility=agility;
 	}
 
+	/**
+	 * @return	  the minimum number of weight, agility, strength,toughness
+	 */
+	private double getMinAttributeValue(){
+		return MIN_ATTRIBUTE_VALUE;
+	}
+
+	/**
+	 * @return	  the maximum number of weight, agility, strength,toughness
+	 */
+	private double getMaxAttributeValue(){
+		return MAX_ATTRIBUTE_VALUE;
+	}
+
+	/**
+	 * Set the strength for this unit to the given strength.
+	 *
+	 * @param 	  strength
+	 * 			  The new strength for this unit.
+	 * @post 	  If the given strength is within the range established by
+	 * 			  the minimum and maximum attribute value for this unit,
+	 * 			  then the strength of this unit is equal to the given strength.
+	 * 			| if (strength >= this.getMinAttributeValue()) && (strength <= this.getMaxAttributeValue())
+	 * 			|	then new.getStrength() == strength
+	 * @post	  If the given strength exceeds the maximum attribute value,
+	 * 			  then the strength of this unit is equal to the maximum attribute value.
+	 * 			| if (strength > this.getMaxAttributeValue())
+	 * 			| 	then new.getStrength() == this.getMaxAttributeValue()
+	 * @post	  If the given strength is lower than the minimum attribute value of this unit,
+	 * 			  then the strength of this unit is equal to the minimum attribute value.
+	 * 			| if (strength < this.getMinAttributeValue())
+	 * 			|	then new.getStrength() == this.getMinAttributeValue()
+	 */
+	public void setStrength(double strength) {
+		if (strength >= this.getMinAttributeValue()
+				&& strength <= this.getMaxAttributeValue()) {
+			this.strength = strength;
+		} else if (strength < this.getMinAttributeValue()) {
+			this.strength = this.getMinAttributeValue();
+		} else if (strength > this.getMaxAttributeValue()) {
+			this.strength = this.getMaxAttributeValue();
+		}
+	}
+
+	/**
+	 * Set the toughness for this unit to the given toughness.
+	 *
+	 * @param 	  toughness
+	 * 			  The new toughness for this unit.
+	 * @post 	  If the given toughness is within the range established by
+	 * 			  the minimum and maximum attribute value for this unit,
+	 * 			  then the toughness of this unit is equal to the given toughness.
+	 * 			| if (toughness >= this.getMinAttributeValue()) && (toughness <= this.getMaxAttributeValue())
+	 * 			|	then new.getToughness() == toughness
+	 * @post	  If the given toughness exceeds the maximum attribute value,
+	 * 			  then the toughness of this unit is equal to the max attribute value.
+	 * 			| if (toughness > this.getMaxAttributeValue())
+	 * 			| 	then new.getToughness() == this.getMaxAttributeValue()
+	 * @post	  If the given toughness is lower than the minimum attribute value of this unit,
+	 * 			  then the toughness of this unit is equal to the minimum attribute value.
+	 * 			| if (toughness < this.getMinAttributeValue())
+	 * 			|	then new.getToughness() == this.getMinAttributeValue()
+	 */
+	public void setToughness(double toughness) {
+		if (toughness >= this.getMinAttributeValue()
+				&& toughness <= this.getMaxAttributeValue()) {
+			this.toughness = toughness;
+		} else if (toughness < this.getMinAttributeValue()) {
+			this.toughness = this.getMinAttributeValue();
+		} else if (toughness > this.getMaxAttributeValue()) {
+			this.toughness = this.getMaxAttributeValue();
+		}
+	}
+
 	private int getAttributeValueWithinInitialRangeFromTooLargeValue(int attributeValue) {
 		return this.getMinInitialAttributeValue()
 				+ (attributeValue - this.getMinInitialAttributeValue())
@@ -368,7 +644,7 @@ public class Unit {
 
 	public void setCurrentHitPoints(double hitpoints){
 		assert isValidHitPoints(hitpoints);
-		this.hitPoints = hitpoints;
+		this.currentHitPoints = hitpoints;
 	}
 
 	/**
@@ -391,38 +667,37 @@ public class Unit {
 	public double getMaxHitPoints(){
 		return (200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
+
 	public double getMinHitPoints(){
-		return MIN_HITPOINTS;
+		return MIN_HIT_POINTS;
 	}
-	
-	private static final double MIN_HITPOINTS =0.0;
 
 	/**
-	 * Set the stamina of this Unit to the given stamina.
+	 * Set the currentStaminaPoints of this Unit to the given currentStaminaPoints.
 	 *
 	 * @param  	  stamina
-	 *         	  The new stamina for this Unit.
-	 * @pre    	  The given stamina must be a valid stamina for any
+	 *         	  The new currentStaminaPoints for this Unit.
+	 * @pre    	  The given currentStaminaPoints must be a valid currentStaminaPoints for any
 	 *         	  Unit.
-	 *       	| isValidStamina(stamina)
-	 * @post   	  The stamina of this Unit is equal to the given
-	 *         	  stamina.
-	 *       	| new.getCurrentStaminaPoints() == stamina
+	 *       	| isValidStamina(currentStaminaPoints)
+	 * @post   	  The currentStaminaPoints of this Unit is equal to the given
+	 *         	  currentStaminaPoints.
+	 *       	| new.getCurrentStaminaPoints() == currentStaminaPoints
 	 */
 	@Raw
 	public void setCurrentStamina(double stamina) {
 		assert isValidStamina(stamina);
-		this.stamina = stamina;
+		this.currentStaminaPoints = stamina;
 	}
 
 	/**
-	 * Check whether the given stamina is a valid stamina for
+	 * Check whether the given currentStaminaPoints is a valid currentStaminaPoints for
 	 * any Unit.
 	 *
 	 * @param  	  stamina
-	 *         	  The stamina to check.
+	 *         	  The currentStaminaPoints to check.
 	 * @return
-	 *       	| result == (stamina >= 0) && (stamina <= this.getMaxStaminaPoints())
+	 *       	| result == (currentStaminaPoints >= 0) && (currentStaminaPoints <= this.getMaxStaminaPoints())
 	 */
 	public boolean isValidStamina(double stamina) {
 		if(stamina <= this.getMaxStaminaPoints() && stamina >= this.getMinStaminaPoints())
@@ -431,18 +706,17 @@ public class Unit {
 	}
 
 	/**
-	 * Returns the maximum amount of stamina points for any Unit.
+	 * Returns the maximum amount of currentStaminaPoints points for any Unit.
 	 *
 	 * @return 	| result == 200*(this.weight/100)*(this.toughness/100)
 	 */
 	public double getMaxStaminaPoints() {
 		return ( 200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
+
 	public double getMinStaminaPoints(){
-		return MIN_STAMINAPOINTS;
+		return MIN_STAMINA_POINTS;
 	}
-	
-	private static final double MIN_STAMINAPOINTS = 0.0;
 
 	/**
 	 *
@@ -458,10 +732,6 @@ public class Unit {
 	public void setDefaultBehaviorEnabled(Boolean toggle){
 		this.defaultBehaviorEnabled= toggle;
 	}
-
-	private static final int MIN_INITIAL_ATTRIBUTE_VALUE = 25;
-
-	private static final int MAX_INITIAL_ATTRIBUTE_VALUE = 100;
 
 	private void updatePosition(double dt) {
 		this.position.unitX += this.getUnitVelocity()[0] * dt;
@@ -520,15 +790,6 @@ public class Unit {
 	private void setNewTargetPosition(int[] newTargetPosition){
 		this.newTargetPosition = newTargetPosition;
 	}
-	
-	private int[] targetPosition = new int[] {0, 0, 0};
-	/*
-	 * Relative difference in current position vs target position.
-	 *
-	 */
-	private double[] initialPosition = new double[]{0, 0, 0};
-	private int[] neighboringCubeToMoveTo = new int[]{0, 0, 0};
-	private int[] newTargetPosition = null;
 
 	/**
 	 * @param dx
@@ -674,8 +935,6 @@ public class Unit {
 	public boolean isSprinting(){
 		return this.isSprinting;
 	}
-	
-	private boolean isSprinting = false;
 
 	/**
 	 * @post 	  the state of the unit is set to work
@@ -712,7 +971,7 @@ public class Unit {
 	 * 			| this.setState(State.RESTING)
 	 *
 	 * @throws IllegalStateException
-	 * 			  When a unit has the maximum hitpoints and the maximum of stamina
+	 * 			  When a unit has the maximum hitpoints and the maximum of currentStaminaPoints
 	 * 			  the unit can't rest
 	 * 			| if(this.getCurrentHitPoints() == this.maxHitPoints())
 	 * 			| && ( this.getCurrentStaminaPoints == this.getMaxStaminaPoints())
@@ -728,12 +987,6 @@ public class Unit {
 			throw new IllegalStateException();
 		this.setState(State.RESTING);
 	}
-	
-	/**
-	 * variable time need the regen hp and stamina
-	 *
-	 */
-	public static final double REGEN_REST_TIME = 0.2;
 
 	/**
 	 * @return 	  gives the amount hitpoinst need to regenerate per time unit of REGEN_REST_TIME
@@ -795,11 +1048,6 @@ public class Unit {
 	}
 
 	/**
-	 * Constant reflecting the lowest possible value for the orientation of this unit.
-	 */
-	private static final float MIN_ORIENTATION = (float) (- Math.PI / 2);
-
-	/**
 	 * Returns the maximum orientation value of this unit.
 	 *
 	 * @return 	  Maximum orientation value of this unit.
@@ -809,16 +1057,6 @@ public class Unit {
 	private float getMaxOrientation() {
 		return Unit.MAX_ORIENTATION;
 	}
-
-	/**
-	 * Constant reflecting the highest possible value for the orientation of this unit.
-	 */
-	private static final float MAX_ORIENTATION = (float) (Math.PI / 2);
-
-	/**
-	 * Variable registering the orientation of this unit.
-	 */
-	private float orientation = (float) (Math.PI / 2);
 
 	/**
 	 * Returns the current strength of this unit.
@@ -831,63 +1069,6 @@ public class Unit {
 		return this.strength;
 	}
 
-	/**
-	 * Set the strength for this unit to the given strength.
-	 *
-	 * @param 	  strength
-	 * 			  The new strength for this unit.
-	 * @post 	  If the given strength is within the range established by
-	 * 			  the minimum and maximum attribute value for this unit,
-	 * 			  then the strength of this unit is equal to the given strength.
-	 * 			| if (strength >= this.getMinAttributeValue()) && (strength <= this.getMaxAttributeValue())
-	 * 			|	then new.getStrength() == strength
-	 * @post	  If the given strength exceeds the maximum attribute value,
-	 * 			  then the strength of this unit is equal to the maximum attribute value.
-	 * 			| if (strength > this.getMaxAttributeValue())
-	 * 			| 	then new.getStrength() == this.getMaxAttributeValue()
-	 * @post	  If the given strength is lower than the minimum attribute value of this unit,
-	 * 			  then the strength of this unit is equal to the minimum attribute value.
-	 * 			| if (strength < this.getMinAttributeValue())
-	 * 			|	then new.getStrength() == this.getMinAttributeValue()
-	 */	
-	public void setStrength(double strength) {
-		if (strength >= this.getMinAttributeValue()
-				&& strength <= this.getMaxAttributeValue()) {
-			this.strength = strength;
-		} else if (strength < this.getMinAttributeValue()) {
-			this.strength = this.getMinAttributeValue();
-		} else if (strength > this.getMaxAttributeValue()) {
-			this.strength = this.getMaxAttributeValue();
-		}
-	}
-
-	/**
-	 * @return	  the minimum number of weight, agility, strength,toughness
-	 */
-	private double getMinAttributeValue(){
-		return MIN_ATTRIBUTE_VALUE;
-	}
-
-	/**
-	 * @return	  the maximum number of weight, agility, strength,toughness
-	 */
-	private double getMaxAttributeValue(){
-		return MAX_ATTRIBUTE_VALUE;
-	}
-
-	/**
-	 * 
-	 *			  Variables that contain the min and max attribute value
-	 * 
-	 */
-	private static final double MAX_ATTRIBUTE_VALUE = 200;	
-	private static final double MIN_ATTRIBUTE_VALUE = 1.0;
-	
-
-	/**
-	 * Variable registering the strength of this unit.
-	 */	
-	private double strength;
 
 	/**
 	 * Returns the current agility of this unit.
@@ -901,19 +1082,12 @@ public class Unit {
 	}
 
 	/**
-	 * Variable registering the agility of this unit.
-	 */
-	private double agility;
-
-	/**
 	 * @return 	  Returns the current weight of the unit.
 	 * 			| result == this.weight
 	 */	
 	public double getWeight(){
 		return this.weight;
 	}
-
-	private double weight;
 
 	/**
 	 * Returns the current toughness of this unit.
@@ -925,41 +1099,6 @@ public class Unit {
 	public double getToughness() {
 		return this.toughness;
 	}
-
-	/**
-	 * Set the toughness for this unit to the given toughness.
-	 *
-	 * @param 	  toughness
-	 * 			  The new toughness for this unit.
-	 * @post 	  If the given toughness is within the range established by
-	 * 			  the minimum and maximum attribute value for this unit,
-	 * 			  then the toughness of this unit is equal to the given toughness.
-	 * 			| if (toughness >= this.getMinAttributeValue()) && (toughness <= this.getMaxAttributeValue())
-	 * 			|	then new.getToughness() == toughness
-	 * @post	  If the given toughness exceeds the maximum attribute value,
-	 * 			  then the toughness of this unit is equal to the max attribute value.
-	 * 			| if (toughness > this.getMaxAttributeValue())
-	 * 			| 	then new.getToughness() == this.getMaxAttributeValue()
-	 * @post	  If the given toughness is lower than the minimum attribute value of this unit,
-	 * 			  then the toughness of this unit is equal to the minimum attribute value.
-	 * 			| if (toughness < this.getMinAttributeValue())
-	 * 			|	then new.getToughness() == this.getMinAttributeValue()
-	 */
-	public void setToughness(double toughness) {
-		if (toughness >= this.getMinAttributeValue()
-				&& toughness <= this.getMaxAttributeValue()) {
-			this.toughness = toughness;
-		} else if (toughness < this.getMinAttributeValue()) {
-			this.toughness = this.getMinAttributeValue();
-		} else if (toughness > this.getMaxAttributeValue()) {
-			this.toughness = this.getMaxAttributeValue();
-		}
-	}
-
-	/**
-	 * Variable registering the toughness of this unit.
-	 */
-	private double toughness;
 
 	/**
 	 * @return 	  Returns the current state of this unit.
@@ -980,10 +1119,8 @@ public class Unit {
 		this.state = state;
 	}
 
-	private State state = State.NONE;
-
 	/**
-	 * @post 	  choose a random state move, conduct a work task, rest until it has full recovered hitPoints and stamina
+	 * @post 	  choose a random state move, conduct a work task, rest until it has full recovered currentHitPoints and currentStaminaPoints
 	 * 			
 	 * @post  	  if is moving sprinting till it's exhausted
 	 *
@@ -1028,31 +1165,22 @@ public class Unit {
 		return this.defaultBehaviorEnabled;
 	}
 
-	private boolean defaultBehaviorEnabled;
-
 	/**
 	 * @return 	  	  return the current hitpoints of the unit
-	 * 				| Result == this.hitPoints
+	 * 				| Result == this.currentHitPoints
 	 */
 	public double getCurrentHitPoints(){
-		return this.hitPoints;
+		return this.currentHitPoints;
 	}
-	
-	private double hitPoints;
 
 	/**
-	 * 				  Return the stamina of this Unit.
-	 * @return		| result == this.stamina
+	 * 				  Return the currentStaminaPoints of this Unit.
+	 * @return		| result == this.currentStaminaPoints
 	 */
 	@Basic @Raw
 	public double getCurrentStaminaPoints() {
-	  return this.stamina;
+	  return this.currentStaminaPoints;
 	}
-
-	/**
-	 * 				  Variable registering the stamina of this Unit.
-	 */
-	private double stamina;
 
 	/**
 	 *@return		  Return the name of this Unit.
@@ -1127,27 +1255,11 @@ public class Unit {
 	private Unit getDefender(){
 		return this.theDefender;
 	}
-	/**
-	 * 
-	 *			  Variable that saves the unit who is defending
-	 * 
-	 */
-	Unit theDefender;
-	
-	/**
-	 * 
-	 * 			  Variable that gives if a unit is defending
-	 * 
-	 */
-	
-	private boolean isDefending = false;
 
 	@Basic @Immutable
 	private double getFightTime() {
 		return FIGHT_TIME;
 	}
-
-	private static final double FIGHT_TIME = 1;
 
 	/**
 	 * When being attacked, this unit defends itself by either
@@ -1297,20 +1409,6 @@ public class Unit {
 	
 	/**
 	 * 
-	 * 			  Variable that hold the previous State of a unit
-	 * 
-	 */
-	private State previousState;
-	
-	/**
-	 * 
-	 * 			  Variable that hold the previous orientation of a unit  
-	 * 
-	 */
-	private float previousOrientation;
-	
-	/**
-	 * 
 	 * 			  Method that saves the State of a unit and saves the orientation of it
 	 * 
 	 * @post	  previous State is set to the current State
@@ -1347,16 +1445,6 @@ public class Unit {
 		if(this.getState()!=State.NONE)
 			this.setOrientation(this.getPreviousOrientation());
 	}
-	
-	/**
-	 * 
-	 *			  Variables for the units of when something must happen(stop activity, gain hitPoints or stamina,
-	 *			  reduce the hitPoints or stamina)
-	 * 
-	 */
-	private static final double SPRINT_TIME = 0.1;	
-	private static final double REST_TIME = 0.2;	
-	private static final double NEEDTOREST_TIME = 180;
 	
 	/**
 	 * 
@@ -1467,22 +1555,6 @@ public class Unit {
 	private void setNeedToRestCounter(double time){
 		this.needToRestCounter = time;
 	}
-	
-	// each SPRINT_TIME seconds reduce the stamina with 1
-	private double sprintCounter= SPRINT_TIME;
-	
-	// each SPRINT_TIME seconds add 1 stamina or HitPoint
-	private double restCounter = REST_TIME;
-	
-	//Is initialize when the method work() is called
-	//This is variable form the units strength
-	private double workCounter;
-	
-	//Is initialize when the method attack() is called
-	private double fightCounter;
-	
-	//Each NEEDTOREST_TIME seconds a unit mandatory need to rest
-	private double needToRestCounter = NEEDTOREST_TIME;
 
 	/**
 	 * 				  A method that update the units state, orientation and position
@@ -1544,7 +1616,7 @@ public class Unit {
 	 * 			| else if(counter == FIGHT_COUNTER)
 	 * 			|	then new.setFightCounter(this.getFightTime())
 	 * 			| else if( counter == NEEDTOREST_COUNTER)
-	 * 			|	then new.setNeedToRestCounter(NEEDTOREST_TIME)
+	 * 			|	then new.setNeedToRestCounter(NEED_TO_REST_TIME)
 	 * 			| else
 	 * 			|	then return
 	 */
@@ -1563,7 +1635,7 @@ public class Unit {
 			this.setFightCounter(this.getFightTime());
 			break;
 		case "NEEDTOREST_COUNTER":
-			this.setNeedToRestCounter(NEEDTOREST_TIME);
+			this.setNeedToRestCounter(NEED_TO_REST_TIME);
 		}
 	}
 	
