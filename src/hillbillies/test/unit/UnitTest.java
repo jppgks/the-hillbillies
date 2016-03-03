@@ -3,12 +3,13 @@ package hillbillies.test.unit;
 import hillbillies.model.IllegalCoordinateException;
 import hillbillies.model.Unit;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
 import static hillbillies.tests.util.PositionAsserts.assertIntegerPositionEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * A class of unit tests.
@@ -19,46 +20,40 @@ import static org.junit.Assert.fail;
 public class UnitTest {
 	
 	private Unit unit;
-	
-	/**
-	 * @throws java.lang.Exception
-	 */
+
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		this.unit = new Unit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#Unit(java.lang.String, int[], int, int, int, int, boolean)}.
-	 */
 	@Test
 	public void CreateUnit_LegalCase() {
 		assertEquals("TestUnit", this.unit.getName());
 
 		double halfCubeSideLength = this.unit.position.cubeSideLength / 2;
 		assertDoublePositionEquals(
-				1 + halfCubeSideLength,
-				2 + halfCubeSideLength,
-				3,
+				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3,
 				this.unit.position.getUnitCoordinates()
 		);
-		
-		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints());
-		assertEquals(50, this.unit.getAgility());
-		assertEquals(50, this.unit.getStrength());
-		assertEquals(50, this.unit.getToughness());
 
-		fail("Constructor has not yet been implemented completely.");
+		assertEquals(50, this.unit.getWeight(), 0.01);
+		assertEquals(50, this.unit.getAgility(), 0.01);
+		assertEquals(50, this.unit.getStrength(), 0.01);
+		assertEquals(50, this.unit.getToughness(), 0.01);
+		assertFalse(this.unit.getDefaultBehaviorEnabled());
+
+		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints(), 0.01);
+		assertEquals(this.unit.getMaxStaminaPoints(), this.unit.getCurrentStaminaPoints(), 0.01);
 	}
 	
 	@Test
 	public void CreatePosition_LegalCase() {
 		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 3});
-		assertDoublePositionEquals(1, 2, 3, testPosition.getUnitCoordinates());
+		assertDoublePositionEquals(1.5, 2.5, 3, testPosition.getUnitCoordinates());
 	}
 
-	@Test(expected = IllegalCoordinateException.class)
-	public void CreatePosition_IllegalCase() throws IllegalCoordinateException {
+	@Test
+	public void CreatePosition_IllegalCase() {
 		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 50});
 	}
 
