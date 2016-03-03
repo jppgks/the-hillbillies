@@ -1,11 +1,8 @@
 package hillbillies.test.unit;
 
-import hillbillies.model.IllegalCoordinateException;
 import hillbillies.model.Unit;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
 import static hillbillies.tests.util.PositionAsserts.assertIntegerPositionEquals;
@@ -424,7 +421,7 @@ public class UnitTest {
 	 */
 	@Test
 	public void testSetStamina() {
-		this.unit.setStamina(15);
+		this.unit.setCurrentStamina(15);
 		assertEquals(15, this.unit.getCurrentStaminaPoints());
 		
 	}
