@@ -99,9 +99,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public void advanceTime(Unit unit, double dt) throws ModelException {
-		unit.advanceTime(dt);
+		try {
+			unit.advanceTime(dt);
+		} catch (IllegalArgumentException exc) {
+			
+		}	
 	}
-
 	@Override
 	public void moveToAdjacent(Unit unit, int dx, int dy, int dz) throws ModelException {
 		try {
@@ -113,7 +116,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public double getCurrentSpeed(Unit unit) throws ModelException {
-		return 0; //unit.getCurrentSpeed();
+		return unit.getCurrentSpeed();
 	}
 
 	@Override
