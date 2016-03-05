@@ -144,6 +144,62 @@ public class UnitTest {
 		assertFalse(this.unit.isSprinting());
 	}
 
+	@Test
+	public void testWork_Doing_Nothing() {
+		try {
+			method = unitClass.getDeclaredMethod("setState", State.class);
+			method.setAccessible(true);
+			method.invoke(this.unit, State.NONE);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		try {
+			unit.work();
+		} catch (Exception exc) {
+
+		}
+		assertEquals(State.WORKING, unit.getState());
+	}
+	
+	/**
+	 * Test method for {@link hillbillies.model.Unit#work(java.lang.String)}.
+	 */
+	@Test
+	public void testWork_Doing_Activity() {
+		try {
+			method = unitClass.getDeclaredMethod("setState", State.class);
+			method.setAccessible(true);
+			method.invoke(this.unit, State.RESTING);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		try {
+			unit.work();
+		} catch (Exception exc) {
+
+		}
+		assertEquals(State.RESTING, unit.getState());
+	}
+	
+	// this is private now
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#getTimeForWork()}.
+//	 */
+//	@Test
+//	public void testGetTimeForWork() {
+//		assertEquals(500/unit.getStrength(), (double)unit.getTimeForWork(),1);
+//	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#rest()}.
+//	 */
 //	@Test
 //	public void testWork_Doing_Nothing() {
 //		unit.setState(State.NONE);
@@ -176,7 +232,45 @@ public class UnitTest {
 		}
 		assertEquals(State.NONE, unit.getState());
 	}
-
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#rest()}.
+//	 */
+//	@Test
+//	public void testRest_NotFull_Hit_Stamina_Points() {
+//		unit.setCurrentHitPoints(10);
+//		unit.rest();
+//		assertEquals(State.RESTING, unit.getState());
+//	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#rest()}.
+//	 */
+//	@Test
+//	public void testRest_Doing_Other_Activity() {
+//		unit.setCurrentHitPoints(10);
+//		unit.setState(State.MOVING);
+//		try {
+//			unit.rest();
+//		} catch (IllegalStateException exc) {
+//			
+//		}
+//		assertEquals(State.MOVING, unit.getState());
+//	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#getRegenHitPoints()}.
+//	 */
+//	@Test
+//	public void testGetRegenHitPoints() {
+//		assertEquals(this.unit.getToughness()/200, this.unit.getRegenHitPoints());
+//	}
+//
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#getRegenStamina()}.
+//	 */
+//	@Test
+//	public void testGetRegenStamina() {
+//		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
+//	}
+	
 	// These methods are private now.
 //	@Test
 //	public void testGetRegenHitPoints() {
@@ -206,7 +300,6 @@ public class UnitTest {
 //		}
 //		assertEquals(State.MOVING, unit.getState());
 //	}
-
 	@Test
 	public void testGetOrientation() {
 		assertEquals(Math.PI / 2, this.unit.getOrientation(), .01);
