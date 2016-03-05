@@ -1,5 +1,6 @@
 package hillbillies.test.unit;
 
+import hillbillies.model.State;
 import hillbillies.model.Unit;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,14 +40,14 @@ public class UnitTest {
 				this.unit.position.getUnitCoordinates()
 		);
 
-		assertEquals(50, this.unit.getWeight(), 0.01);
-		assertEquals(50, this.unit.getAgility(), 0.01);
-		assertEquals(50, this.unit.getStrength(), 0.01);
-		assertEquals(50, this.unit.getToughness(), 0.01);
+		assertEquals(50, this.unit.getWeight(), .01);
+		assertEquals(50, this.unit.getAgility(), .01);
+		assertEquals(50, this.unit.getStrength(), .01);
+		assertEquals(50, this.unit.getToughness(), .01);
 		assertFalse(this.unit.getDefaultBehaviorEnabled());
 
-		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints(), 0.01);
-		assertEquals(this.unit.getMaxStaminaPoints(), this.unit.getCurrentStaminaPoints(), 0.01);
+		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints(), .01);
+		assertEquals(this.unit.getMaxStaminaPoints(), this.unit.getCurrentStaminaPoints(), .01);
 	}
 	
 	@Test
@@ -83,28 +84,35 @@ public class UnitTest {
 	}
 
 	@Test
-	public void testGetUnitBaseSpeed() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetUnitWalkSpeed() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testStartSprinting() {
-		fail("Not yet implemented");
+		try {
+			method = unitClass.getDeclaredMethod("setState", State.class);
+			method.setAccessible(true);
+			method.invoke(this.unit, State.MOVING);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		this.unit.startSprinting();
+		assertTrue(this.unit.isSprinting());
 	}
 
 	@Test
 	public void testStopSprinting() {
-		fail("Not yet implemented");
+		this.testStartSprinting();
+		this.unit.stopSprinting();
+		assertFalse(this.unit.isSprinting());
 	}
 
 	@Test
 	public void testIsSprinting() {
-		fail("Not yet implemented");
+		this.testStartSprinting();
+		assertTrue(this.unit.isSprinting());
+		this.unit.stopSprinting();
+		assertFalse(this.unit.isSprinting());
 	}
 
 	@Test
@@ -130,7 +138,7 @@ public class UnitTest {
 
 	@Test
 	public void testGetOrientation() {
-		fail("Not yet implemented");
+		assertEquals(Math.PI / 2, this.unit.getOrientation(), .01);
 	}
 
 	@Test
@@ -228,7 +236,7 @@ public class UnitTest {
 
 	@Test
 	public void testGetHitPoints() {
-		assertEquals(50, this.unit.getCurrentHitPoints());
+		assertEquals(50, this.unit.getCurrentHitPoints(), .01);
 	}
 
 	// These methods are private now.
@@ -251,12 +259,12 @@ public class UnitTest {
 
 	@Test
 	public void testGetMaxHitPoints() {
-		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints());
+		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints(), .01);
 	}
 
 	@Test
 	public void testGetStamina() {
-		assertEquals(50,this.unit.getCurrentStaminaPoints());
+		assertEquals(50,this.unit.getCurrentStaminaPoints(), .01);
 	}
 
 	// These methods are private now.
@@ -356,12 +364,12 @@ public class UnitTest {
 
 	@Test
 	public void testGetState() throws Exception {
-
+		assertEquals(State.NONE, this.unit.getState());
 	}
 
 	@Test
 	public void testGetCurrentSpeed() throws Exception {
-
+		assertEquals(0, this.unit.getCurrentSpeed(), .01);
 	}
 
 	@Test
