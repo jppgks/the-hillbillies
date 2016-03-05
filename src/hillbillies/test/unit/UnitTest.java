@@ -334,18 +334,10 @@ public class UnitTest {
 	}
 
 	/**
-	 * Test method for {@link hillbillies.model.Unit#startDefaultBehaviour()}.
+	 * Test method for {@link hillbillies.model.Unit#startDefaultBehavior()}.
 	 */
 	@Test
 	public void testStartDefaultBehaviour() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#stopDefaultBehavior()}.
-	 */
-	@Test
-	public void testStopDefaultBehavior() {
 		fail("Not yet implemented");
 	}
 
@@ -427,7 +419,7 @@ public class UnitTest {
 	 */
 	@Test
 	public void testSetStamina() {
-		this.unit.setCurrentStamina(15);
+		this.unit.setCurrentStaminaPoints(15);
 		assertEquals(15, this.unit.getCurrentStaminaPoints());
 		
 	}
