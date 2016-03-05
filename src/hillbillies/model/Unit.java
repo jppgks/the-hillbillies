@@ -318,7 +318,7 @@ public class Unit {
 	 *       	| result == name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?")
 	 */
 	private static boolean isValidName(String name) {
-		return name.matches("\"?([A-Z])([a-zA-Z\'\"\\s ])+\"?");
+		return name.matches("\"?[A-Z][a-zA-Z'\\s]+\"?");
 	}
 
 	/**
@@ -1272,7 +1272,7 @@ public class Unit {
 	 * @post 	  When the agility of this unit is high enough,
 	 * 			  relative to the agility of its attacker,
 	 * 			  this unit dodges the attack and moves to a
-	 * 			  random neighBouring cube.
+	 * 			  random neighbouring cube.
 	 * 			| 1 <= 0.20 * (this.getAgility() / attacker.getAgility())
 	 * @post 	  When this unit fails to dodge the attack,
 	 * 			  this unit blocks the attack when the sum of it's
@@ -1281,7 +1281,7 @@ public class Unit {
 	 * 			| 1 <= 0.25 * ( (this.getStrength() + this.getAgility())
 	 * 			|	/ (attacker.getStrength() + attacker.getAgility()) )
 	 * @post	  When this unit fails to dodge or block the attack,
-	 * 			  this unit's hitPoints are lowered,
+	 * 			  this unit's hitpoints are lowered,
 	 * 			  relative to the strength of the attacker.
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
 	 */
@@ -1563,15 +1563,11 @@ public class Unit {
 	 * 				  Time interval
 	 * 
 	 */
-	public void advanceTime(double dt)throws IllegalArgumentException {
-		if(dt <= 0 && dt >= 0.2)
-			throw new IllegalArgumentException();
+	public void advanceTime(double dt) {
+		
 		//When the unit State is MOVING then to this
 		if (this.getState() == State.MOVING)
 			advanceWhileMoving(dt);
-		
-		if(this.getState() != State.MOVING)
-			this.setCurrentSpeed(0);
 		
 		//When the unit State is RESTING then to this
 		if (this.getState() == State.RESTING)
@@ -1716,7 +1712,6 @@ public class Unit {
 	 */
 	private void advanceWhileMoving(double dt) {
 		if (this.isSprinting()) {
-			this.setCurrentSpeed(this.getUnitWalkSpeed());
 			this.setSprintCounter(this.getSprintCounter()-dt);
 			if (this.getSprintCounter() <= 0) {
 				if (this.getCurrentStaminaPoints() <= 0) {
@@ -1727,8 +1722,6 @@ public class Unit {
 					this.resetCounter("SPRINT_COUNTER");
 				}
 			}
-		}else{
-			this.setCurrentSpeed(this.getUnitBaseSpeed());
 		}
 		if(!isDefending)
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
@@ -1769,13 +1762,5 @@ public class Unit {
 			dz = -1;
 		}
 		return new int[]{dx,dy,dz};
-	}
-	private double currentSpeed;
-	
-	private void setCurrentSpeed(double speed){
-		this.currentSpeed = speed;
-	}
-	public double getCurrentSpeed(){
-		return this.currentSpeed;
 	}
 }

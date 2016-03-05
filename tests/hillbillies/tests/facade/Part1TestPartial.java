@@ -31,7 +31,7 @@ public class Part1TestPartial {
 	@Test
 	public void testPosition() throws ModelException {
 		Unit unit = facade.createUnit("TestUnit", new int[] { 12, 11, 5 }, 50, 50, 50, 50, false);
-		assertDoublePositionEquals("Position must be the center of the cube", 12.5, 11.5, 5.0,
+		assertDoublePositionEquals("Position must be the center of the cube", 12.5, 11.5, 5.5,
 				facade.getPosition(unit));
 	}
 
@@ -65,11 +65,11 @@ public class Part1TestPartial {
 		IFacade facade = new Facade();
 		Unit unit = facade.createUnit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
 		facade.moveToAdjacent(unit, 1, 0, -1);
-		double speed = 1.5;
+		double speed = facade.getCurrentSpeed(unit);
 		double distance = Math.sqrt(2);
 		double time = distance / speed;
 		advanceTimeFor(facade, unit, time, 0.05);
-		assertDoublePositionEquals(2.5, 2.5, 2, facade.getPosition(unit));
+		assertDoublePositionEquals(2.5, 2.5, 2.5, facade.getPosition(unit));
 	}
 
 	/**

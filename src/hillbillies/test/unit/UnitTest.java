@@ -1,9 +1,6 @@
 package hillbillies.test.unit;
 
-import hillbillies.model.State;
 import hillbillies.model.Unit;
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -139,75 +136,34 @@ public class UnitTest {
 	 * Test method for {@link hillbillies.model.Unit#work(java.lang.String)}.
 	 */
 	@Test
-	public void testWork_Doing_Nothing() {
-		unit.setState(State.NONE);
-		try {
-			unit.work();
-		} catch (Exception exc) {
-
-		}
-		assertEquals(State.WORKING, unit.getState());
-		assertEquals(500/unit.getStrength(),unit.getTimeForWork(),1);
+	public void testWork() {
+		fail("Not yet implemented");
 	}
-	
+
 	/**
-	 * Test method for {@link hillbillies.model.Unit#work(java.lang.String)}.
+	 * Test method for {@link hillbillies.model.Unit#isValidWorkActivity(java.lang.String)}.
 	 */
 	@Test
-	public void testWork_Doing_Activity() {
-		unit.setState(State.RESTING);
-		try {
-			unit.work();
-		} catch (Exception exc) {
-
-		}
-		assertEquals(State.RESTING, unit.getState());
+	public void testIsValidWorkActivity() {
+		fail("Not yet implemented");
 	}
-	
+
 	/**
 	 * Test method for {@link hillbillies.model.Unit#getTimeForWork()}.
 	 */
 	@Test
 	public void testGetTimeForWork() {
-		assertEquals(500/unit.getStrength(), (double)unit.getTimeForWork(),1);
+		fail("Not yet implemented");
 	}
 
 	/**
 	 * Test method for {@link hillbillies.model.Unit#rest()}.
 	 */
 	@Test
-	public void testRest_Full_Hit_Stamina_Points() {
-		try {
-			unit.rest();
-		} catch (IllegalStateException exc) {
-			//do nothing
-		}
-		assertEquals(State.NONE, unit.getState());
+	public void testRest() {
+		fail("Not yet implemented");
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#rest()}.
-	 */
-	@Test
-	public void testRest_NotFull_Hit_Stamina_Points() {
-		unit.setCurrentHitPoints(10);
-		unit.rest();
-		assertEquals(State.RESTING, unit.getState());
-	}
-	/**
-	 * Test method for {@link hillbillies.model.Unit#rest()}.
-	 */
-	@Test
-	public void testRest_Doing_Other_Activity() {
-		unit.setCurrentHitPoints(10);
-		unit.setState(State.MOVING);
-		try {
-			unit.rest();
-		} catch (IllegalStateException exc) {
-			// TODO: handle exception
-		}
-		assertEquals(State.MOVING, unit.getState());
-	}
 	/**
 	 * Test method for {@link hillbillies.model.Unit#getRegenHitPoints()}.
 	 */
