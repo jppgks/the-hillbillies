@@ -75,12 +75,23 @@ public class UnitTest {
 
 	@Test
 	public void testMoveToAdjacent() {
-		fail("Not yet implemented");
+		double initialX = this.unit.position.getUnitCoordinates()[0];
+		double initialY = this.unit.position.getUnitCoordinates()[1];
+		double initialZ = this.unit.position.getUnitCoordinates()[2];
+
+		this.unit.moveToAdjacent(0, -1, 0);
+		this.unit.advanceTime(1.34);
+
+		assertDoublePositionEquals(
+				initialX,
+				initialY - 1,
+				initialZ,
+				this.unit.position.getUnitCoordinates());
 	}
 
 	@Test
 	public void testMoveTo() {
-		fail("Not yet implemented");
+//		this.unit.moveTo();
 	}
 
 	@Test
