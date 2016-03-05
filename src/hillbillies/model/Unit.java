@@ -842,6 +842,7 @@ public class Unit {
 	 * @return 	  Returns the current state of this unit.
 	 * 			| result == this.state
 	 */
+	@Basic
 	public State getState(){
 		return this.state;
 	}
@@ -881,6 +882,7 @@ public class Unit {
 	 * 			| result == this.isSprinting
 	 *
 	 */
+	@Basic
 	public boolean isSprinting(){
 		return this.isSprinting;
 	}
@@ -929,6 +931,7 @@ public class Unit {
 	 * @return		  The neighboringCubeToMoveTo
 	 * 				| Result == this.neighboringCubeToMoveTo
 	 */
+	@Basic
 	private int[] getNeighboringCubeToMoveTo(){
 		return this.neighboringCubeToMoveTo;
 	}
@@ -959,6 +962,7 @@ public class Unit {
 	 * 				| Result == this.sprintCounter
 	 *
 	 */
+	@Basic
 	private double getSprintCounter() {
 		return this.sprintCounter;
 	}
@@ -1176,6 +1180,7 @@ public class Unit {
 	 * @return 		  the initialPosition of a unit
 	 * 				| Result == this.initialPosition
 	 */
+	@Basic
 	private double[] getInitialPosition() {
 		return this.initialPosition;
 	}
@@ -1184,6 +1189,7 @@ public class Unit {
 	 * @return 		  the targetPosition of a unit
 	 * 				| Result == this.targetPosition
 	 */
+	@Basic
 	private int[] getTargetPosition(){
 		return this.targetPosition;
 	}
@@ -1202,7 +1208,8 @@ public class Unit {
 	/**
 	 * @return 		  the newTargetPosition of a unit( != targetPosition)
 	 * 				| Result == this.newTargetPosition
-	 */	
+	 */
+	@Basic
 	int[] getNewTargetPosition(){
 		return this.newTargetPosition;
 	}
@@ -1280,6 +1287,7 @@ public class Unit {
 	 * @return 	  	  return the current hitpoints of the unit
 	 * 				| Result == this.currentHitPoints
 	 */
+	@Basic
 	public double getCurrentHitPoints(){
 		return this.currentHitPoints;
 	}
@@ -1302,6 +1310,7 @@ public class Unit {
 	 * 				| Result == this.restCounter
 	 *
 	 */
+	@Basic
 	private double getRestCounter(){
 		return this.restCounter;
 	}
@@ -1364,6 +1373,7 @@ public class Unit {
 	 * 				| Result == this.workCounter
 	 *
 	 */
+	@Basic
 	private double getWorkCounter() {
 		return this.workCounter;
 	}
@@ -1398,6 +1408,7 @@ public class Unit {
 	 * @return		  The unit that's current defending against this unit
 	 * 				| Result == this.defender
 	 */
+	@Basic
 	private Unit getDefender(){
 		return this.theDefender;
 	}
@@ -1420,6 +1431,7 @@ public class Unit {
 	 * 				| Result == this.fightCounter
 	 *
 	 */
+	@Basic
 	private double getFightCounter() {
 		return this.fightCounter;
 	}
@@ -1449,6 +1461,7 @@ public class Unit {
 	 * @return	  Gives the units previous State
 	 * 			| Result = this.previousState
 	 */
+	@Basic
 	private State getPreviousState(){
 		return this.previousState;
 	}
@@ -1457,6 +1470,7 @@ public class Unit {
 	 * @return	  Gives the units previous orientation
 	 * 			| Result = this.previousOrientation
 	 */
+	@Basic
 	private float getPreviousOrientation(){
 		return this.previousOrientation;
 	}
@@ -1479,6 +1493,7 @@ public class Unit {
 	 * 				| Result == this.needToRestCounter
 	 *
 	 */
+	@Basic
 	private double getNeedToRestCounter() {
 		return this.needToRestCounter;
 	}
@@ -1514,6 +1529,7 @@ public class Unit {
 	 * 				| Result == this.defaultBehaviorEnabled
 	 *
 	 */
+	@Basic
 	public Boolean getDefaultBehaviorEnabled(){
 		return this.defaultBehaviorEnabled;
 	}
@@ -1562,6 +1578,7 @@ public class Unit {
 	 * @return 	  Returns the current weight of the unit.
 	 * 			| result == this.weight
 	 */
+	@Basic
 	public double getWeight(){
 		return this.weight;
 	}
