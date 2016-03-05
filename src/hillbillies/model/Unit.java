@@ -371,7 +371,7 @@ public class Unit {
 		 *        	|	{
 		 *        	|	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
 		 *        	| 	  (cubeCoordinates[1] + 1/2 * cubeSideLength),
-		 *        	| 	  (cubeCoordinates[2])
+		 *        	| 	  (cubeCoordinates[2] + 1/2 * cubeSideLength)
 		 *        	| 	}
 		 * @throws IllegalCoordinateException
 		 *         	  The given coordinates are not valid coordinates for any

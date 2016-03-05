@@ -93,7 +93,23 @@ public class UnitTest {
 
 	@Test
 	public void testMoveTo() {
-//		this.unit.moveTo();
+		this.unit.moveTo(new int[]{10, 2, 3});
+		for(int i = 0; i < 6; i++)
+			this.unit.advanceTime(1);
+		assertDoublePositionEquals(
+				7.5, 2.5, 3.5,
+				this.unit.position.getUnitCoordinates()
+		);
+
+		this.unit.advanceTime(1);
+
+		this.unit.moveTo(new int[]{7, 4, 3});
+		for(int i = 0; i < 100; i++)
+			this.unit.advanceTime(.1);
+		assertDoublePositionEquals(
+				7.5, 4.5, 3.5,
+				this.unit.position.getUnitCoordinates()
+		);
 	}
 
 	@Test
@@ -181,10 +197,32 @@ public class UnitTest {
 //	public void testGetTimeForWork() {
 //		assertEquals(500/unit.getStrength(), (double)unit.getTimeForWork(),1);
 //	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#rest()}.
+//	 */
+//	@Test
+//	public void testWork_Doing_Nothing() {
+//		unit.setState(State.NONE);
+//		try {
+//			unit.work();
+//		} catch (Exception exc) {
+//
+//		}
+//		assertEquals(State.WORKING, unit.getState());
+//		assertEquals(500/unit.getStrength(),unit.getTimeForWork(),1);
+//	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#rest()}.
-	 */
+//	@Test
+//	public void testWork_Doing_Activity() {
+//		unit.setState(State.RESTING);
+//		try {
+//			unit.work();
+//		} catch (Exception exc) {
+//
+//		}
+//		assertEquals(State.RESTING, unit.getState());
+//	}
+
 	@Test
 	public void testRest_Full_Hit_Stamina_Points() {
 		try {
@@ -194,7 +232,6 @@ public class UnitTest {
 		}
 		assertEquals(State.NONE, unit.getState());
 	}
-
 //	/**
 //	 * Test method for {@link hillbillies.model.Unit#rest()}.
 //	 */
@@ -245,7 +282,24 @@ public class UnitTest {
 //		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
 //	}
 
-
+//	@Test
+//	public void testRest_NotFull_Hit_Stamina_Points() {
+//		unit.setCurrentHitPoints(10);
+//		unit.rest();
+//		assertEquals(State.RESTING, unit.getState());
+//	}
+//
+//	@Test
+//	public void testRest_Doing_Other_Activity() {
+//		unit.setCurrentHitPoints(10);
+//		unit.setState(State.MOVING);
+//		try {
+//			unit.rest();
+//		} catch (IllegalStateException exc) {
+//			// TODO: handle exception
+//		}
+//		assertEquals(State.MOVING, unit.getState());
+//	}
 	@Test
 	public void testGetOrientation() {
 		assertEquals(Math.PI / 2, this.unit.getOrientation(), .01);
