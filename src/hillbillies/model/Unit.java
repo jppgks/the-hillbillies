@@ -462,19 +462,57 @@ public class Unit {
 		}
 	}
 
+	/**
+	 * @param attributeValue
+	 * 			  Value to check
+	 * @return	  Gives true if the value is in range of the minimum attribute value and maximum attribute value
+	 * 			| Result == (attributeValue >= this.getMinInitialAttributeValue()) &&
+				| (attributeValue <= this.getMaxInitialAttributeValue())
+	 */
 	private boolean isWithinInitialAttributeValueRange(int attributeValue) {
 		return (attributeValue >= this.getMinInitialAttributeValue()) &&
 				(attributeValue <= this.getMaxInitialAttributeValue());
 	}
 
+	/**
+	 * 
+	 * @return	  the minimum initial attribute value
+	 * 			| Result == Unit.MIN_INITIAL_ATTRIBUTE_VALUE		
+	 * 
+	 */
 	private int getMinInitialAttributeValue() {
 		return Unit.MIN_INITIAL_ATTRIBUTE_VALUE;
 	}
-
+	
+	/**
+	 * 
+	 * @return	  the maximum initial attribute value
+	 * 			| Result == Unit.MAX_INITIAL_ATTRIBUTE_VALUE		
+	 * 
+	 */
 	private int getMaxInitialAttributeValue() {
 		return Unit.MAX_INITIAL_ATTRIBUTE_VALUE;
 	}
 
+	/**
+	 * @param 		attributeKind
+	 * 			  	  The kind of the attribute if (weight, agility, strength and toughness)
+	 * 
+	 * @param 		attributeValue
+	 * 			  	  The value of that kind that need to be set.
+	 * @post		  if the kind equals to w then set the weight to the attribute Value
+	 * 				| if( attributeKind == "w")
+	 * 				| 	Then this.setWeight(attributeValue)
+	 * @post		  if the kind equals to a then set the agility to the attribute Value
+	 * 				| if( attributeKind == "a")
+	 * 				| 	Then this.setAgility(attributeValue) 
+	 * @post		  if the kind equals to s then set the strength to the attribute Value
+	 * 				| if( attributeKind == "s")
+	 * 				| 	Then this.setStrength(attributeValue)	
+	 * @post		  if the kind equals to t then set the toughness to the attribute Value
+	 * 				| if( attributeKind == "t")
+	 * 				| 	Then this.setToughness(attributeValue)
+	 */
 	private void setAttribute(String attributeKind, int attributeValue) {
 		switch (attributeKind) {
 			case "w":
@@ -627,6 +665,15 @@ public class Unit {
 		}
 	}
 
+	/**
+	 * @param 		attributeValue
+	 * 				  The attribute value to change
+	 * 
+	 * @return		  the  modulo of attribute value 
+	 * 				| Result == this.getMinInitialAttributeValue()
+	 *				| + (attributeValue - this.getMinInitialAttributeValue())
+	 *				| % (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue())
+	 */
 	private int getAttributeValueWithinInitialRangeFromTooLargeValue(int attributeValue) {
 		return this.getMinInitialAttributeValue()
 				+ (attributeValue - this.getMinInitialAttributeValue())
@@ -652,7 +699,7 @@ public class Unit {
 	 *
 	 * @return 	  True if the amounts of hitpoints larger or equals to zero
 	 *            and is smaller or equals to the maximum hitpoints the unit can have
-	 *         	| return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
+	 *         	| Result == ( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
 	 */
 	private boolean isValidHitPoints(double hitpoints){
 		if(hitpoints <= this.getMaxHitPoints() && hitpoints >=getMinHitPoints())
@@ -668,6 +715,10 @@ public class Unit {
 		return (200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 
+	/**
+	 * @return	  the minimum hit points a unit can have
+	 * 			| Result == MIN_HIT_POINTS
+	 */
 	private double getMinHitPoints(){
 		return MIN_HIT_POINTS;
 	}
@@ -714,6 +765,10 @@ public class Unit {
 		return ( 200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 
+	/**
+	 * @return	  the minimum stamina points a unit can have
+	 * 			| Result == MIN_STAMINA_POINTS
+	 */
 	private double getMinStaminaPoints(){
 		return MIN_STAMINA_POINTS;
 	}
@@ -746,7 +801,7 @@ public class Unit {
 		//When the unit State is MOVING then to this
 		if (this.getState() == State.MOVING)
 			advanceWhileMoving(dt);
-
+		//set the speed of the unit to 0 when it's not moving
 		if(this.getState() != State.MOVING)
 			this.setCurrentSpeed(0);
 
@@ -830,6 +885,12 @@ public class Unit {
 		return this.isSprinting;
 	}
 
+	/**
+	 * @param 	   	speed
+	 * 				  The speed of the unit
+	 * @post		  the currentSpeed is equals to speed
+	 * 				| this.currentSpeed = speed 	
+	 */
 	private void setCurrentSpeed(double speed){
 		this.currentSpeed = speed;
 	}
@@ -864,13 +925,17 @@ public class Unit {
 		return moveSpeed;
 	}
 
+	/**
+	 * @return		  The neighboringCubeToMoveTo
+	 * 				| Result == this.neighboringCubeToMoveTo
+	 */
 	private int[] getNeighboringCubeToMoveTo(){
 		return this.neighboringCubeToMoveTo;
 	}
 
 	/**
 	 * @return 	  the base speed of a unit determined by the unit's weight, strength and agility
-	 * 			| result == 1.5*((this.getStrength() + this.getAgility)/(200*(this.getWeight/100))
+	 * 			| Result == 1.5*((this.getStrength() + this.getAgility)/(200*(this.getWeight/100))
 	 */
 	private double getUnitBaseSpeed() {
 		return 1.5*((this.getStrength()+this.getAgility())/(200*this.getWeight()/100));
@@ -998,14 +1063,16 @@ public class Unit {
 		return Unit.MAX_ORIENTATION;
 	}
 
+	/**
+	 * @return		  a double array of the velocity in the x,y and z axis
+	 * 				| Result == new double[]{
+	 *				|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[0])/ distance,
+	 *				|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[1])/ distance,
+	 *				|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[2])/ distance,}
+	 * 	
+	 */
 	private double[] getUnitVelocity() {
-		double distance =
-				Math.sqrt(
-						Math.pow(this.getNeighboringCubeToMoveTo()[0], 2) +
-								Math.pow(this.getNeighboringCubeToMoveTo()[1], 2) +
-								Math.pow(this.getNeighboringCubeToMoveTo()[2], 2)
-				);
-
+		double distance = getDistance();
 		return new double[]
 				{
 						this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[0])/ distance,
@@ -1014,6 +1081,27 @@ public class Unit {
 				};
 	}
 
+	/**
+	 * @return		  the distance
+	 * 				| Result == Math.sqrt(
+	 *				|	Math.pow(this.getNeighboringCubeToMoveTo()[0], 2) +
+	 *				|	Math.pow(this.getNeighboringCubeToMoveTo()[1], 2) +
+	 *				|	Math.pow(this.getNeighboringCubeToMoveTo()[2], 2))
+	 */
+	private double getDistance() {
+		return Math.sqrt(
+						Math.pow(this.getNeighboringCubeToMoveTo()[0], 2) +
+								Math.pow(this.getNeighboringCubeToMoveTo()[1], 2) +
+								Math.pow(this.getNeighboringCubeToMoveTo()[2], 2)
+				);
+	}
+
+	/**
+	 * @param 		  neighboringCubeToMoveTo
+	 * 
+	 * @post		  Set the neighboringCubeToMoveTo equals to neighboringCubeToMoveTo
+	 * 				| new.neighboringCubeToMoveTo = neighboringCubeToMoveTo
+	 */
 	private void setNeighboringCubeToMoveTo(int[] neighboringCubeToMoveTo){
 		this.neighboringCubeToMoveTo = neighboringCubeToMoveTo;
 	}
@@ -1052,6 +1140,12 @@ public class Unit {
 		return new int[]{dx,dy,dz};
 	}
 
+	/**
+	 * 				Method that's calls in advanceTime and update the Units position
+	 * 
+	 * @param 		dt
+	 * 				  Difference in time
+	 */
 	private void updatePosition(double dt) {
 		this.position.unitX += this.getUnitVelocity()[0] * dt;
 		this.getInitialPosition()[0] += this.getUnitVelocity()[0] * dt;
@@ -1078,10 +1172,18 @@ public class Unit {
 		}
 	}
 
+	/**
+	 * @return 		  the initialPosition of a unit
+	 * 				| Result == this.initialPosition
+	 */
 	private double[] getInitialPosition() {
 		return this.initialPosition;
 	}
 
+	/**
+	 * @return 		  the targetPosition of a unit
+	 * 				| Result == this.targetPosition
+	 */
 	private int[] getTargetPosition(){
 		return this.targetPosition;
 	}
@@ -1097,24 +1199,53 @@ public class Unit {
 		this.state = state;
 	}
 
-	private int[] getNewTargetPosition(){
+	/**
+	 * @return 		  the newTargetPosition of a unit( != targetPosition)
+	 * 				| Result == this.newTargetPosition
+	 */	
+	int[] getNewTargetPosition(){
 		return this.newTargetPosition;
 	}
 
+	/**
+	 * @param 	  targetPosition
+	 *
+	 * @post 	  The new targetPosition is equal to the given targetPosition.
+	 * 			| new.targetPosition == targetPosition
+	 *
+	 */
 	private void setTargetPosition(int[] targetPosition){
 		this.targetPosition = targetPosition;
 	}
 
+	/**
+	 * @param 	  newTargetPosition
+	 *
+	 * @post 	  The new newTargetPosition is equal to the given newTargetPosition.
+	 * 			| new.newTargetPosition == newTargetPosition
+	 *
+	 */
 	private void setNewTargetPosition(int[] newTargetPosition){
 		this.newTargetPosition = newTargetPosition;
 	}
 
+	/**
+	 * @param 	  initialPosition
+	 *
+	 * @post 	  The new newTargetPosition is equal to the given initialPosition.
+	 * 			| new.initialPosition == initialPosition
+	 *
+	 */
 	private void setInitialPosition(double[] initialPosition){
 		this.initialPosition = initialPosition;
 	}
 
 	private double currentSpeed;
 
+	/**
+	 * @return 		  the currentSpeed of a unit
+	 * 				| Result == this.currentSpeed
+	 */	
 	public double getCurrentSpeed(){
 		return this.currentSpeed;
 	}
@@ -1593,6 +1724,13 @@ public class Unit {
 		}
 	}
 
+	/**
+	 * @param 	cubeCoordinatesOfPossibleNeighbor
+	 * 			  The cube coordinates to check
+	 * 	
+	 * @return 	  True if the given coordinate is a neighboring cube
+	 * 			  False if the given coordinate isn't a neighboring cube 
+	 */
 	private boolean isNeighboringCube(int[] cubeCoordinatesOfPossibleNeighbor) {
 		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.position.getCubeCoordinates()[0]) == 1) {
 			if (Arrays.
@@ -1615,6 +1753,10 @@ public class Unit {
 		return false;
 	}
 
+	/**
+	 * @return	  The time needed for fighting
+	 * 			| Result == FIGHT_TIME		
+	 */
 	@Basic @Immutable
 	private double getFightTime() {
 		return FIGHT_TIME;
