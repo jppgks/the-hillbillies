@@ -144,64 +144,64 @@ public class UnitTest {
 	@Test
 	public void testGetStrength() {
 		this.unit.setStrength(55);
-		assertEquals(55, this.unit.getStrength());
+		assertEquals(55, this.unit.getStrength(), .01);
 	}
 
 	@Test
 	public void SetStrength_LegalCase() {
 		this.unit.setStrength(67);
-		assertEquals(67, this.unit.getStrength());
+		assertEquals(67, this.unit.getStrength(), .01);
 	}
 
 	@Test
 	public void SetStrength_InputLowerThanMinAttrValue() {
 		this.unit.setStrength(0);
-		assertEquals(1, this.unit.getStrength());
+		assertEquals(1, this.unit.getStrength(), .01);
 	}
 
 	@Test
 	public void SetStrength_InputHigherThanMaxAttrValue() {
 		this.unit.setStrength(235);
-		assertEquals(200, this.unit.getStrength());
+		assertEquals(200, this.unit.getStrength(), .01);
 	}
 
 	@Test
 	public void testGetAgility() {
 		this.unit.setAgility(55);
-		assertEquals(55, this.unit.getAgility());
+		assertEquals(55, this.unit.getAgility(), .01);
 	}
 
 	@Test
 	public void SetAgility_LegalCase() {
 		this.unit.setAgility(67);
-		assertEquals(67, this.unit.getAgility());
+		assertEquals(67, this.unit.getAgility(), .01);
 	}
 
 	@Test
 	public void SetAgility_InputLowerThanMinAttrValue() {
 		this.unit.setAgility(0);
-		assertEquals(1, this.unit.getAgility());
+		assertEquals(1, this.unit.getAgility(), .01);
 	}
 
 	@Test
 	public void SetAgility_InputHigherThanMaxAttrValue() {
 		this.unit.setAgility(235);
-		assertEquals(200, this.unit.getAgility());
+		assertEquals(200, this.unit.getAgility(), .01);
 	}
 
 	@Test
 	public void testGetWeight() {
-		assertEquals(50,this.unit.getWeight());
+		assertEquals(50,this.unit.getWeight(), .01);
 	}
 
 	@Test
 	public void testSetWeight() {
 		this.unit.setWeight(100);
-		assertEquals(100, this.unit.getWeight());
+		assertEquals(100, this.unit.getWeight(), .01);
 		this.unit.setAgility(50);
 		this.unit.setStrength(50);
 		this.unit.setWeight(-5);
-		assertEquals((unit.getAgility()+unit.getStrength())/2, this.unit.getWeight());
+		assertEquals((unit.getAgility()+unit.getStrength())/2, this.unit.getWeight(), .01);
 	}
 
 	// This method is private now.
@@ -213,25 +213,25 @@ public class UnitTest {
 	@Test
 	public void testGetToughness() {
 		this.unit.setToughness(55);
-		assertEquals(55, this.unit.getToughness());
+		assertEquals(55, this.unit.getToughness(), .01);
 	}
 
 	@Test
 	public void SetToughness_LegalCase() {
 		this.unit.setToughness(67);
-		assertEquals(67, this.unit.getToughness());
+		assertEquals(67, this.unit.getToughness(), .01);
 	}
 
 	@Test
 	public void SetToughness_InputLowerThanMinAttrValue() {
 		this.unit.setToughness(0);
-		assertEquals(1, this.unit.getToughness());
+		assertEquals(1, this.unit.getToughness(), .01);
 	}
 
 	@Test
 	public void SetToughness_InputHigherThanMaxAttrValue() {
 		this.unit.setToughness(235);
-		assertEquals(200, this.unit.getToughness());
+		assertEquals(200, this.unit.getToughness(), .01);
 	}
 
 	@Test
@@ -289,7 +289,7 @@ public class UnitTest {
 
 	@Test
 	public void testGetMaxStaminaPoints() {
-		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints());
+		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints(), .01);
 		
 	}
 
@@ -358,22 +358,25 @@ public class UnitTest {
 
 
 	@Test
-	public void testSetDefaultBehaviorEnabled() throws Exception {
-
+	public void testSetDefaultBehaviorEnabled() {
+		this.unit.setDefaultBehaviorEnabled(true);
+		assertTrue(this.unit.getDefaultBehaviorEnabled());
+		this.unit.setDefaultBehaviorEnabled(false);
+		assertFalse(this.unit.getDefaultBehaviorEnabled());
 	}
 
 	@Test
-	public void testGetState() throws Exception {
+	public void testGetState() {
 		assertEquals(State.NONE, this.unit.getState());
 	}
 
 	@Test
-	public void testGetCurrentSpeed() throws Exception {
+	public void testGetCurrentSpeed() {
 		assertEquals(0, this.unit.getCurrentSpeed(), .01);
 	}
 
 	@Test
-	public void testGetDefaultBehaviorEnabled() throws Exception {
-
+	public void testGetDefaultBehaviorEnabled() {
+		assertFalse(this.unit.getDefaultBehaviorEnabled());
 	}
 }
