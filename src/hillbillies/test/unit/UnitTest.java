@@ -91,7 +91,23 @@ public class UnitTest {
 
 	@Test
 	public void testMoveTo() {
-//		this.unit.moveTo();
+		this.unit.moveTo(new int[]{10, 2, 3});
+		for(int i = 0; i < 6; i++)
+			this.unit.advanceTime(1);
+		assertDoublePositionEquals(
+				7.5, 2.5, 3.5,
+				this.unit.position.getUnitCoordinates()
+		);
+
+		this.unit.advanceTime(1);
+
+		this.unit.moveTo(new int[]{7, 4, 3});
+		for(int i = 0; i < 100; i++)
+			this.unit.advanceTime(.1);
+		assertDoublePositionEquals(
+				7.5, 4.5, 3.5,
+				this.unit.position.getUnitCoordinates()
+		);
 	}
 
 	@Test
