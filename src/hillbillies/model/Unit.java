@@ -318,7 +318,7 @@ public class Unit {
 	 *       	| result == name.matches("\"?[A-Z]{1}[a-zA-Z'\\s]*\"?")
 	 */
 	private static boolean isValidName(String name) {
-		return name.matches("\"?([A-Z])([a-zA-Z\'\"\\s ])+\"?");
+		return name.matches("[A-Z][a-zA-Z\'\"\\s]+");
 	}
 
 	/**
@@ -411,7 +411,7 @@ public class Unit {
 		 *       	|	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
 		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
 		 */
-		public boolean isValidPosition(int[] cubeCoordinates) {
+		private boolean isValidPosition(int[] cubeCoordinates) {
 			return (
 					(cubeCoordinates[0] >= 0 && cubeCoordinates[0] < 50) &&
 							(cubeCoordinates[1] >= 0 && cubeCoordinates[1] < 50) &&
@@ -467,11 +467,11 @@ public class Unit {
 				(attributeValue <= this.getMaxInitialAttributeValue());
 	}
 
-	public int getMinInitialAttributeValue() {
+	private int getMinInitialAttributeValue() {
 		return Unit.MIN_INITIAL_ATTRIBUTE_VALUE;
 	}
 
-	public int getMaxInitialAttributeValue() {
+	private int getMaxInitialAttributeValue() {
 		return Unit.MAX_INITIAL_ATTRIBUTE_VALUE;
 	}
 
@@ -521,7 +521,7 @@ public class Unit {
 	 * 			| (this.getStrength()+this.getAgility())/2
 	 */
 
-	public double getMinWeight(){
+	private double getMinWeight(){
 		return (this.getStrength()+this.getAgility())/2;
 	}
 
@@ -642,7 +642,7 @@ public class Unit {
 	 *
 	 */
 
-	public void setCurrentHitPoints(double hitpoints){
+	private void setCurrentHitPoints(double hitpoints){
 		assert isValidHitPoints(hitpoints);
 		this.currentHitPoints = hitpoints;
 	}
@@ -654,7 +654,7 @@ public class Unit {
 	 *            and is smaller or equals to the maximum hitpoints the unit can have
 	 *         	| return if( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
 	 */
-	public boolean isValidHitPoints(double hitpoints){
+	private boolean isValidHitPoints(double hitpoints){
 		if(hitpoints <= this.getMaxHitPoints() && hitpoints >=getMinHitPoints())
 			return true;
 		return false;
@@ -668,7 +668,7 @@ public class Unit {
 		return (200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 
-	public double getMinHitPoints(){
+	private double getMinHitPoints(){
 		return MIN_HIT_POINTS;
 	}
 
@@ -685,7 +685,7 @@ public class Unit {
 	 *       	| new.getCurrentStaminaPoints() == currentStaminaPoints
 	 */
 	@Raw
-	public void setCurrentStaminaPoints(double stamina) {
+	private void setCurrentStaminaPoints(double stamina) {
 		assert isValidStamina(stamina);
 		this.currentStaminaPoints = stamina;
 	}
@@ -699,7 +699,7 @@ public class Unit {
 	 * @return
 	 *       	| result == (currentStaminaPoints >= 0) && (currentStaminaPoints <= this.getMaxStaminaPoints())
 	 */
-	public boolean isValidStamina(double stamina) {
+	private boolean isValidStamina(double stamina) {
 		if(stamina <= this.getMaxStaminaPoints() && stamina >= this.getMinStaminaPoints())
 			return true;
 		return false;
@@ -714,7 +714,7 @@ public class Unit {
 		return ( 200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 
-	public double getMinStaminaPoints(){
+	private double getMinStaminaPoints(){
 		return MIN_STAMINA_POINTS;
 	}
 
@@ -851,7 +851,7 @@ public class Unit {
 	 * 			|	then totalSpeed *2
 	 * 			| result == totalSpeed
 	 */
-	public double getUnitWalkSpeed() {
+	private double getUnitWalkSpeed() {
 		double moveSpeed;
 		if((getNeighboringCubeToMoveTo()[2]) == 1)
 			moveSpeed = 0.5*getUnitBaseSpeed();
@@ -872,7 +872,7 @@ public class Unit {
 	 * @return 	  the base speed of a unit determined by the unit's weight, strength and agility
 	 * 			| result == 1.5*((this.getStrength() + this.getAgility)/(200*(this.getWeight/100))
 	 */
-	public double getUnitBaseSpeed() {
+	private double getUnitBaseSpeed() {
 		return 1.5*((this.getStrength()+this.getAgility())/(200*this.getWeight()/100));
 	}
 
@@ -894,7 +894,7 @@ public class Unit {
 	 * 				| Result == this.sprintCounter
 	 *
 	 */
-	public double getSprintCounter() {
+	private double getSprintCounter() {
 		return this.sprintCounter;
 	}
 
@@ -1093,7 +1093,7 @@ public class Unit {
 	 * 			| new.getState() == state
 	 *
 	 */
-	public void setState(State state) {
+	private void setState(State state) {
 		this.state = state;
 	}
 
@@ -1179,7 +1179,7 @@ public class Unit {
 	 * @return 	  gives the amount hitpoinst need to regenerate per time unit of REGEN_REST_TIME
 	 * 			| result == (this.getToughness)/200
 	 */
-	public double getRegenHitPoints(){
+	private double getRegenHitPoints(){
 		return (this.getToughness()/200.0);
 	}
 
@@ -1198,7 +1198,7 @@ public class Unit {
 	 * @return 	  gives the amount Stamina points need to regenerate per time unit of REGEN_REST_TIME
 	 * 			| restult == (this.getToughness)/100
 	 */
-	public double getRegenStamina(){
+	private double getRegenStamina(){
 		return this.getToughness()/100.0;
 	}
 
@@ -1233,7 +1233,7 @@ public class Unit {
 	 * 				| Result == this.workCounter
 	 *
 	 */
-	public double getWorkCounter() {
+	private double getWorkCounter() {
 		return this.workCounter;
 	}
 
@@ -1289,7 +1289,7 @@ public class Unit {
 	 * 				| Result == this.fightCounter
 	 *
 	 */
-	public double getFightCounter() {
+	private double getFightCounter() {
 		return this.fightCounter;
 	}
 
@@ -1348,7 +1348,7 @@ public class Unit {
 	 * 				| Result == this.needToRestCounter
 	 *
 	 */
-	public double getNeedToRestCounter() {
+	private double getNeedToRestCounter() {
 		return this.needToRestCounter;
 	}
 
@@ -1395,7 +1395,7 @@ public class Unit {
 	 * @throws IllegalStateException
 	 * 			  if the unit is doing a state
 	 */
-	public void startDefaultBehavior() throws IllegalStateException{
+	private void startDefaultBehavior() throws IllegalStateException{
 		if(this.getState()!= State.NONE)
 			throw new IllegalStateException();
 		int randomBehaviorNumber =new Random().nextInt(5);
@@ -1564,7 +1564,7 @@ public class Unit {
 	 * 			| result == 500/this.getStrength
 	 *
 	 */
-	public float getTimeForWork(){
+	private float getTimeForWork(){
 		return (float) (500/this.getStrength());
 	}
 
@@ -1655,7 +1655,7 @@ public class Unit {
 	 * 			  relative to the strength of the attacker.
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
 	 */
-	public void defend(double attackerAgility, double attackerStrength) {
+	private void defend(double attackerAgility, double attackerStrength) {
 		this.isDefending = true;
 		double chance = Math.random();
 		if(chance < this.chanceForDodging(attackerAgility)){
