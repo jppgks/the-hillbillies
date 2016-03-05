@@ -36,7 +36,7 @@ public class UnitTest {
 
 		double halfCubeSideLength = this.unit.position.cubeSideLength / 2;
 		assertDoublePositionEquals(
-				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3,
+				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3 +halfCubeSideLength,
 				this.unit.position.getUnitCoordinates()
 		);
 
@@ -53,7 +53,7 @@ public class UnitTest {
 	@Test
 	public void CreatePosition_LegalCase() {
 		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 3});
-		assertDoublePositionEquals(1.5, 2.5, 3, testPosition.getUnitCoordinates());
+		assertDoublePositionEquals(1.5, 2.5, 3.5, testPosition.getUnitCoordinates());
 	}
 
 	@Test

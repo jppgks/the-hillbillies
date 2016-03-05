@@ -386,7 +386,7 @@ public class Unit {
 			double halfCubeSideLength = cubeSideLength / 2;
 			this.unitX = cubeCoordinates[0] + halfCubeSideLength;
 			this.unitY = cubeCoordinates[1] + halfCubeSideLength;
-			this.unitZ = cubeCoordinates[2];
+			this.unitZ = cubeCoordinates[2] + halfCubeSideLength;
 		}
 
 		/**
