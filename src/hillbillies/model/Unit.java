@@ -8,23 +8,22 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * A class for a cubical object that occupies a position in the game world.
+ * A class for a 'cubical object that occupies a position in the game world'.
  * 
  * @author 	  Iwein Bau & Joppe Geluykens
  *
  * @note 	  A Unit is a basic type of in-game character with the ability to move around,
  * 			  interact with other such characters and manipulate the game world.
- * 
- * @invar 	  The state is always equals to a valid state.
- * 		  	| isValidAcivity(state)
- * @invar 	  The amount of hitpoints is always a valid amount
- * 		  	| isValidHitPoints(hitpoints)
- * @invar  	  The currentStaminaPoints of each Unit must be a valid currentStaminaPoints for any
- *         	  Unit.
- *        	| isValidStamina(getCurrentStaminaPoints())
- * @invar  	  The name of each Unit must be a valid name for any
- *         	  Unit.
- *        	| isValidName(getName())
+ *
+ * @invar 	  The amount of current hit points must be valid
+ * 			  hit points for any unit.
+ * 		  	| isValidHitPoints(this.getCurrentHitPoints())
+ * @invar  	  The current stamina points of each unit must be valid
+ * 			  stamina points for any unit.
+ *        	| isValidStamina(this.getCurrentStaminaPoints())
+ * @invar  	  The name of each unit must be a valid
+ * 			  name for any unit.
+ *        	| isValidName(this.getName())
  */
 public class Unit {
 	/**
@@ -328,8 +327,6 @@ public class Unit {
 	 * 			  unit coordinates for any unit position.
 	 *       	| isValidPosition(this.getUnitCoordinates())
 	 *
-	 * @note 	  All of these functions should be worked out defensively.
-	 *
 	 */
 	public class Position {
 		/**
@@ -337,9 +334,8 @@ public class Unit {
 		 *
 		 * @param cubeCoordinates
 		 *            The coordinates of the cube that this new unit position is occupying.
-		 * @effect 	  Calls this.setUnitCoordinates and this.setOccupyingCubeCoordinates
-		 * 			  with given cubeCoordinates.
-		 *       	| this.setOccupyingCubeCoordinates(cubeCoordinates)
+		 * @effect 	  Sets the unit coordinates to the given cube coordinates if they are valid.
+		 * 			  If that's not the case, an error message is printed out.
 		 *       	| this.setUnitCoordinates(cubeCoordinates)
 		 */
 		public Position(int[] cubeCoordinates){
@@ -351,12 +347,19 @@ public class Unit {
 		}
 
 		/**
-		 * Return the unit coordinates of this unit position.
+		 * Variables registering the unit coordinates of this unit position.
 		 */
-		@Basic @Raw
-		public double[] getUnitCoordinates() {
-			return new double[] {this.unitX, this.unitY, this.unitZ};
-		}
+		private double unitX, unitY, unitZ;
+
+		/**
+		 * Variables registering the cube coordinates of this unit position.
+		 */
+		private int cubeX, cubeY, cubeZ;
+
+		/**
+		 * Variable registering the length of a cube side in meters.
+		 */
+		public final double cubeSideLength = 1;
 
 		/**
 		 * Set the unit coordinates of this unit position to the sum of
@@ -365,8 +368,7 @@ public class Unit {
 		 * @param cubeCoordinates
 		 *         	  The cube coordinates of this unit position.
 		 * @post 	  The unit coordinates of this new unit position are equal to
-		 *         	  the given cube coordinates + 1/2 of a cube side for unitX and unitY,
-		 *         	  equal to the given cube coordinate for unitZ.
+		 *         	  the given cube coordinates + 1/2 of a cube side.
 		 *        	| new.getUnitCoordinates() ==
 		 *        	|	{
 		 *        	|	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
@@ -375,29 +377,19 @@ public class Unit {
 		 *        	| 	}
 		 * @throws IllegalCoordinateException
 		 *         	  The given coordinates are not valid coordinates for any
-		 *         	  position.
-		 *       	| ! isValidPosition(cubeCoordinates)
+		 *         	  position or the passed in parameter is null.
+		 *       	| ! isValidPosition(cubeCoordinates) || cubeCoordinates == null
 		 */
 		@Raw
 		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
 			if(!isValidPosition(cubeCoordinates) || cubeCoordinates == null)
 				throw new IllegalCoordinateException(cubeCoordinates);
-			this.setOccupyingCubeCoordinates(cubeCoordinates);
+			this.setCubeCoordinates(cubeCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
 			this.unitX = cubeCoordinates[0] + halfCubeSideLength;
 			this.unitY = cubeCoordinates[1] + halfCubeSideLength;
 			this.unitZ = cubeCoordinates[2] + halfCubeSideLength;
 		}
-
-		/**
-		 * Variable registering the length of a cube side in meters.
-		 */
-		public final double cubeSideLength = 1;
-
-		/**
-		 * Variables registering the unit coordinates of this unit position.
-		 */
-		private double unitX, unitY, unitZ;
 
 		/**
 		 * Check whether the given coordinates are valid coordinates for
@@ -419,17 +411,42 @@ public class Unit {
 			);
 		}
 
-		public int[] getCubeCoordinates() {
-			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
-		}
-
-		private void setOccupyingCubeCoordinates(int[] cubeCoordinates) {
+		/**
+		 * Set the cube coordinates of this position to the given coordinates.
+		 *
+		 * @param cubeCoordinates
+		 * 			  The coordinates to initialize this position's cube coordinates with.
+		 * @post 	  The cube coordinates of this position are equal to the given coordinates.
+		 * 			| new.getCubeCoordinates() == {cubeCoordinates[0], cubeCoordinates[1], cubeCoordinates[2]}
+         */
+		@Raw
+		private void setCubeCoordinates(int[] cubeCoordinates) {
 			this.cubeX = cubeCoordinates[0];
 			this.cubeY = cubeCoordinates[1];
 			this.cubeZ = cubeCoordinates[2];
 		}
 
-		private int cubeX, cubeY, cubeZ;
+		/**
+		 * Return the unit coordinates of this unit position.
+		 *
+		 * @return 	  The unit coordinates.
+		 * 			| result = {this.unitX, this.unitY, this.unitZ}
+		 */
+		@Basic @Raw
+		public double[] getUnitCoordinates() {
+			return new double[] {this.unitX, this.unitY, this.unitZ};
+		}
+
+		/**
+		 * Returns this position's cube coordinates.
+		 *
+		 * @return 	  The cube coordinates.
+		 * 			| result == {this.cubeX, this.cubeY, this.cubeZ}
+         */
+		@Basic @Raw
+		public int[] getCubeCoordinates() {
+			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
+		}
 	}
 
 	/**
@@ -1752,6 +1769,10 @@ public class Unit {
 	 * 			  False if the given coordinate isn't a neighboring cube 
 	 */
 	private boolean isNeighboringCube(int[] cubeCoordinatesOfPossibleNeighbor) {
+		if(cubeCoordinatesOfPossibleNeighbor == null ||
+				(! this.position.isValidPosition(cubeCoordinatesOfPossibleNeighbor))) {
+			return false;
+		}
 		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.position.getCubeCoordinates()[0]) == 1) {
 			if (Arrays.
 					stream(new int[]{-1, 0, 1}).
