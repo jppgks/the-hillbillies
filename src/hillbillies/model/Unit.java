@@ -1301,7 +1301,7 @@ public class Unit {
 	}
 
 	/**
-	 * @return 	  	  return the current hitpoints of the unit
+	 * @return 	  	  return the current hitPoints of the unit
 	 * 				| Result == this.currentHitPoints
 	 */
 	@Basic
@@ -1353,7 +1353,7 @@ public class Unit {
 
 	/**
 	 * @return 	  gives the amount Stamina points need to regenerate per time unit of REGEN_REST_TIME
-	 * 			| restult == (this.getToughness)/100
+	 * 			| Result == (this.getToughness)/100
 	 */
 	private double getRegenStamina(){
 		return this.getToughness()/100.0;
@@ -1523,7 +1523,7 @@ public class Unit {
 	 * 			| this.setState(State.RESTING)
 	 *
 	 * @throws IllegalStateException
-	 * 			  When a unit has the maximum hitpoints and the maximum of currentStaminaPoints
+	 * 			  When a unit has the maximum hitPoints and the maximum of currentStaminaPoints
 	 * 			  the unit can't rest
 	 * 			| if(this.getCurrentHitPoints() == this.maxHitPoints())
 	 * 			| && ( this.getCurrentStaminaPoints == this.getMaxStaminaPoints())
@@ -1555,9 +1555,11 @@ public class Unit {
 	 * @post 	  choose a random state move, conduct a work task, rest until it has full recovered currentHitPoints and currentStaminaPoints
 	 *
 	 * @post  	  if is moving sprinting till it's exhausted
-	 *
+	 * 			|if(randomBehaviorNumber== 0)
+	 * 			|	then this.startSprinting()
 	 * @throws IllegalStateException
 	 * 			  if the unit is doing a state
+	 *			| if this.getState() != NONE
 	 */
 	private void startDefaultBehavior() throws IllegalStateException{
 		if(this.getState()!= State.NONE)
@@ -1565,7 +1567,7 @@ public class Unit {
 		int randomBehaviorNumber =new Random().nextInt(5);
 		if(randomBehaviorNumber== 0) {
 			moveTo(new int[]{new Random().nextInt(50), new Random().nextInt(50), new Random().nextInt(50)});
-			startSprinting();
+			this.startSprinting();
 		}
 		else if(randomBehaviorNumber == 1) {
 			work();
@@ -1624,17 +1626,15 @@ public class Unit {
 
 	/**
 	 * @param dx
-	 * 			  X coordinate of neighbouring cube to move to.
+	 * 			  X coordinate of neighboring cube to move to.
 	 * @param dy
-	 * 			  Y coordinate of neighbouring cube to move to.
+	 * 			  Y coordinate of neighboring cube to move to.
 	 * @param dz
-	 * 			  Z coordinate of neighbouring cube to move to.
+	 * 			  Z coordinate of neighboring cube to move to.
 	 * @post 	  the unit moves to an adjacent cube of the current one
 	 * 			| new.position.getUnitCoordinates() == targetPosition
-	 * @post 	  the orientation must be set to atan2(vy,vx)
-	 * 			| new.getOrientation() == atan2(vy,vx)
 	 * @throws IllegalArgumentException
-	 * 			  When the given cube coordinates aren't from a neighbouring cube of this unit.
+	 * 			  When the given cube coordinates aren't from a neighboring cube of this unit.
 	 *
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
@@ -1644,7 +1644,7 @@ public class Unit {
 				this.position.getCubeCoordinates()[2]+dz})) {
 			throw new IllegalArgumentException();
 		}
-
+		//when the unit need to move to the same cube as his cube something weird happens
 		if (dx == 0 && dy == 0 && dz == 0) {
 			return;
 		}
@@ -1686,7 +1686,7 @@ public class Unit {
 
 	/**
 	 * @param 	  targetPosition
-	 *
+	 * 
 	 * @post 	  the new position must be the target position if it's not moving and set the State on moving
 	 * 			| this.Position.getPositon() == targetPosition
 	 * 			| new.setState(State.MOVING)
@@ -1713,8 +1713,8 @@ public class Unit {
 	 * 			| this.setState(State.WORKING)
 	 *
 	 * @throws IllegalStateException
-	 * 			  The unit is attacking or defending
-	 * 			| if(this.getState() == State.ATTACKING)
+	 * 			  The unit is attacking or defending or working or moving
+	 * 			| if(this.getState() != State.NONE)
 	 */
 	public void work() throws IllegalStateException {
 		if(this.getState() != State.NONE)
@@ -1744,19 +1744,32 @@ public class Unit {
 	 * @throws IllegalStateException
 	 * 			  When the victim is not within reach.
 	 * @note 	  Conducting an attack lasts 1s of game time.
+	 * @post	  if the defender is located on a neighboring cube of the attacker then 
+	 * 			  set the state of this unit to ATTACKING and set the defender as defender
+	 * 			| if(this.isNeighboringCube(defender.position.getCubeCoordinates()))
+	 * 			|	then new.setState(State.ATTACKING)
+	 * 			|	new.setDefender(defender)
+	 * 			|	this.getDefender().defend(this.getAgility(), this.getStrength())
+	 * @post	  Set the fight counter equals to the fight time
+	 * 			|	new.setFightCoutner() == this.getFightTime()
+	 * 
 	 */
 	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
+		// when there is no unit 
 		if (defender == null) {
 			throw new IllegalArgumentException();
 		}
+		// Can't attack units that not on a neighboring cube of the attacker
 		if(!(this.isNeighboringCube(defender.position.getCubeCoordinates())))
 			throw new IllegalStateException();
 		if(defender.getCurrentHitPoints()<=0)
 			this.setState(State.NONE);
 		else{
 			this.setFightCounter(this.getFightTime());
+			// set the state of the defender on attacking
 			this.setState(State.ATTACKING);
 			this.setDefender(defender);
+									// the attackers agility and strength
 			this.getDefender().defend(this.getAgility(), this.getStrength());
 		}
 	}
@@ -1807,7 +1820,7 @@ public class Unit {
 	 *
 	 * @param 		  defender
 	 * 				  Set the unit that will be defending against this unit
-	 * 				| this.theDefender == defender
+	 * 				| new.theDefender == defender
 	 *
 	 */
 	private void setDefender(Unit defender){
@@ -1822,34 +1835,36 @@ public class Unit {
 	 * 			  The agility of the attacking unit.
 	 * @param 	  attackerStrength
 	 * 			  The strength of the attacking unit.
-	 * @post 	  When the agility of this unit is high enough,
-	 * 			  relative to the agility of its attacker,
+	 * @post 	  When the block is smaller then chance for dodging,
 	 * 			  this unit dodges the attack and moves to a
 	 * 			  random neighBouring cube.
-	 * 			| Math.random() < 0.20 * (this.getAgility() / attacker.getAgility())
+	 * 			| if(dodge < this.chanceForDodging(attackerAgility)
+	 * 			|	then this.dodge
+	 * @effect	  the unit moves to a random neighboring cube
+	 * 			| new.position.setUnitCoordinates(randomNeighboringCube) 
 	 * @post 	  When this unit fails to dodge the attack,
-	 * 			  this unit blocks the attack when the sum of it's
-	 * 			  strength and agility, relative to those of its attacker
-	 * 			  is high enough.
+	 * 			  this unit chance for blocking the attack is equals to chanceForBlocking(attackerAgility,attackerStrength)
+	 * 			| if(blocking <this.chanceForBlocking(attackerAgility,attackerStrength)
+	 * 			|	then return
 	 * 			| Math.random() < 0.25 * ( (this.getStrength() + this.getAgility())
 	 * 			|	/ (attacker.getStrength() + attacker.getAgility()) )
 	 * @post	  When this unit fails to dodge or block the attack,
 	 * 			  this unit's hitPoints are lowered,
 	 * 			  relative to the strength of the attacker.
-	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
+	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - this.damge(attackerStrength)
 	 */
 	private void defend(double attackerAgility, double attackerStrength) {
 		this.isDefending = true;
-		double chance = Math.random();
-		if(chance < this.chanceForDodging(attackerAgility)){
+		double dodge = Math.random();
+		if(dodge < this.chanceForDodging(attackerAgility)){
 			this.dodge();
 			return;
 		}else{
-			chance = Math.random();
-			if(chance< this.chanceForBlocking(attackerAgility,attackerStrength)){
+			double block = Math.random();
+			if(block< this.chanceForBlocking(attackerAgility,attackerStrength)){
 				return;
 			}else{
-				this.setCurrentHitPoints(this.getCurrentHitPoints() - damage(attackerStrength));
+				this.setCurrentHitPoints(this.getCurrentHitPoints() - this.damage(attackerStrength));
 			}
 		}
 		this.saveUnitSate();
@@ -1857,11 +1872,13 @@ public class Unit {
 	}
 
 	/**
+	 * @note	  this is equals to the defender 
+	 * 
 	 * @param	  attackerAgility
 	 * 			  The attackers agility
 	 *
 	 * @return	  Gives the chance for dodging an attack
-	 * 			| return 0.2*(this.getAgility()/attackerAgility)
+	 * 			| return 0.20*(this.getAgility()/attackerAgility)
 	 */
 	private double chanceForDodging(double attackerAgility){
 		return (0.20*(this.getAgility()/attackerAgility));
@@ -1870,9 +1887,12 @@ public class Unit {
 	/**
 	 * 			  This Method set the change the units position when dodging
 	 *
-	 * @post 	  The new UnitCoordinates are the coordinates of a randomNeighboringCube
+	 * @post 	  The new UnitCoordinates are the coordinates of a randomNeighboringCube that is a valid cube
+	 * 			| while(!this.position.isValidPosition(randomNeighboringCube)
+	 * 			| 	then randomNeighboringCube = calculateRandomNeighboringCube()
 	 *
 	 * @post	  Set the position of the unit to those coordinates
+	 * 			| new.position.setUnitCoordinates(randomNeighboringCube)
 	 *
 	 *
 	 */
@@ -1888,6 +1908,9 @@ public class Unit {
 	 *
 	 *
 	 * @return	  This method returns a random calculate a random neighboring cube of the unit
+	 * 			| Result == new int[][]{equalXDifferentY, 
+	 * 			| 	equalYDifferentX, 
+	 * 			| 	differentXDifferentY}[new Random().nextInt(3)]
 	 *
 	 *
 	 */
@@ -1911,14 +1934,16 @@ public class Unit {
 	}
 
 	/**
-	 * @param	  attackerAgility
+	 * @note	 this is equals to the defender 
+	 * 
+	 * @param	 attackerAgility
 	 * 			  The attackers agility
 	 *
-	 * @param 	  attackerStrength
+	 * @param 	 attackerStrength
 	 * 			  attackers strength
 	 *
 	 * @return    Gives the chance for a defending unit to block the attack
-	 *			| result == 0.25*(this.getAgility() + this.getStrength())/(attackerAgility + attackerStrength)
+	 *			| Result == 0.25*(this.getAgility() + this.getStrength())/(attackerAgility + attackerStrength)
 	 *
 	 */
 	private double chanceForBlocking(double attackerAgility, double attackerStrength){
