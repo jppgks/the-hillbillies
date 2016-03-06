@@ -457,7 +457,7 @@ public class Unit {
 	 * @param attributeValue
 	 * 			  The value to initialize this unit's attribute with.
 	 * @effect 	  If the given value is within the minimum and maximum
-	 * 			  attribute value range, the attribute's value is set
+	 * 			  initial attribute value range, the attribute's value is set
 	 * 			  to the given value.
 	 * 			| this.setAttribute(attributeKind, attributeValue)
 	 * @effect 	  If the given value is smaller than the minimum initial
@@ -550,33 +550,41 @@ public class Unit {
 	}
 
 	/**
+	 * Set the weight of this unit to the given weight.
+	 *
 	 * @param 	  weight
-	 *
-	 * @post 	  if the given weight larger is then MAX_WEIGHT then weight
-	 * 			  is equals to MAX_WEIGHT
-	 * 			| if( weight > MAX_WEIGHT)
-	 * 			|	then new.weight == MAX_WEIGHT
-	 * @post 	  if the given weight smaller is then MIN_WEIGHT
-	 * 			  then is new weight equals to MIN_WEIGHT
-	 *
-	 * @post 	  the weight of a unit must all times be at least minWeight()
-	 * 			  if its smaller set the weight equals to minWeight()
-	 * @post 	  the new weight is equals as the given weight
-	 * 			| new.weight == weight
-	 *
+	 *			  The new weight for this unit.
+	 * @post 	  If the given weight is within the range established by
+	 * 			  the minimum weight and maximum attribute value for this unit,
+	 * 			  then the weight of this unit is equal to the given weight.
+	 * 			| if (weight >= this.getMinWeight()) && (weight <= this.getMaxAttributeValue())
+	 * 			|	then new.getWeight() == weight
+	 * @post	  If the given weight exceeds the maximum attribute value,
+	 * 			  then the weight of this unit is equal to the max attribute value.
+	 * 			| if (weight > this.getMaxAttributeValue())
+	 * 			| 	then new.getWeight() == this.getMaxAttributeValue()
+	 * @post	  If the given weight is lower than the minimum weight value of this unit,
+	 * 			  then the weight of this unit is equal to the minimum weight value.
+	 * 			| if (weight < this.getMinWeight())
+	 * 			|	then new.getWeight() == this.getMinWeight()
 	 */
-	public void setWeight(double weight){
-		if(weight <= getMinWeight())
-			weight = getMinWeight();
-		this.weight = weight;
+	public void setWeight(double weight) {
+		if (weight > this.getMaxAttributeValue()) {
+			this.weight = this.getMaxAttributeValue();
+		}
+		if (weight < this.getMinWeight()) {
+			this.weight = this.getMinWeight();
+		}
+		if (weight >= this.getMinWeight() && weight <= this.getMaxAttributeValue())
+			this.weight = weight;
 	}
 
 	/**
-	 * @return 	  the minWeight of a unit
-	 * 			| (this.getStrength()+this.getAgility())/2
+	 * @return 	  The minimum weight for any unit.
+	 * 			| result == (this.getStrength() + this.getAgility()) / 2
 	 */
 
-	private double getMinWeight(){
+	private double getMinWeight() {
 		return (this.getStrength()+this.getAgility())/2;
 	}
 
@@ -609,16 +617,18 @@ public class Unit {
 	}
 
 	/**
-	 * @return	  the minimum number of weight, agility, strength,toughness
+	 * @return	  The minimum value for the agility, strength and toughness
+	 * 			  for any unit.
 	 */
-	private double getMinAttributeValue(){
+	private double getMinAttributeValue() {
 		return MIN_ATTRIBUTE_VALUE;
 	}
 
 	/**
-	 * @return	  the maximum number of weight, agility, strength,toughness
+	 * @return	  The maximum value for the weight, agility, strength and toughness
+	 * 			  for any unit.
 	 */
-	private double getMaxAttributeValue(){
+	private double getMaxAttributeValue() {
 		return MAX_ATTRIBUTE_VALUE;
 	}
 
@@ -683,13 +693,15 @@ public class Unit {
 	}
 
 	/**
-	 * @param 		attributeValue
-	 * 				  The attribute value to change
+	 * Return a value, based on the given one, within range for initialization of an attribute.
+	 *
+	 * @param attributeValue
+	 * 			  The attribute value to get a proper initial value for.
 	 * 
-	 * @return		  the  modulo of attribute value 
-	 * 				| Result == this.getMinInitialAttributeValue()
-	 *				| + (attributeValue - this.getMinInitialAttributeValue())
-	 *				| % (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue())
+	 * @return	  The  modulo of attribute value
+	 * 			| Result == this.getMinInitialAttributeValue()
+	 *			| + (attributeValue - this.getMinInitialAttributeValue())
+	 *			| % (this.getMaxInitialAttributeValue() - this.getMinInitialAttributeValue())
 	 */
 	private int getAttributeValueWithinInitialRangeFromTooLargeValue(int attributeValue) {
 		return this.getMinInitialAttributeValue()
@@ -698,46 +710,50 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  hitpoints
-	 * 			  The amount of hitpoints need to be set
+	 * Set the hit points of this unit to the given hit points.
 	 *
-	 * @post 	  The hitpoints must be valid
-	 * 			| isValidHitPoints(hitpoints)
+	 * @param hitPoints
+	 * 			  The new hit points for this unit.
 	 *
+	 * @pre 	  The hitPoints must be valid.
+	 * 			| isValidHitPoints(hitPoints)
+	 * @post 	  If the given hit points are valid,
+	 * 			  the hit points of this unit are set to them.
+	 *			| new.getCurrentHitPoints() == hitPoints
 	 */
 
-	private void setCurrentHitPoints(double hitpoints){
-		assert isValidHitPoints(hitpoints);
-		this.currentHitPoints = hitpoints;
+	private void setCurrentHitPoints(double hitPoints) {
+		assert isValidHitPoints(hitPoints);
+		this.currentHitPoints = hitPoints;
 	}
 
 	/**
-	 * @param 	  hitpoints
+	 * @param 	  hitPoints
 	 *
-	 * @return 	  True if the amounts of hitpoints larger or equals to zero
-	 *            and is smaller or equals to the maximum hitpoints the unit can have
-	 *         	| Result == ( (0 <= hitpoints) && ( hitpoints <= this.maxHitPoints())
+	 * @return 	  True if the given hit points are smaller than the maximum hit points for any unit
+	 * 			  and larger than the minimum hit points for any unit.
+	 *         	| result == ( (this.getMinHitPoints() <= hitPoints) && ( hitPoints <= this.getMaxHitPoints())
 	 */
-	private boolean isValidHitPoints(double hitpoints){
-		if(hitpoints <= this.getMaxHitPoints() && hitpoints >=getMinHitPoints())
+	private boolean isValidHitPoints(double hitPoints) {
+		if(hitPoints <= this.getMaxHitPoints() && hitPoints >=getMinHitPoints())
 			return true;
 		return false;
 	}
 
 	/**
-	 * @return 	  returns the maximum hitpoints the unit can have
-	 * 			| result == 200.(this.getWeight()/100).(this.getTughness()/100)
+	 * @return 	  Returns the maximum hit points this unit can have.
+	 * 			| result == 200 * (this.getWeight()/100) * (this.getToughness()/100)
 	 */
-	public double getMaxHitPoints(){
+	public double getMaxHitPoints() {
 		return (200.0 * (this.getWeight()/100.0) * (this.getToughness()/100.0));
 	}
 
 	/**
-	 * @return	  the minimum hit points a unit can have
-	 * 			| Result == MIN_HIT_POINTS
+	 * @return	  The minimum amount of hit points for any unit.
+	 * 			| Result == Unit.MIN_HIT_POINTS
 	 */
-	private double getMinHitPoints(){
-		return MIN_HIT_POINTS;
+	private double getMinHitPoints() {
+		return Unit.MIN_HIT_POINTS;
 	}
 
 	/**
@@ -798,21 +814,18 @@ public class Unit {
 	 * 			|	then new.defaultBehaviorEnabled == false
 	 * 			| else
 	 * 			|	then new.defaultBehaviorEnabled == true
-	 *
 	 */
-
-	public void setDefaultBehaviorEnabled(Boolean toggle){
+	public void setDefaultBehaviorEnabled(Boolean toggle) {
 		this.defaultBehaviorEnabled= toggle;
 	}
 
 	/**
-	 * 				  A method that update the units state, orientation and position
+	 * A method that updates the unit's state, orientation and position.
 	 *
-	 * @param		  dt
-	 * 				  Time interval
-	 *
+	 * @param dt
+	 * 			  Time interval
 	 */
-	public void advanceTime(double dt)throws IllegalArgumentException {
+	public void advanceTime(double dt) throws IllegalArgumentException {
 		if(dt <= 0 && dt >= 0.2)
 			throw new IllegalArgumentException();
 		//When the unit State is MOVING then to this
@@ -856,7 +869,9 @@ public class Unit {
 	}
 
 	/**
-	 * @return 	  Returns the current state of this unit.
+	 * Returns the current state of this unit.
+	 *
+	 * @return 	  The current state of this unit.
 	 * 			| result == this.state
 	 */
 	@Basic
@@ -865,8 +880,8 @@ public class Unit {
 	}
 
 	/**
-	 * @param		  dt	
-	 * 				  Time interval
+	 * @param dt
+	 * 			  Time interval
 	 * 
 	 * 				  
 	 */
@@ -894,10 +909,10 @@ public class Unit {
 	}
 
 	/**
+	 * Returns whether or not this unit is currently sprinting.
 	 *
-	 * @return	  true if the unit is sprinting else return false
+	 * @return	  true if the unit is sprinting, false otherwise.
 	 * 			| result == this.isSprinting
-	 *
 	 */
 	@Basic
 	public boolean isSprinting(){
@@ -905,17 +920,18 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	   	speed
-	 * 				  The speed of the unit
-	 * @post		  the currentSpeed is equals to speed
-	 * 				| this.currentSpeed = speed 	
+	 * Set the current speed of this unit to the given speed.
+	 *
+	 * @param speed
+	 * 			  The speed of the unit
+	 * @post	  The current speed is equal to the given speed.
+	 * 			| new.currentSpeed == speed
 	 */
 	private void setCurrentSpeed(double speed){
 		this.currentSpeed = speed;
 	}
 
 	/**
-	 * 			  the position were the unit will go
 	 * @return 	  if the unit is lower than the targetposition then the speed will be
 	 * 			  0.5*getUnitBaseSpeed()
 	 * 			  if the unit is higher then the targetposition the speed will be
@@ -945,8 +961,8 @@ public class Unit {
 	}
 
 	/**
-	 * @return		  The neighboringCubeToMoveTo
-	 * 				| Result == this.neighboringCubeToMoveTo
+	 * @return	  The neighboringCubeToMoveTo
+	 * 			| result == this.neighboringCubeToMoveTo
 	 */
 	@Basic
 	private int[] getNeighboringCubeToMoveTo(){
@@ -962,11 +978,10 @@ public class Unit {
 	}
 
 	/**
-	 * @param		  time
+	 * @param time
 	 *
-	 * @post		  Set the sprintCounter equals to the given time
-	 * 				| new.sprintCounter == time
-	 *
+	 * @post	  Set the sprintCounter equals to the given time
+	 * 			| new.sprintCounter == time
 	 */
 	private void setSprintCounter(double time){
 		this.sprintCounter = time;
@@ -974,10 +989,8 @@ public class Unit {
 
 	/**
 	 *
-	 *
-	 * @return		  Gives the current value of sprintCounter
-	 * 				| Result == this.sprintCounter
-	 *
+	 * @return	  The current value of sprintCounter
+	 * 			| result == this.sprintCounter
 	 */
 	@Basic
 	private double getSprintCounter() {
@@ -985,19 +998,20 @@ public class Unit {
 	}
 
 	/**
-	 * @post 	  if the unit isn't sprinting do nothing
+	 * Stop the sprint of this unit.
 	 *
 	 * @post 	  if the unit is sprinting set sprinting to false
 	 * 			| new.isSprinting == false
-	 *
 	 */
 	public void stopSprinting(){
 		this.isSprinting = false;
 	}
 
 	/**
-	 * 				  Return the currentStaminaPoints of this Unit.
-	 * @return		| result == this.currentStaminaPoints
+	 * Return the current stamina points of this unit.
+	 *
+	 * @return	The current stamina points.
+	 * 	 	  | result == this.currentStaminaPoints
 	 */
 	@Basic @Raw
 	public double getCurrentStaminaPoints() {
@@ -1005,7 +1019,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  counter
+	 * @param counter
 	 * 			  the counter that need to be reseted
 	 *
 	 * @post	  The given counter is set to it's default value
@@ -1042,7 +1056,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  orientation
+	 * @param orientation
 	 * 			  The new orientation for this unit.
 	 * @post 	  If the given orientation is within the range of minimum and maximum
 	 * 			  orientation values, the orientation of this unit is set to the given orientation.
@@ -1085,11 +1099,11 @@ public class Unit {
 	}
 
 	/**
-	 * @return		  a double array of the velocity in the x,y and z axis
-	 * 				| Result == new double[]{
-	 *				|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[0])/ distance,
-	 *				|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[1])/ distance,
-	 *				|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[2])/ distance,}
+	 * @return	  a double array of the velocity in the x,y and z axis
+	 * 			| result == new double[]{
+	 *			|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[0])/ distance,
+	 *			|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[1])/ distance,
+	 *			|	this.getUnitWalkSpeed() * (this.getNeighboringCubeToMoveTo()[2])/ distance,}
 	 * 	
 	 */
 	private double[] getUnitVelocity() {
@@ -1103,11 +1117,11 @@ public class Unit {
 	}
 
 	/**
-	 * @return		  the distance
-	 * 				| Result == Math.sqrt(
-	 *				|	Math.pow(this.getNeighboringCubeToMoveTo()[0], 2) +
-	 *				|	Math.pow(this.getNeighboringCubeToMoveTo()[1], 2) +
-	 *				|	Math.pow(this.getNeighboringCubeToMoveTo()[2], 2))
+	 * @return	  The distance to the next cube to move to.
+	 * 			| result == Math.sqrt(
+	 *			|	Math.pow(this.getNeighboringCubeToMoveTo()[0], 2) +
+	 *			|	Math.pow(this.getNeighboringCubeToMoveTo()[1], 2) +
+	 *			|	Math.pow(this.getNeighboringCubeToMoveTo()[2], 2))
 	 */
 	private double getDistance() {
 		return Math.sqrt(
@@ -1118,17 +1132,17 @@ public class Unit {
 	}
 
 	/**
-	 * @param 		  neighboringCubeToMoveTo
+	 * @param neighboringCubeToMoveTo
 	 * 
-	 * @post		  Set the neighboringCubeToMoveTo equals to neighboringCubeToMoveTo
-	 * 				| new.neighboringCubeToMoveTo = neighboringCubeToMoveTo
+	 * @post	  Set the neighboringCubeToMoveTo equals to neighboringCubeToMoveTo
+	 * 			| new.neighboringCubeToMoveTo = neighboringCubeToMoveTo
 	 */
 	private void setNeighboringCubeToMoveTo(int[] neighboringCubeToMoveTo){
 		this.neighboringCubeToMoveTo = neighboringCubeToMoveTo;
 	}
 
 	/**
-	 * @return		  The the displacement a unit has to do
+	 * @return	  The displacement of this unit when moving.
 	 *
 	 */
 	private int[] getMovementChange() {
@@ -1162,10 +1176,10 @@ public class Unit {
 	}
 
 	/**
-	 * 				Method that's calls in advanceTime and update the Units position
+	 * Method that's calls in advanceTime and update the Units position
 	 * 
-	 * @param 		dt
-	 * 				  Difference in time
+	 * @param dt
+	 * 		  Difference in time
 	 */
 	private void updatePosition(double dt) {
 		this.position.unitX += this.getUnitVelocity()[0] * dt;
@@ -1194,8 +1208,8 @@ public class Unit {
 	}
 
 	/**
-	 * @return 		  the initialPosition of a unit
-	 * 				| Result == this.initialPosition
+	 * @return 	  The initial position of a unit
+	 * 			| result == this.initialPosition
 	 */
 	@Basic
 	private double[] getInitialPosition() {
@@ -1212,7 +1226,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  state
+	 * @param state
 	 *
 	 * @post 	  The new state is equal to the given state.
 	 * 			| new.getState() == state
@@ -1232,7 +1246,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  targetPosition
+	 * @param targetPosition
 	 *
 	 * @post 	  The new targetPosition is equal to the given targetPosition.
 	 * 			| new.targetPosition == targetPosition
@@ -1243,7 +1257,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  newTargetPosition
+	 * @param newTargetPosition
 	 *
 	 * @post 	  The new newTargetPosition is equal to the given newTargetPosition.
 	 * 			| new.newTargetPosition == newTargetPosition
@@ -1254,7 +1268,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  initialPosition
+	 * @param initialPosition
 	 *
 	 * @post 	  The new newTargetPosition is equal to the given initialPosition.
 	 * 			| new.initialPosition == initialPosition
@@ -1301,7 +1315,7 @@ public class Unit {
 	}
 
 	/**
-	 * @return 	  	  return the current hitpoints of the unit
+	 * @return 	  	  return the current hitPoints of the unit
 	 * 				| Result == this.currentHitPoints
 	 */
 	@Basic
@@ -1310,7 +1324,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param		  time
+	 * @param time
 	 *
 	 * @post		  Set the restCounter equals to the given time
 	 * 				| new.restCounter == time
@@ -1353,15 +1367,15 @@ public class Unit {
 
 	/**
 	 * @return 	  gives the amount Stamina points need to regenerate per time unit of REGEN_REST_TIME
-	 * 			| restult == (this.getToughness)/100
+	 * 			| Result == (this.getToughness)/100
 	 */
 	private double getRegenStamina(){
 		return this.getToughness()/100.0;
 	}
 
 	/**
-	 * @param		  dt
-	 * 				  Time interval
+	 * @param dt
+	 * 		  Time interval
 	 */
 	private void advanceWhileWorking(double dt) {
 		this.setWorkCounter(this.getWorkCounter()-dt);
@@ -1373,10 +1387,10 @@ public class Unit {
 	}
 
 	/**
-	 * @param		  time
+	 * @param time
 	 *
-	 * @post		  Set the workCounter equals to the given time
-	 * 				| new.workCounter == time
+	 * @post	  Set the workCounter equals to the given time
+	 * 			| new.workCounter == time
 	 *
 	 */
 	private void setWorkCounter(double time){
@@ -1385,10 +1399,8 @@ public class Unit {
 
 	/**
 	 *
-	 *
-	 * @return		  Gives the current value of workCounter
-	 * 				| Result == this.workCounter
-	 *
+	 * @return	  Gives the current value of workCounter
+	 * 			| result == this.workCounter
 	 */
 	@Basic
 	private double getWorkCounter() {
@@ -1397,10 +1409,8 @@ public class Unit {
 
 	/**
 	 *
-	 * @param		  dt
-	 * 				  Time interval
-	 *
-	 *
+	 * @param dt
+	 * 		  Time interval
 	 */
 	private void advanceWhileAttacking(double dt) {
 		this.setOrientation((float) Math.atan2(
@@ -1422,8 +1432,8 @@ public class Unit {
 	}
 
 	/**
-	 * @return		  The unit that's current defending against this unit
-	 * 				| Result == this.defender
+	 * @return	  The unit that's current defending against this unit
+	 * 			| result == this.defender
 	 */
 	@Basic
 	private Unit getDefender(){
@@ -1431,10 +1441,10 @@ public class Unit {
 	}
 
 	/**
-	 * @param		  time
+	 * @param time
 	 *
-	 * @post		  Set the fightCounter equals to the given time
-	 * 				| new.fightCounter == time
+	 * @post	  Set the fightCounter equals to the given time
+	 * 			| new.fightCounter == time
 	 *
 	 */
 	private void setFightCounter(double time){
@@ -1444,8 +1454,8 @@ public class Unit {
 	/**
 	 *
 	 *
-	 * @return		  Gives the current value of fightCounter
-	 * 				| Result == this.fightCounter
+	 * @return	  Gives the current value of fightCounter
+	 * 			| Result == this.fightCounter
 	 *
 	 */
 	@Basic
@@ -1454,8 +1464,7 @@ public class Unit {
 	}
 
 	/**
-	 *
-	 * 			 Method that update the units State whit it's previous and also update the orientation
+	 * Method that update the units State whit it's previous and also update the orientation
 	 *
 	 * @post	  State is set to the previous State
 	 * 			| new.setState(this.getPreviousState())
@@ -1493,10 +1502,10 @@ public class Unit {
 	}
 
 	/**
-	 * @param		  time
+	 * @param time
 	 *
-	 * @post		  Set the needToRestCounter equals to the given time
-	 * 				| new.needToRestCounter == time
+	 * @post	  Set the needToRestCounter equals to the given time
+	 * 			| new.needToRestCounter == time
 	 *
 	 */
 	private void setNeedToRestCounter(double time){
@@ -1505,10 +1514,8 @@ public class Unit {
 
 	/**
 	 *
-	 *
-	 * @return		  Gives the current value of needToRestCounter
-	 * 				| Result == this.needToRestCounter
-	 *
+	 * @return	  Gives the current value of needToRestCounter
+	 * 			| Result == this.needToRestCounter
 	 */
 	@Basic
 	private double getNeedToRestCounter() {
@@ -1523,7 +1530,7 @@ public class Unit {
 	 * 			| this.setState(State.RESTING)
 	 *
 	 * @throws IllegalStateException
-	 * 			  When a unit has the maximum hitpoints and the maximum of currentStaminaPoints
+	 * 			  When a unit has the maximum hitPoints and the maximum of currentStaminaPoints
 	 * 			  the unit can't rest
 	 * 			| if(this.getCurrentHitPoints() == this.maxHitPoints())
 	 * 			| && ( this.getCurrentStaminaPoints == this.getMaxStaminaPoints())
@@ -1542,9 +1549,8 @@ public class Unit {
 
 	/**
 	 *
-	 * @return		  Gives the current value of defaultBehaviorEnabled
-	 * 				| Result == this.defaultBehaviorEnabled
-	 *
+	 * @return	  Gives the current value of defaultBehaviorEnabled
+	 * 			| result == this.defaultBehaviorEnabled
 	 */
 	@Basic
 	public Boolean getDefaultBehaviorEnabled(){
@@ -1555,9 +1561,11 @@ public class Unit {
 	 * @post 	  choose a random state move, conduct a work task, rest until it has full recovered currentHitPoints and currentStaminaPoints
 	 *
 	 * @post  	  if is moving sprinting till it's exhausted
-	 *
+	 * 			|if(randomBehaviorNumber== 0)
+	 * 			|	then this.startSprinting()
 	 * @throws IllegalStateException
 	 * 			  if the unit is doing a state
+	 *			| if this.getState() != NONE
 	 */
 	private void startDefaultBehavior() throws IllegalStateException{
 		if(this.getState()!= State.NONE)
@@ -1565,7 +1573,7 @@ public class Unit {
 		int randomBehaviorNumber =new Random().nextInt(5);
 		if(randomBehaviorNumber== 0) {
 			moveTo(new int[]{new Random().nextInt(50), new Random().nextInt(50), new Random().nextInt(50)});
-			startSprinting();
+			this.startSprinting();
 		}
 		else if(randomBehaviorNumber == 1) {
 			work();
@@ -1624,17 +1632,15 @@ public class Unit {
 
 	/**
 	 * @param dx
-	 * 			  X coordinate of neighbouring cube to move to.
+	 * 			  X coordinate of neighboring cube to move to.
 	 * @param dy
-	 * 			  Y coordinate of neighbouring cube to move to.
+	 * 			  Y coordinate of neighboring cube to move to.
 	 * @param dz
-	 * 			  Z coordinate of neighbouring cube to move to.
+	 * 			  Z coordinate of neighboring cube to move to.
 	 * @post 	  the unit moves to an adjacent cube of the current one
 	 * 			| new.position.getUnitCoordinates() == targetPosition
-	 * @post 	  the orientation must be set to atan2(vy,vx)
-	 * 			| new.getOrientation() == atan2(vy,vx)
 	 * @throws IllegalArgumentException
-	 * 			  When the given cube coordinates aren't from a neighbouring cube of this unit.
+	 * 			  When the given cube coordinates aren't from a neighboring cube of this unit.
 	 *
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
@@ -1644,7 +1650,7 @@ public class Unit {
 				this.position.getCubeCoordinates()[2]+dz})) {
 			throw new IllegalArgumentException();
 		}
-
+		//when the unit need to move to the same cube as his cube something weird happens
 		if (dx == 0 && dy == 0 && dz == 0) {
 			return;
 		}
@@ -1686,7 +1692,7 @@ public class Unit {
 
 	/**
 	 * @param 	  targetPosition
-	 *
+	 * 
 	 * @post 	  the new position must be the target position if it's not moving and set the State on moving
 	 * 			| this.Position.getPositon() == targetPosition
 	 * 			| new.setState(State.MOVING)
@@ -1713,8 +1719,8 @@ public class Unit {
 	 * 			| this.setState(State.WORKING)
 	 *
 	 * @throws IllegalStateException
-	 * 			  The unit is attacking or defending
-	 * 			| if(this.getState() == State.ATTACKING)
+	 * 			  The unit is attacking or defending or working or moving
+	 * 			| if(this.getState() != State.NONE)
 	 */
 	public void work() throws IllegalStateException {
 		if(this.getState() != State.NONE)
@@ -1744,19 +1750,32 @@ public class Unit {
 	 * @throws IllegalStateException
 	 * 			  When the victim is not within reach.
 	 * @note 	  Conducting an attack lasts 1s of game time.
+	 * @post	  if the defender is located on a neighboring cube of the attacker then 
+	 * 			  set the state of this unit to ATTACKING and set the defender as defender
+	 * 			| if(this.isNeighboringCube(defender.position.getCubeCoordinates()))
+	 * 			|	then new.setState(State.ATTACKING)
+	 * 			|	new.setDefender(defender)
+	 * 			|	this.getDefender().defend(this.getAgility(), this.getStrength())
+	 * @post	  Set the fight counter equals to the fight time
+	 * 			|	new.setFightCoutner() == this.getFightTime()
+	 * 
 	 */
 	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
+		// when there is no unit 
 		if (defender == null) {
 			throw new IllegalArgumentException();
 		}
+		// Can't attack units that not on a neighboring cube of the attacker
 		if(!(this.isNeighboringCube(defender.position.getCubeCoordinates())))
 			throw new IllegalStateException();
 		if(defender.getCurrentHitPoints()<=0)
 			this.setState(State.NONE);
 		else{
 			this.setFightCounter(this.getFightTime());
+			// set the state of the defender on attacking
 			this.setState(State.ATTACKING);
 			this.setDefender(defender);
+									// the attackers agility and strength
 			this.getDefender().defend(this.getAgility(), this.getStrength());
 		}
 	}
@@ -1807,7 +1826,7 @@ public class Unit {
 	 *
 	 * @param 		  defender
 	 * 				  Set the unit that will be defending against this unit
-	 * 				| this.theDefender == defender
+	 * 				| new.theDefender == defender
 	 *
 	 */
 	private void setDefender(Unit defender){
@@ -1822,34 +1841,36 @@ public class Unit {
 	 * 			  The agility of the attacking unit.
 	 * @param 	  attackerStrength
 	 * 			  The strength of the attacking unit.
-	 * @post 	  When the agility of this unit is high enough,
-	 * 			  relative to the agility of its attacker,
+	 * @post 	  When the block is smaller then chance for dodging,
 	 * 			  this unit dodges the attack and moves to a
 	 * 			  random neighBouring cube.
-	 * 			| Math.random() < 0.20 * (this.getAgility() / attacker.getAgility())
+	 * 			| if(dodge < this.chanceForDodging(attackerAgility)
+	 * 			|	then this.dodge
+	 * @effect	  the unit moves to a random neighboring cube
+	 * 			| new.position.setUnitCoordinates(randomNeighboringCube) 
 	 * @post 	  When this unit fails to dodge the attack,
-	 * 			  this unit blocks the attack when the sum of it's
-	 * 			  strength and agility, relative to those of its attacker
-	 * 			  is high enough.
+	 * 			  this unit chance for blocking the attack is equals to chanceForBlocking(attackerAgility,attackerStrength)
+	 * 			| if(blocking <this.chanceForBlocking(attackerAgility,attackerStrength)
+	 * 			|	then return
 	 * 			| Math.random() < 0.25 * ( (this.getStrength() + this.getAgility())
 	 * 			|	/ (attacker.getStrength() + attacker.getAgility()) )
 	 * @post	  When this unit fails to dodge or block the attack,
 	 * 			  this unit's hitPoints are lowered,
 	 * 			  relative to the strength of the attacker.
-	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - (attacker.getStrength() / 10)
+	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - this.damge(attackerStrength)
 	 */
 	private void defend(double attackerAgility, double attackerStrength) {
 		this.isDefending = true;
-		double chance = Math.random();
-		if(chance < this.chanceForDodging(attackerAgility)){
+		double dodge = Math.random();
+		if(dodge < this.chanceForDodging(attackerAgility)){
 			this.dodge();
 			return;
 		}else{
-			chance = Math.random();
-			if(chance< this.chanceForBlocking(attackerAgility,attackerStrength)){
+			double block = Math.random();
+			if(block< this.chanceForBlocking(attackerAgility,attackerStrength)){
 				return;
 			}else{
-				this.setCurrentHitPoints(this.getCurrentHitPoints() - damage(attackerStrength));
+				this.setCurrentHitPoints(this.getCurrentHitPoints() - this.damage(attackerStrength));
 			}
 		}
 		this.saveUnitSate();
@@ -1857,11 +1878,13 @@ public class Unit {
 	}
 
 	/**
+	 * @note	  this is equals to the defender 
+	 * 
 	 * @param	  attackerAgility
 	 * 			  The attackers agility
 	 *
 	 * @return	  Gives the chance for dodging an attack
-	 * 			| return 0.2*(this.getAgility()/attackerAgility)
+	 * 			| return 0.20*(this.getAgility()/attackerAgility)
 	 */
 	private double chanceForDodging(double attackerAgility){
 		return (0.20*(this.getAgility()/attackerAgility));
@@ -1870,9 +1893,12 @@ public class Unit {
 	/**
 	 * 			  This Method set the change the units position when dodging
 	 *
-	 * @post 	  The new UnitCoordinates are the coordinates of a randomNeighboringCube
+	 * @post 	  The new UnitCoordinates are the coordinates of a randomNeighboringCube that is a valid cube
+	 * 			| while(!this.position.isValidPosition(randomNeighboringCube)
+	 * 			| 	then randomNeighboringCube = calculateRandomNeighboringCube()
 	 *
 	 * @post	  Set the position of the unit to those coordinates
+	 * 			| new.position.setUnitCoordinates(randomNeighboringCube)
 	 *
 	 *
 	 */
@@ -1888,6 +1914,9 @@ public class Unit {
 	 *
 	 *
 	 * @return	  This method returns a random calculate a random neighboring cube of the unit
+	 * 			| Result == new int[][]{equalXDifferentY, 
+	 * 			| 	equalYDifferentX, 
+	 * 			| 	differentXDifferentY}[new Random().nextInt(3)]
 	 *
 	 *
 	 */
@@ -1911,14 +1940,16 @@ public class Unit {
 	}
 
 	/**
-	 * @param	  attackerAgility
+	 * @note	 this is equals to the defender 
+	 * 
+	 * @param	 attackerAgility
 	 * 			  The attackers agility
 	 *
-	 * @param 	  attackerStrength
+	 * @param 	 attackerStrength
 	 * 			  attackers strength
 	 *
 	 * @return    Gives the chance for a defending unit to block the attack
-	 *			| result == 0.25*(this.getAgility() + this.getStrength())/(attackerAgility + attackerStrength)
+	 *			| Result == 0.25*(this.getAgility() + this.getStrength())/(attackerAgility + attackerStrength)
 	 *
 	 */
 	private double chanceForBlocking(double attackerAgility, double attackerStrength){
