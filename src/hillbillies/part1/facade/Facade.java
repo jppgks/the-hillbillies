@@ -32,7 +32,7 @@ public class Facade implements IFacade {
 		try {
 			unit.setName(newName);
 		} catch (IllegalArgumentException exc) {
-			unit.setName("Billy the Hill");
+//			unit.setName("Billy the Hill");
 			throw new ModelException();
 		}
 		
