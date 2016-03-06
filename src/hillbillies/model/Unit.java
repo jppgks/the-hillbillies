@@ -1802,12 +1802,12 @@ public class Unit {
 	 * 			  relative to the agility of its attacker,
 	 * 			  this unit dodges the attack and moves to a
 	 * 			  random neighBouring cube.
-	 * 			| 1 <= 0.20 * (this.getAgility() / attacker.getAgility())
+	 * 			| Math.random() < 0.20 * (this.getAgility() / attacker.getAgility())
 	 * @post 	  When this unit fails to dodge the attack,
 	 * 			  this unit blocks the attack when the sum of it's
 	 * 			  strength and agility, relative to those of its attacker
 	 * 			  is high enough.
-	 * 			| 1 <= 0.25 * ( (this.getStrength() + this.getAgility())
+	 * 			| Math.random() < 0.25 * ( (this.getStrength() + this.getAgility())
 	 * 			|	/ (attacker.getStrength() + attacker.getAgility()) )
 	 * @post	  When this unit fails to dodge or block the attack,
 	 * 			  this unit's hitPoints are lowered,
