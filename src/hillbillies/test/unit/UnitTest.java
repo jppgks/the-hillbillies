@@ -2,8 +2,6 @@ package hillbillies.test.unit;
 
 import hillbillies.model.State;
 import hillbillies.model.Unit;
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -413,20 +411,24 @@ public class UnitTest {
 	}
 
 	@Test
-	public void testAttack() {
-		fail("Not yet implemented");
+	public void AttackNeighboringUnit_LegalCase() {
+		Unit defender = new Unit("TestUnit", new int[] { 2, 2, 3 }, 50, 50, 50, 50, false);
+		this.unit.attack(defender);
+
+		assertEquals(State.ATTACKING, this.unit.getState());
+
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void AttackNotNeighboringUnit_IllegalCase() throws IllegalStateException {
+		Unit defender = new Unit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
+		this.unit.attack(defender);
 	}
 
 	@Test
 	public void testDefend() {
 		fail("Not yet implemented");
 	}
-
-	@Test
-	public void testAdvanceTime() {
-		fail("Not yet implemented");
-	}
-
 
 	@Test
 	public void testSetDefaultBehaviorEnabled() {

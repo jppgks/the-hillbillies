@@ -1579,7 +1579,7 @@ public class Unit {
 	 * 			| result == this.weight
 	 */
 	@Basic
-	public double getWeight(){
+	public double getWeight() {
 		return this.weight;
 	}
 
