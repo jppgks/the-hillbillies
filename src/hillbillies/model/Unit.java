@@ -303,7 +303,7 @@ public class Unit {
 	 */
 	@Raw
 	public void setName(String name) throws IllegalArgumentException {
-		if (! isValidName(name))
+		if (! isValidName(name) || name == null)
 			throw new IllegalArgumentException();
 		this.name = name;
 	}
@@ -380,7 +380,7 @@ public class Unit {
 		 */
 		@Raw
 		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
-			if(!isValidPosition(cubeCoordinates))
+			if(!isValidPosition(cubeCoordinates) || cubeCoordinates == null)
 				throw new IllegalCoordinateException(cubeCoordinates);
 			this.setOccupyingCubeCoordinates(cubeCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
@@ -842,6 +842,7 @@ public class Unit {
 	 * @return 	  Returns the current state of this unit.
 	 * 			| result == this.state
 	 */
+	@Basic
 	public State getState(){
 		return this.state;
 	}
@@ -881,6 +882,7 @@ public class Unit {
 	 * 			| result == this.isSprinting
 	 *
 	 */
+	@Basic
 	public boolean isSprinting(){
 		return this.isSprinting;
 	}
@@ -929,6 +931,7 @@ public class Unit {
 	 * @return		  The neighboringCubeToMoveTo
 	 * 				| Result == this.neighboringCubeToMoveTo
 	 */
+	@Basic
 	private int[] getNeighboringCubeToMoveTo(){
 		return this.neighboringCubeToMoveTo;
 	}
@@ -959,6 +962,7 @@ public class Unit {
 	 * 				| Result == this.sprintCounter
 	 *
 	 */
+	@Basic
 	private double getSprintCounter() {
 		return this.sprintCounter;
 	}
@@ -1176,6 +1180,7 @@ public class Unit {
 	 * @return 		  the initialPosition of a unit
 	 * 				| Result == this.initialPosition
 	 */
+	@Basic
 	private double[] getInitialPosition() {
 		return this.initialPosition;
 	}
@@ -1184,6 +1189,7 @@ public class Unit {
 	 * @return 		  the targetPosition of a unit
 	 * 				| Result == this.targetPosition
 	 */
+	@Basic
 	private int[] getTargetPosition(){
 		return this.targetPosition;
 	}
@@ -1202,7 +1208,8 @@ public class Unit {
 	/**
 	 * @return 		  the newTargetPosition of a unit( != targetPosition)
 	 * 				| Result == this.newTargetPosition
-	 */	
+	 */
+	@Basic
 	int[] getNewTargetPosition(){
 		return this.newTargetPosition;
 	}
@@ -1280,6 +1287,7 @@ public class Unit {
 	 * @return 	  	  return the current hitpoints of the unit
 	 * 				| Result == this.currentHitPoints
 	 */
+	@Basic
 	public double getCurrentHitPoints(){
 		return this.currentHitPoints;
 	}
@@ -1302,6 +1310,7 @@ public class Unit {
 	 * 				| Result == this.restCounter
 	 *
 	 */
+	@Basic
 	private double getRestCounter(){
 		return this.restCounter;
 	}
@@ -1364,6 +1373,7 @@ public class Unit {
 	 * 				| Result == this.workCounter
 	 *
 	 */
+	@Basic
 	private double getWorkCounter() {
 		return this.workCounter;
 	}
@@ -1398,6 +1408,7 @@ public class Unit {
 	 * @return		  The unit that's current defending against this unit
 	 * 				| Result == this.defender
 	 */
+	@Basic
 	private Unit getDefender(){
 		return this.theDefender;
 	}
@@ -1420,6 +1431,7 @@ public class Unit {
 	 * 				| Result == this.fightCounter
 	 *
 	 */
+	@Basic
 	private double getFightCounter() {
 		return this.fightCounter;
 	}
@@ -1449,6 +1461,7 @@ public class Unit {
 	 * @return	  Gives the units previous State
 	 * 			| Result = this.previousState
 	 */
+	@Basic
 	private State getPreviousState(){
 		return this.previousState;
 	}
@@ -1457,6 +1470,7 @@ public class Unit {
 	 * @return	  Gives the units previous orientation
 	 * 			| Result = this.previousOrientation
 	 */
+	@Basic
 	private float getPreviousOrientation(){
 		return this.previousOrientation;
 	}
@@ -1479,6 +1493,7 @@ public class Unit {
 	 * 				| Result == this.needToRestCounter
 	 *
 	 */
+	@Basic
 	private double getNeedToRestCounter() {
 		return this.needToRestCounter;
 	}
@@ -1514,6 +1529,7 @@ public class Unit {
 	 * 				| Result == this.defaultBehaviorEnabled
 	 *
 	 */
+	@Basic
 	public Boolean getDefaultBehaviorEnabled(){
 		return this.defaultBehaviorEnabled;
 	}
@@ -1562,7 +1578,8 @@ public class Unit {
 	 * @return 	  Returns the current weight of the unit.
 	 * 			| result == this.weight
 	 */
-	public double getWeight(){
+	@Basic
+	public double getWeight() {
 		return this.weight;
 	}
 
@@ -1651,22 +1668,22 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  targetposition
+	 * @param 	  targetPosition
 	 *
 	 * @post 	  the new position must be the target position if it's not moving and set the State on moving
-	 * 			| this.Position.getPositon() == targetposition
+	 * 			| this.Position.getPositon() == targetPosition
 	 * 			| new.setState(State.MOVING)
-	 * @post      if the unit is moving set the newTargetPosition equals to targetposition
+	 * @post      if the unit is moving set the newTargetPosition equals to targetPosition
 	 *
 	 */
-	public void moveTo(int[] targetposition) throws IllegalCoordinateException {
-		if (! this.position.isValidPosition(targetposition)) {
-			throw new IllegalCoordinateException(targetposition);
+	public void moveTo(int[] targetPosition) throws IllegalCoordinateException {
+		if (! this.position.isValidPosition(targetPosition) || targetPosition == null) {
+			throw new IllegalCoordinateException(targetPosition);
 		}
 		if(this.getState()== State.MOVING){
-			this.setNewTargetPosition(targetposition);
+			this.setNewTargetPosition(targetPosition);
 		}else{
-			this.setTargetPosition(targetposition);
+			this.setTargetPosition(targetPosition);
 			this.setState(State.MOVING);
 		}
 	}
@@ -1711,7 +1728,10 @@ public class Unit {
 	 * 			  When the victim is not within reach.
 	 * @note 	  Conducting an attack lasts 1s of game time.
 	 */
-	public void attack(Unit defender) throws IllegalStateException {
+	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
+		if (defender == null) {
+			throw new IllegalArgumentException();
+		}
 		if(!(this.isNeighboringCube(defender.position.getCubeCoordinates())))
 			throw new IllegalStateException();
 		if(defender.getCurrentHitPoints()<=0)
@@ -1785,12 +1805,12 @@ public class Unit {
 	 * 			  relative to the agility of its attacker,
 	 * 			  this unit dodges the attack and moves to a
 	 * 			  random neighBouring cube.
-	 * 			| 1 <= 0.20 * (this.getAgility() / attacker.getAgility())
+	 * 			| Math.random() < 0.20 * (this.getAgility() / attacker.getAgility())
 	 * @post 	  When this unit fails to dodge the attack,
 	 * 			  this unit blocks the attack when the sum of it's
 	 * 			  strength and agility, relative to those of its attacker
 	 * 			  is high enough.
-	 * 			| 1 <= 0.25 * ( (this.getStrength() + this.getAgility())
+	 * 			| Math.random() < 0.25 * ( (this.getStrength() + this.getAgility())
 	 * 			|	/ (attacker.getStrength() + attacker.getAgility()) )
 	 * @post	  When this unit fails to dodge or block the attack,
 	 * 			  this unit's hitPoints are lowered,
@@ -1851,11 +1871,22 @@ public class Unit {
 	 *
 	 */
 	private int[] calculateRandomNeighboringCube() {
-		return new int[] {
-				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)] /*+/- 1*/,
-				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)] /*+/- 1*/,
+		int[] equalXDifferentY = new int[]{
+				this.position.getCubeCoordinates()[0],
+				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
 				this.position.getCubeCoordinates()[2]
 		};
+		int[] equalYDifferentX = new int[]{
+				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.position.getCubeCoordinates()[1],
+				this.position.getCubeCoordinates()[2]
+		};
+		int[] differentXDifferentY = new int[]{
+				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.position.getCubeCoordinates()[2]
+		};
+		return new int[][]{equalXDifferentY, equalYDifferentX, differentXDifferentY}[new Random().nextInt(3)];
 	}
 
 	/**
