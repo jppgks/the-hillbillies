@@ -303,7 +303,7 @@ public class Unit {
 	 */
 	@Raw
 	public void setName(String name) throws IllegalArgumentException {
-		if (! isValidName(name))
+		if (! isValidName(name) || name == null)
 			throw new IllegalArgumentException();
 		this.name = name;
 	}
@@ -380,7 +380,7 @@ public class Unit {
 		 */
 		@Raw
 		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
-			if(!isValidPosition(cubeCoordinates))
+			if(!isValidPosition(cubeCoordinates) || cubeCoordinates == null)
 				throw new IllegalCoordinateException(cubeCoordinates);
 			this.setOccupyingCubeCoordinates(cubeCoordinates);
 			double halfCubeSideLength = cubeSideLength / 2;
@@ -1668,22 +1668,22 @@ public class Unit {
 	}
 
 	/**
-	 * @param 	  targetposition
+	 * @param 	  targetPosition
 	 *
 	 * @post 	  the new position must be the target position if it's not moving and set the State on moving
-	 * 			| this.Position.getPositon() == targetposition
+	 * 			| this.Position.getPositon() == targetPosition
 	 * 			| new.setState(State.MOVING)
-	 * @post      if the unit is moving set the newTargetPosition equals to targetposition
+	 * @post      if the unit is moving set the newTargetPosition equals to targetPosition
 	 *
 	 */
-	public void moveTo(int[] targetposition) throws IllegalCoordinateException {
-		if (! this.position.isValidPosition(targetposition)) {
-			throw new IllegalCoordinateException(targetposition);
+	public void moveTo(int[] targetPosition) throws IllegalCoordinateException {
+		if (! this.position.isValidPosition(targetPosition) || targetPosition == null) {
+			throw new IllegalCoordinateException(targetPosition);
 		}
 		if(this.getState()== State.MOVING){
-			this.setNewTargetPosition(targetposition);
+			this.setNewTargetPosition(targetPosition);
 		}else{
-			this.setTargetPosition(targetposition);
+			this.setTargetPosition(targetPosition);
 			this.setState(State.MOVING);
 		}
 	}
@@ -1728,7 +1728,10 @@ public class Unit {
 	 * 			  When the victim is not within reach.
 	 * @note 	  Conducting an attack lasts 1s of game time.
 	 */
-	public void attack(Unit defender) throws IllegalStateException {
+	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
+		if (defender == null) {
+			throw new IllegalArgumentException();
+		}
 		if(!(this.isNeighboringCube(defender.position.getCubeCoordinates())))
 			throw new IllegalStateException();
 		if(defender.getCurrentHitPoints()<=0)

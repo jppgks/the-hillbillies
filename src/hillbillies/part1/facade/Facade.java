@@ -175,6 +175,8 @@ public class Facade implements IFacade {
 			attacker.attack(defender);
 		} catch (IllegalStateException exc) {
 	
+		} catch (IllegalArgumentException exc) {
+			
 		}
 	}
 
