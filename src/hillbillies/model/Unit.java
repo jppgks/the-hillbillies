@@ -1868,11 +1868,22 @@ public class Unit {
 	 *
 	 */
 	private int[] calculateRandomNeighboringCube() {
-		return new int[] {
-				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)] /*+/- 1*/,
-				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)] /*+/- 1*/,
+		int[] equalXDifferentY = new int[]{
+				this.position.getCubeCoordinates()[0],
+				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
 				this.position.getCubeCoordinates()[2]
 		};
+		int[] equalYDifferentX = new int[]{
+				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.position.getCubeCoordinates()[1],
+				this.position.getCubeCoordinates()[2]
+		};
+		int[] differentXDifferentY = new int[]{
+				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.position.getCubeCoordinates()[2]
+		};
+		return new int[][]{equalXDifferentY, equalYDifferentX, differentXDifferentY}[new Random().nextInt(3)];
 	}
 
 	/**
