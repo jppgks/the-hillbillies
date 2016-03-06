@@ -32,7 +32,8 @@ public class Facade implements IFacade {
 		try {
 			unit.setName(newName);
 		} catch (IllegalArgumentException exc) {
-			unit.setName("\"Billy The Hill\"");
+//			unit.setName("Billy the Hill");
+			throw new ModelException();
 		}
 		
 	}
@@ -174,6 +175,8 @@ public class Facade implements IFacade {
 			attacker.attack(defender);
 		} catch (IllegalStateException exc) {
 	
+		} catch (IllegalArgumentException exc) {
+			
 		}
 	}
 

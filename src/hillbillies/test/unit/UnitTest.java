@@ -2,8 +2,6 @@ package hillbillies.test.unit;
 
 import hillbillies.model.State;
 import hillbillies.model.Unit;
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,24 +36,24 @@ public class UnitTest {
 
 		double halfCubeSideLength = this.unit.position.cubeSideLength / 2;
 		assertDoublePositionEquals(
-				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3,
+				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3 +halfCubeSideLength,
 				this.unit.position.getUnitCoordinates()
 		);
 
-		assertEquals(50, this.unit.getWeight(), 0.01);
-		assertEquals(50, this.unit.getAgility(), 0.01);
-		assertEquals(50, this.unit.getStrength(), 0.01);
-		assertEquals(50, this.unit.getToughness(), 0.01);
+		assertEquals(50, this.unit.getWeight(), .01);
+		assertEquals(50, this.unit.getAgility(), .01);
+		assertEquals(50, this.unit.getStrength(), .01);
+		assertEquals(50, this.unit.getToughness(), .01);
 		assertFalse(this.unit.getDefaultBehaviorEnabled());
 
-		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints(), 0.01);
-		assertEquals(this.unit.getMaxStaminaPoints(), this.unit.getCurrentStaminaPoints(), 0.01);
+		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints(), .01);
+		assertEquals(this.unit.getMaxStaminaPoints(), this.unit.getCurrentStaminaPoints(), .01);
 	}
 	
 	@Test
 	public void CreatePosition_LegalCase() {
 		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 3});
-		assertDoublePositionEquals(1.5, 2.5, 3, testPosition.getUnitCoordinates());
+		assertDoublePositionEquals(1.5, 2.5, 3.5, testPosition.getUnitCoordinates());
 	}
 
 	@Test
@@ -68,86 +66,101 @@ public class UnitTest {
 		assertIntegerPositionEquals(1, 2, 3, this.unit.position.getCubeCoordinates());
 	}
 
+	// This method is private now.
 //	@Test
 //	public void SetCubeCoordinates_LegalCase() {
 //		unit.position.setOccupyingCubeCoordinates(new int[]{6, 7, 8});
 //		assertIntegerPositionEquals(6, 7, 8, unit.position.getCubeCoordinates());
 //	}
-//
-//	@Test(expected = IllegalCoordinateException.class)
-//	public void SetCubeCoordinates_IllegalCase() throws IllegalCoordinateException {
-//		unit.position.setOccupyingCubeCoordinates(new int[]{1, 2, 50});
-//	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#moveToAdjacent(hillbillies.model.Unit.Position)}.
-	 */
 	@Test
 	public void testMoveToAdjacent() {
-		fail("Not yet implemented");
+		double initialX = this.unit.position.getUnitCoordinates()[0];
+		double initialY = this.unit.position.getUnitCoordinates()[1];
+		double initialZ = this.unit.position.getUnitCoordinates()[2];
+
+		this.unit.moveToAdjacent(0, -1, 0);
+		this.unit.advanceTime(1.34);
+
+		assertDoublePositionEquals(
+				initialX,
+				initialY - 1,
+				initialZ,
+				this.unit.position.getUnitCoordinates());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#moveTo(hillbillies.model.Unit.Position)}.
-	 */
 	@Test
 	public void testMoveTo() {
-		fail("Not yet implemented");
+		this.unit.moveTo(new int[]{10, 2, 3});
+		for(int i = 0; i < 6; i++)
+			this.unit.advanceTime(1);
+		assertDoublePositionEquals(
+				7.5, 2.5, 3.5,
+				this.unit.position.getUnitCoordinates()
+		);
+
+		this.unit.advanceTime(1);
+
+		this.unit.moveTo(new int[]{7, 4, 3});
+		for(int i = 0; i < 100; i++)
+			this.unit.advanceTime(.1);
+		assertDoublePositionEquals(
+				7.5, 4.5, 3.5,
+				this.unit.position.getUnitCoordinates()
+		);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getUnitBaseSpeed()}.
-	 */
-	@Test
-	public void testGetUnitBaseSpeed() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getUnitWalkSpeed(hillbillies.model.Unit.Position)}.
-	 */
-	@Test
-	public void testGetUnitWalkSpeed() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#startSprinting()}.
-	 */
 	@Test
 	public void testStartSprinting() {
-		fail("Not yet implemented");
+		try {
+			method = unitClass.getDeclaredMethod("setState", State.class);
+			method.setAccessible(true);
+			method.invoke(this.unit, State.MOVING);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		this.unit.startSprinting();
+		assertTrue(this.unit.isSprinting());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#stopSprinting()}.
-	 */
 	@Test
 	public void testStopSprinting() {
-		fail("Not yet implemented");
+		this.testStartSprinting();
+		this.unit.stopSprinting();
+		assertFalse(this.unit.isSprinting());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#isSprinting()}.
-	 */
 	@Test
 	public void testIsSprinting() {
-		fail("Not yet implemented");
+		this.testStartSprinting();
+		assertTrue(this.unit.isSprinting());
+		this.unit.stopSprinting();
+		assertFalse(this.unit.isSprinting());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#work(java.lang.String)}.
-	 */
 	@Test
 	public void testWork_Doing_Nothing() {
-		unit.setState(State.NONE);
+		try {
+			method = unitClass.getDeclaredMethod("setState", State.class);
+			method.setAccessible(true);
+			method.invoke(this.unit, State.NONE);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		try {
 			unit.work();
 		} catch (Exception exc) {
 
 		}
 		assertEquals(State.WORKING, unit.getState());
-		assertEquals(500/unit.getStrength(),unit.getTimeForWork(),1);
 	}
 	
 	/**
@@ -155,7 +168,17 @@ public class UnitTest {
 	 */
 	@Test
 	public void testWork_Doing_Activity() {
-		unit.setState(State.RESTING);
+		try {
+			method = unitClass.getDeclaredMethod("setState", State.class);
+			method.setAccessible(true);
+			method.invoke(this.unit, State.RESTING);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		try {
 			unit.work();
 		} catch (Exception exc) {
@@ -164,17 +187,40 @@ public class UnitTest {
 		assertEquals(State.RESTING, unit.getState());
 	}
 	
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getTimeForWork()}.
-	 */
-	@Test
-	public void testGetTimeForWork() {
-		assertEquals(500/unit.getStrength(), (double)unit.getTimeForWork(),1);
-	}
+	// this is private now
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#getTimeForWork()}.
+//	 */
+//	@Test
+//	public void testGetTimeForWork() {
+//		assertEquals(500/unit.getStrength(), (double)unit.getTimeForWork(),1);
+//	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#rest()}.
+//	 */
+//	@Test
+//	public void testWork_Doing_Nothing() {
+//		unit.setState(State.NONE);
+//		try {
+//			unit.work();
+//		} catch (Exception exc) {
+//
+//		}
+//		assertEquals(State.WORKING, unit.getState());
+//		assertEquals(500/unit.getStrength(),unit.getTimeForWork(),1);
+//	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#rest()}.
-	 */
+//	@Test
+//	public void testWork_Doing_Activity() {
+//		unit.setState(State.RESTING);
+//		try {
+//			unit.work();
+//		} catch (Exception exc) {
+//
+//		}
+//		assertEquals(State.RESTING, unit.getState());
+//	}
+
 	@Test
 	public void testRest_Full_Hit_Stamina_Points() {
 		try {
@@ -184,324 +230,242 @@ public class UnitTest {
 		}
 		assertEquals(State.NONE, unit.getState());
 	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#rest()}.
+//	 */
+//	@Test
+//	public void testRest_NotFull_Hit_Stamina_Points() {
+//		unit.setCurrentHitPoints(10);
+//		unit.rest();
+//		assertEquals(State.RESTING, unit.getState());
+//	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#rest()}.
+//	 */
+//	@Test
+//	public void testRest_Doing_Other_Activity() {
+//		unit.setCurrentHitPoints(10);
+//		unit.setState(State.MOVING);
+//		try {
+//			unit.rest();
+//		} catch (IllegalStateException exc) {
+//			
+//		}
+//		assertEquals(State.MOVING, unit.getState());
+//	}
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#getRegenHitPoints()}.
+//	 */
+//	@Test
+//	public void testGetRegenHitPoints() {
+//		assertEquals(this.unit.getToughness()/200, this.unit.getRegenHitPoints());
+//	}
+//
+//	/**
+//	 * Test method for {@link hillbillies.model.Unit#getRegenStamina()}.
+//	 */
+//	@Test
+//	public void testGetRegenStamina() {
+//		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
+//	}
+	
+	// These methods are private now.
+//	@Test
+//	public void testGetRegenHitPoints() {
+//		assertEquals(this.unit.getToughness()/200, this.unit.getRegenHitPoints());
+//	}
+//
+//	@Test
+//	public void testGetRegenStamina() {
+//		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
+//	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#rest()}.
-	 */
-	@Test
-	public void testRest_NotFull_Hit_Stamina_Points() {
-		unit.setCurrentHitPoints(10);
-		unit.rest();
-		assertEquals(State.RESTING, unit.getState());
-	}
-	/**
-	 * Test method for {@link hillbillies.model.Unit#rest()}.
-	 */
-	@Test
-	public void testRest_Doing_Other_Activity() {
-		unit.setCurrentHitPoints(10);
-		unit.setState(State.MOVING);
-		try {
-			unit.rest();
-		} catch (IllegalStateException exc) {
-			// TODO: handle exception
-		}
-		assertEquals(State.MOVING, unit.getState());
-	}
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getRegenHitPoints()}.
-	 */
-	@Test
-	public void testGetRegenHitPoints() {
-		assertEquals(this.unit.getToughness()/200, this.unit.getRegenHitPoints());
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getRegenStamina()}.
-	 */
-	@Test
-	public void testGetRegenStamina() {
-		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getOrientation()}.
-	 */
+//	@Test
+//	public void testRest_NotFull_Hit_Stamina_Points() {
+//		unit.setCurrentHitPoints(10);
+//		unit.rest();
+//		assertEquals(State.RESTING, unit.getState());
+//	}
+//
+//	@Test
+//	public void testRest_Doing_Other_Activity() {
+//		unit.setCurrentHitPoints(10);
+//		unit.setState(State.MOVING);
+//		try {
+//			unit.rest();
+//		} catch (IllegalStateException exc) {
+//			// TODO: handle exception
+//		}
+//		assertEquals(State.MOVING, unit.getState());
+//	}
 	@Test
 	public void testGetOrientation() {
-		fail("Not yet implemented");
+		assertEquals(Math.PI / 2, this.unit.getOrientation(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getStrength()}.
-	 */
 	@Test
 	public void testGetStrength() {
 		this.unit.setStrength(55);
-		assertEquals(55, this.unit.getStrength());
+		assertEquals(55, this.unit.getStrength(), .01);
 	}
 
 	@Test
 	public void SetStrength_LegalCase() {
 		this.unit.setStrength(67);
-		assertEquals(67, this.unit.getStrength());
+		assertEquals(67, this.unit.getStrength(), .01);
 	}
 
 	@Test
 	public void SetStrength_InputLowerThanMinAttrValue() {
 		this.unit.setStrength(0);
-		assertEquals(1, this.unit.getStrength());
+		assertEquals(1, this.unit.getStrength(), .01);
 	}
 
 	@Test
 	public void SetStrength_InputHigherThanMaxAttrValue() {
 		this.unit.setStrength(235);
-		assertEquals(200, this.unit.getStrength());
+		assertEquals(200, this.unit.getStrength(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getAgility()}.
-	 */
 	@Test
 	public void testGetAgility() {
 		this.unit.setAgility(55);
-		assertEquals(55, this.unit.getAgility());
+		assertEquals(55, this.unit.getAgility(), .01);
 	}
 
 	@Test
 	public void SetAgility_LegalCase() {
 		this.unit.setAgility(67);
-		assertEquals(67, this.unit.getAgility());
+		assertEquals(67, this.unit.getAgility(), .01);
 	}
 
 	@Test
 	public void SetAgility_InputLowerThanMinAttrValue() {
 		this.unit.setAgility(0);
-		assertEquals(1, this.unit.getAgility());
+		assertEquals(1, this.unit.getAgility(), .01);
 	}
 
 	@Test
 	public void SetAgility_InputHigherThanMaxAttrValue() {
 		this.unit.setAgility(235);
-		assertEquals(200, this.unit.getAgility());
+		assertEquals(200, this.unit.getAgility(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getWeight()}.
-	 */
 	@Test
 	public void testGetWeight() {
-		assertEquals(50,this.unit.getWeight());
+		assertEquals(50,this.unit.getWeight(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setWeight(int)}.
-	 */
 	@Test
 	public void testSetWeight() {
 		this.unit.setWeight(100);
-		assertEquals(100, this.unit.getWeight());
+		assertEquals(100, this.unit.getWeight(), .01);
 		this.unit.setAgility(50);
 		this.unit.setStrength(50);
 		this.unit.setWeight(-5);
-		assertEquals((unit.getAgility()+unit.getStrength())/2, this.unit.getWeight());
+		assertEquals((unit.getAgility()+unit.getStrength())/2, this.unit.getWeight(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getMinWeight()}.
-	 */
-	@Test
-	public void testMinWeight() {
-		assertEquals((unit.getStrength()+ unit.getAgility())/2, unit.getMinWeight());
-	}
+	// This method is private now.
+//	@Test
+//	public void testMinWeight() {
+//		assertEquals((unit.getStrength()+ unit.getAgility())/2, unit.getMinWeight());
+//	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getToughness()}.
-	 */
 	@Test
 	public void testGetToughness() {
 		this.unit.setToughness(55);
-		assertEquals(55, this.unit.getToughness());
+		assertEquals(55, this.unit.getToughness(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setToughness(int)}.
-	 */
 	@Test
 	public void SetToughness_LegalCase() {
 		this.unit.setToughness(67);
-		assertEquals(67, this.unit.getToughness());
+		assertEquals(67, this.unit.getToughness(), .01);
 	}
 
 	@Test
 	public void SetToughness_InputLowerThanMinAttrValue() {
 		this.unit.setToughness(0);
-		assertEquals(1, this.unit.getToughness());
+		assertEquals(1, this.unit.getToughness(), .01);
 	}
 
 	@Test
 	public void SetToughness_InputHigherThanMaxAttrValue() {
 		this.unit.setToughness(235);
-		assertEquals(200, this.unit.getToughness());
+		assertEquals(200, this.unit.getToughness(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getActivity(java.lang.String)}.
-	 */
-	@Test
-	public void testGetActivity() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setState(java.lang.String)}.
-	 */
-	@Test
-	public void testSetActivity() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#isValidState(java.lang.String)}.
-	 */
-	@Test
-	public void testIsValidActivity() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#validActivities()}.
-	 */
-	@Test
-	public void testValidActivities() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#startDefaultBehaviour()}.
-	 */
-	@Test
-	public void testStartDefaultBehaviour() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#stopDefaultBehavior()}.
-	 */
-	@Test
-	public void testStopDefaultBehavior() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#toggleDefaultBehavior()}.
-	 */
-	@Test
-	public void testToggleDefaultBehavior() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getCurrentHitPoints()}.
-	 */
 	@Test
 	public void testGetHitPoints() {
-		assertEquals(50, this.unit.getCurrentHitPoints());
+		assertEquals(50, this.unit.getCurrentHitPoints(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setCurrentHitPoints(int)}.
-	 */
-	@Test
-	public void testSetHitPoints() {
-		this.unit.setCurrentHitPoints(50);
-		assertEquals(50, this.unit.getCurrentHitPoints());
-	}
+	// These methods are private now.
+//	@Test
+//	public void testSetHitPoints() {
+//		this.unit.setCurrentHitPoints(50);
+//		assertEquals(50, this.unit.getCurrentHitPoints());
+//	}
+//
+//	@Test
+//	public void IsValidHitPoints_LegalCase() {
+//		assertEquals(true,this.unit.isValidHitPoints(50));
+//		assertEquals(true,this.unit.isValidHitPoints(17));
+//	}
+//	@Test
+//	public void IsValidHitPoints_IllegalCase() {
+//		assertEquals(false,this.unit.isValidHitPoints(this.unit.getMaxHitPoints()+1));
+//		assertEquals(false,this.unit.isValidHitPoints(-17));
+//	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#isValidHitPoints(int)}.
-	 */
-	@Test
-	public void IsValidHitPoints_LegalCase() {
-		assertEquals(true,this.unit.isValidHitPoints(50));
-		assertEquals(true,this.unit.isValidHitPoints(17));
-	}
-	@Test
-	public void IsValidHitPoints_IllegalCase() {
-		assertEquals(false,this.unit.isValidHitPoints(this.unit.getMaxHitPoints()+1));
-		assertEquals(false,this.unit.isValidHitPoints(-17));
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getMaxHitPoints()}.
-	 */
 	@Test
 	public void testGetMaxHitPoints() {
-		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints());
+		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getCurrentStaminaPoints()}.
-	 */
 	@Test
 	public void testGetStamina() {
-		assertEquals(50,this.unit.getCurrentStaminaPoints());
+		assertEquals(50,this.unit.getCurrentStaminaPoints(), .01);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#isValidStamina(int)}.
-	 */
-	@Test
-	public void isValidStamina_LegalCase() {
-		assertEquals(true, this.unit.isValidStamina(50));
-		assertEquals(true, this.unit.isValidStamina(36));
-	}
+	// These methods are private now.
+//	@Test
+//	public void isValidStamina_LegalCase() {
+//		assertEquals(true, this.unit.isValidStamina(50));
+//		assertEquals(true, this.unit.isValidStamina(36));
+//	}
+//
+//	@Test
+//	public void isValidStamina_IllegalCase() {
+//		assertEquals(false, this.unit.isValidStamina(100));
+//		assertEquals(false, this.unit.isValidStamina(-23));
+//	}
+//
+//	@Test
+//	public void testSetStamina() {
+//		this.unit.setCurrentStaminaPoints(15);
+//		assertEquals(15, this.unit.getCurrentStaminaPoints());
+//
+//	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#isValidStamina(int)}.
-	 */
-	@Test
-	public void isValidStamina_IllegalCase() {
-		assertEquals(false, this.unit.isValidStamina(100));
-		assertEquals(false, this.unit.isValidStamina(-23));
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setStamina(int)}.
-	 */
-	@Test
-	public void testSetStamina() {
-		this.unit.setCurrentStamina(15);
-		assertEquals(15, this.unit.getCurrentStaminaPoints());
-		
-	}
-
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getMaxStaminaPoints()}.
-	 */
 	@Test
 	public void testGetMaxStaminaPoints() {
-		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints());
+		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints(), .01);
 		
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#getName()}.
-	 */
 	@Test
 	public void testGetName() {
 		assertEquals("TestUnit", this.unit.getName());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#isValidName(java.lang.String)}.
-	 */
 	@Test
 	public void isValidName_LegalCase() {
 		try {
 			method = unitClass.getDeclaredMethod("isValidName", String.class);
 			method.setAccessible(true);
-			assertEquals(true, method.invoke(null, "\"Test 'Name\""));
+			assertEquals(true, method.invoke(null, "Test 'Name"));
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
@@ -528,9 +492,6 @@ public class UnitTest {
 		//assertEquals(false, Unit.isValidName("|Test name 12"));
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#setName(java.lang.String)}.
-	 */
 	@Test
 	public void setName_LegalCase() {
 		this.unit.setName("New Test Name");
@@ -542,36 +503,40 @@ public class UnitTest {
 		this.unit.setName("New @Test5Name");
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#fight(hillbillies.model.Unit, hillbillies.model.Unit)}.
-	 */
 	@Test
-	public void testFight() {
-		fail("Not yet implemented");
+	public void AttackNeighboringUnit_LegalCase() {
+		Unit defender = new Unit("TestUnit", new int[] { 2, 2, 3 }, 50, 50, 50, 50, false);
+		this.unit.attack(defender);
+
+		assertEquals(State.ATTACKING, this.unit.getState());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#attack(hillbillies.model.Unit)}.
-	 */
-	@Test
-	public void testAttack() {
-		fail("Not yet implemented");
+	@Test(expected = IllegalStateException.class)
+	public void AttackNotNeighboringUnit_IllegalCase() throws IllegalStateException {
+		Unit defender = new Unit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
+		this.unit.attack(defender);
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#defend(hillbillies.model.Unit)}.
-	 */
 	@Test
-	public void testDefend() {
-		fail("Not yet implemented");
+	public void testSetDefaultBehaviorEnabled() {
+		this.unit.setDefaultBehaviorEnabled(true);
+		assertTrue(this.unit.getDefaultBehaviorEnabled());
+		this.unit.setDefaultBehaviorEnabled(false);
+		assertFalse(this.unit.getDefaultBehaviorEnabled());
 	}
 
-	/**
-	 * Test method for {@link hillbillies.model.Unit#advanceTime(double)}.
-	 */
 	@Test
-	public void testAdvanceTime() {
-		fail("Not yet implemented");
+	public void testGetState() {
+		assertEquals(State.NONE, this.unit.getState());
 	}
 
+	@Test
+	public void testGetCurrentSpeed() {
+		assertEquals(0, this.unit.getCurrentSpeed(), .01);
+	}
+
+	@Test
+	public void testGetDefaultBehaviorEnabled() {
+		assertFalse(this.unit.getDefaultBehaviorEnabled());
+	}
 }
