@@ -291,6 +291,7 @@ public class Unit {
 	 * be forced to rest.
 	 */
 	private static final double NEED_TO_REST_TIME = 180;
+	Faction faction;
 
 	/**
 	 * Set the name of this Unit to the given name.
