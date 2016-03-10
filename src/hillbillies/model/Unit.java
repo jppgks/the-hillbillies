@@ -1746,6 +1746,7 @@ public class Unit {
 		}else{
 			this.setTargetPosition(targetPosition);
 			this.setState(State.MOVING);
+			this.setRestRequestedWhileMoving(false);
 		}
 	}
 
