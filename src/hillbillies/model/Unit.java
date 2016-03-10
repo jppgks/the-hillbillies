@@ -1216,6 +1216,7 @@ public class Unit {
 				try {
 					this.saveUnitSate();
 					this.setState(State.NONE);
+					this.stopSprinting();
 					this.rest();
 				} catch (IllegalStateException exc) {
 					
@@ -1333,9 +1334,12 @@ public class Unit {
 			}
 		}
 		if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints() && this.getCurrentHitPoints() == this.getMaxHitPoints()) {
-			if(this.getPreviousState()== State.MOVING)
+			if(this.getPreviousState()== State.MOVING){
 				this.updateUnitState();
-			this.setState(State.NONE);
+				this.setRestRequestedWhileMoving(false);
+			}else{
+				this.setState(State.NONE);
+			}
 		}
 	}
 
@@ -1567,21 +1571,18 @@ public class Unit {
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
 			throw new IllegalStateException();
+		if (this.getState()== State.MOVING)
+			this.setRestRequestedWhileMoving(true);
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
-		if (this.getState()== State.MOVING)
-			this.toggleRestRequestedWhileMoving();
 		this.setState(State.RESTING);
 	}
 
 	/**
 	 * 
 	 */
-	private void toggleRestRequestedWhileMoving() {
-		if (this.restRequestedWhileMoving == false)
-			this.restRequestedWhileMoving = true;
-		else
-			this.restRequestedWhileMoving = false;
+	private void setRestRequestedWhileMoving(boolean haveToRest) {
+		this.restRequestedWhileMoving = haveToRest;
 	}
 
 	/**
