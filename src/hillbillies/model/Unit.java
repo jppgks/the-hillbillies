@@ -852,7 +852,11 @@ public class Unit {
 		this.setNeedToRestCounter(this.getNeedToRestCounter()-dt);
 		if (this.getNeedToRestCounter() <= 0) {
 			if (this.getState() != State.ATTACKING) {
-				this.rest();
+				try {
+					this.rest();
+				} catch (Exception e) {
+					// Do Nothing
+				}
 				//reset the NEEDTOREST_COUNTER
 				this.resetCounter("NEEDTOREST_COUNTER");
 			}
@@ -899,7 +903,7 @@ public class Unit {
 				}
 			}
 		}else{
-			this.setCurrentSpeed(this.getUnitBaseSpeed());
+			this.setCurrentSpeed(this.getUnitWalkSpeed());
 		}
 		if(!isDefending)
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
