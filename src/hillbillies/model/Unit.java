@@ -72,6 +72,7 @@ public class Unit {
 		this.setCurrentHitPoints(this.getMaxHitPoints());
 		this.setCurrentStaminaPoints(this.getMaxStaminaPoints());
 		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
+		this.setState(State.NONE);
 	}
 
 	/**
@@ -198,6 +199,10 @@ public class Unit {
 	 * this unit is done working.
 	 */
 	private double workCounter;
+	
+	private double currentSpeed;
+
+	private boolean restRequestedWhileMoving = false;
 
 	/**
 	 * Variable registering the number of seconds until
@@ -1206,9 +1211,25 @@ public class Unit {
 			}
 			if(this.getNewTargetPosition() != null)
 				this.setTargetPosition(this.getNewTargetPosition());
+			// check if there is a rest request
+			if(this.getRestRequestedWhileMoving())
+				try {
+					this.saveUnitSate();
+					this.setState(State.NONE);
+					this.rest();
+				} catch (IllegalStateException exc) {
+					
+				}		
 			this.setNewTargetPosition(null);
 			this.setInitialPosition(new double[]{0, 0, 0});
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean getRestRequestedWhileMoving() {
+		return this.restRequestedWhileMoving;
 	}
 
 	/**
@@ -1282,8 +1303,6 @@ public class Unit {
 		this.initialPosition = initialPosition;
 	}
 
-	private double currentSpeed;
-
 	/**
 	 * @return 		  the currentSpeed of a unit
 	 * 				| Result == this.currentSpeed
@@ -1314,6 +1333,8 @@ public class Unit {
 			}
 		}
 		if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints() && this.getCurrentHitPoints() == this.getMaxHitPoints()) {
+			if(this.getPreviousState()== State.MOVING)
+				this.updateUnitState();
 			this.setState(State.NONE);
 		}
 	}
@@ -1548,7 +1569,19 @@ public class Unit {
 			throw new IllegalStateException();
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
+		if (this.getState()== State.MOVING)
+			this.toggleRestRequestedWhileMoving();
 		this.setState(State.RESTING);
+	}
+
+	/**
+	 * 
+	 */
+	private void toggleRestRequestedWhileMoving() {
+		if (this.restRequestedWhileMoving == false)
+			this.restRequestedWhileMoving = true;
+		else
+			this.restRequestedWhileMoving = false;
 	}
 
 	/**
