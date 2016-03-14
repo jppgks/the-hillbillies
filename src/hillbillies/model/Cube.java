@@ -8,6 +8,8 @@ public class Cube {
 	private List<Cube> directlyAdjacentCubes;
 	private Position position;
 	private boolean isConnectedToBorder;
+	Boulder boulder;
+	Log log;
 
 	private List<Cube> calculateDirectlyAdjacentCubes() {
 		// TODO - implement Cube.calculateDirectlyAdjacentCubes
