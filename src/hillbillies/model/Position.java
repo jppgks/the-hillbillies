@@ -1,20 +1,24 @@
 package hillbillies.model;
 
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Raw;
+import be.kuleuven.cs.som.annotate.Value;
+
 @Value
 public class Position {
 
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	private double unitX;
+	public double unitX;
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	private double unitY;
+	public double unitY;
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	private double unitZ;
+	public double unitZ;
 	/**
 	 * Variables registering the cube coordinates of this unit position.
 	 */
@@ -31,6 +35,10 @@ public class Position {
 	 * Variable registering the length of a cube side in meters.
 	 */
 	public final double cubeSideLength = 1;
+
+	public Position(int[] initialPosition) {
+
+	}
 
 	/**
 	 * Return the unit coordinates of this unit position.

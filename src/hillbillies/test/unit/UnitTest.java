@@ -1,5 +1,6 @@
 package hillbillies.test.unit;
 
+import hillbillies.model.Position;
 import hillbillies.model.State;
 import hillbillies.model.Unit;
 import org.junit.Before;
@@ -52,13 +53,13 @@ public class UnitTest {
 	
 	@Test
 	public void CreatePosition_LegalCase() {
-		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 3});
+		Position testPosition = new Position(new int[] {1, 2, 3});
 		assertDoublePositionEquals(1.5, 2.5, 3.5, testPosition.getUnitCoordinates());
 	}
 
 	@Test
 	public void CreatePosition_IllegalCase() {
-		Unit.Position testPosition = unit.new Position(new int[] {1, 2, 50});
+		Position testPosition = new Position(new int[] {1, 2, 50});
 	}
 
 	@Test
@@ -162,10 +163,7 @@ public class UnitTest {
 		}
 		assertEquals(State.WORKING, unit.getState());
 	}
-	
-	/**
-	 * Test method for {@link hillbillies.model.Unit#work(java.lang.String)}.
-	 */
+
 	@Test
 	public void testWork_Doing_Activity() {
 		try {

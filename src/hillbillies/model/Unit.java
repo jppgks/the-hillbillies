@@ -64,7 +64,7 @@ public class Unit {
 		} catch (IllegalArgumentException exc) {
 			this.setName("\"Billy The Hill\"");
 		}
-		this.position = this.new Position(initialPosition);
+		this.position = new Position(initialPosition);
 		this.initializeAttribute("w", weight);
 		this.initializeAttribute("a", agility);
 		this.initializeAttribute("s", strength);
@@ -288,7 +288,7 @@ public class Unit {
 	private static final double NEED_TO_REST_TIME = 180;
 	Faction faction;
 	World world;
-	Position position;
+	public Position position;
 
 	/**
 	 * Set the name of this Unit to the given name.
@@ -321,17 +321,6 @@ public class Unit {
 	 */
 	private static boolean isValidName(String name) {
 		return name.matches("[A-Z][a-zA-Z\'\"\\s]+");
-	}
-
-	/**
-	 * A nested class in Unit for maintaining its position.
-	 *
-	 * @invar  	  The unit coordinates of each unit position must be valid
-	 * 			  unit coordinates for any unit position.
-	 *       	| isValidPosition(this.getUnitCoordinates())
-	 *
-	 */
-	public class Position {
 	}
 
 	/**
@@ -1080,7 +1069,7 @@ public class Unit {
 		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(getInitialPosition()[2]) <= 0) {
-			this.position.setUnitCoordinates(new int[]{
+			this.setUnitCoordinates(new int[]{
 					this.position.getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
 					this.position.getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
 					this.position.getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
@@ -1562,7 +1551,7 @@ public class Unit {
 	 *
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
-		if(!this.position.isValidPosition(new int[]{
+		if(!this.isValidPosition(new int[]{
 				this.position.getCubeCoordinates()[0]+dx,
 				this.position.getCubeCoordinates()[1]+dy,
 				this.position.getCubeCoordinates()[2]+dz})) {
@@ -1618,7 +1607,7 @@ public class Unit {
 	 *
 	 */
 	public void moveTo(int[] targetPosition) throws IllegalCoordinateException {
-		if (! this.position.isValidPosition(targetPosition) || targetPosition == null) {
+		if (! this.isValidPosition(targetPosition) || targetPosition == null) {
 			throw new IllegalCoordinateException(targetPosition);
 		}
 		if(this.getState()== State.MOVING){
@@ -1708,7 +1697,7 @@ public class Unit {
 	 */
 	private boolean isNeighboringCube(int[] cubeCoordinatesOfPossibleNeighbor) {
 		if(cubeCoordinatesOfPossibleNeighbor == null ||
-				(! this.position.isValidPosition(cubeCoordinatesOfPossibleNeighbor))) {
+				(! this.isValidPosition(cubeCoordinatesOfPossibleNeighbor))) {
 			return false;
 		}
 		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.position.getCubeCoordinates()[0]) == 1) {
@@ -1823,10 +1812,10 @@ public class Unit {
 	 */
 	private void dodge() {
 		int[] randomNeighboringCube = calculateRandomNeighboringCube();
-		while (! this.position.isValidPosition(randomNeighboringCube)) {
+		while (! this.isValidPosition(randomNeighboringCube)) {
 			randomNeighboringCube = calculateRandomNeighboringCube();
 		}
-		this.position.setUnitCoordinates(randomNeighboringCube);
+		this.setUnitCoordinates(randomNeighboringCube);
 	}
 
 	/**
