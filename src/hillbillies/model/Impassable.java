@@ -1,4 +1,4 @@
 package hillbillies.model;
 
-public class Impassable extends Terrain {
+public abstract class Impassable extends Terrain {
 }
