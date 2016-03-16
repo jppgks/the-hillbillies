@@ -38,7 +38,7 @@ public class UnitTest {
 		double halfCubeSideLength = this.unit.position.cubeSideLength / 2;
 		assertDoublePositionEquals(
 				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3 +halfCubeSideLength,
-				this.unit.position.getUnitCoordinates()
+				this.unit.position.getDoubleCoordinates()
 		);
 
 		assertEquals(50, this.unit.getWeight(), .01);
@@ -54,7 +54,7 @@ public class UnitTest {
 	@Test
 	public void CreatePosition_LegalCase() {
 		Position testPosition = new Position(new int[] {1, 2, 3});
-		assertDoublePositionEquals(1.5, 2.5, 3.5, testPosition.getUnitCoordinates());
+		assertDoublePositionEquals(1.5, 2.5, 3.5, testPosition.getDoubleCoordinates());
 	}
 
 	@Test
@@ -76,9 +76,9 @@ public class UnitTest {
 
 	@Test
 	public void testMoveToAdjacent() {
-		double initialX = this.unit.position.getUnitCoordinates()[0];
-		double initialY = this.unit.position.getUnitCoordinates()[1];
-		double initialZ = this.unit.position.getUnitCoordinates()[2];
+		double initialX = this.unit.position.getDoubleCoordinates()[0];
+		double initialY = this.unit.position.getDoubleCoordinates()[1];
+		double initialZ = this.unit.position.getDoubleCoordinates()[2];
 
 		this.unit.moveToAdjacent(0, -1, 0);
 		this.unit.advanceTime(1.34);
@@ -87,7 +87,7 @@ public class UnitTest {
 				initialX,
 				initialY - 1,
 				initialZ,
-				this.unit.position.getUnitCoordinates());
+				this.unit.position.getDoubleCoordinates());
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class UnitTest {
 			this.unit.advanceTime(1);
 		assertDoublePositionEquals(
 				7.5, 2.5, 3.5,
-				this.unit.position.getUnitCoordinates()
+				this.unit.position.getDoubleCoordinates()
 		);
 
 		this.unit.advanceTime(1);
@@ -107,7 +107,7 @@ public class UnitTest {
 			this.unit.advanceTime(.1);
 		assertDoublePositionEquals(
 				7.5, 4.5, 3.5,
-				this.unit.position.getUnitCoordinates()
+				this.unit.position.getDoubleCoordinates()
 		);
 	}
 

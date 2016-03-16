@@ -1320,11 +1320,11 @@ public class Unit {
 	 */
 	private void advanceWhileAttacking(double dt) {
 		this.setOrientation((float) Math.atan2(
-				this.getDefender().position.getUnitCoordinates()[1] - this.position.getUnitCoordinates()[1],
-				this.getDefender().position.getUnitCoordinates()[0] - this.position.getUnitCoordinates()[0]));
+				this.getDefender().position.getDoubleCoordinates()[1] - this.position.getDoubleCoordinates()[1],
+				this.getDefender().position.getDoubleCoordinates()[0] - this.position.getDoubleCoordinates()[0]));
 		this.getDefender().setOrientation((float) Math.atan2(
-				this.position.getUnitCoordinates()[1] - this.getDefender().position.getUnitCoordinates()[1],
-				this.position.getUnitCoordinates()[0] - this.getDefender().position.getUnitCoordinates()[0])
+				this.position.getDoubleCoordinates()[1] - this.getDefender().position.getDoubleCoordinates()[1],
+				this.position.getDoubleCoordinates()[0] - this.getDefender().position.getDoubleCoordinates()[0])
 		);
 		this.setFightCounter(this.getFightCounter() -dt);
 		if (this.getFightCounter() <= 0) {
