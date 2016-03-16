@@ -46,7 +46,7 @@ public class Position {
 	 */
 	@Basic
 	@Raw
-	public double[] getUnitCoordinates() {
+	public double[] getDoubleCoordinates() {
 		// TODO - implement Position.getUnitCoordinates
 		throw new UnsupportedOperationException();
 	}

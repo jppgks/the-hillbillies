@@ -10,20 +10,20 @@ import java.util.Random;
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
  * 
- * @author 	  Iwein Bau & Joppe Geluykens
- *
- * @note 	  A Unit is a basic type of in-game character with the ability to move around,
- * 			  interact with other such characters and manipulate the game world.
- *
- * @invar 	  The amount of current hit points must be valid
- * 			  hit points for any unit.
- * 		  	| isValidHitPoints(this.getCurrentHitPoints())
- * @invar  	  The current stamina points of each unit must be valid
- * 			  stamina points for any unit.
- *        	| isValidStamina(this.getCurrentStaminaPoints())
- * @invar  	  The name of each unit must be a valid
- * 			  name for any unit.
- *        	| isValidName(this.getName())
+ * @author  Iwein Bau & Joppe Geluykens
+ * 
+ * @note  A Unit is a basic type of in-game character with the ability to move around,
+ * interact with other such characters and manipulate the game world.
+ * 
+ * @invar  The amount of current hit points must be valid
+ * hit points for any unit.
+ * | isValidHitPoints(this.getCurrentHitPoints())
+ * @invar    The current stamina points of each unit must be valid
+ * stamina points for any unit.
+ * | isValidStamina(this.getCurrentStaminaPoints())
+ * @invar    The name of each unit must be a valid
+ * name for any unit.
+ * | isValidName(this.getName())
  */
 public class Unit {
 	/**
@@ -107,7 +107,7 @@ public class Unit {
 	 * Variable registering whether this unit is
 	 * conducting a sprint.
 	 */
-	private boolean isSprinting = false;
+	private boolean sprinting = false;
 
 	/**
 	 * Variable registering the current orientation of this unit.
@@ -137,7 +137,7 @@ public class Unit {
 	/**
 	 * Variable registering the current state of this unit.
 	 */
-	private State state = State.NONE;
+	private State state;
 
 	/**
 	 * Variable registering whether or not this unit's
@@ -289,6 +289,11 @@ public class Unit {
 	Faction faction;
 	World world;
 	public Position position;
+	private int currentExperiencePoints;
+	private int randomAttributePointCounter;
+	private boolean falling;
+	Log log;
+	Boulder boulder;
 
 	/**
 	 * Set the name of this Unit to the given name.
@@ -594,8 +599,8 @@ public class Unit {
 	 * @post 	  If the given hit points are valid,
 	 * 			  the hit points of this unit are set to them.
 	 *			| new.getCurrentHitPoints() == hitPoints
+     * TODO: 16/03/16 Die when 0 hitpoints left.
 	 */
-
 	private void setCurrentHitPoints(double hitPoints) {
 		assert isValidHitPoints(hitPoints);
 		this.currentHitPoints = hitPoints;
@@ -698,7 +703,8 @@ public class Unit {
 	 *
 	 * @param dt
 	 * 			  Time interval
-	 */
+     * TODO: 16/03/16 Update hitpoints when falling.
+     */
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		if(dt <= 0 && dt >= 0.2)
 			throw new IllegalArgumentException();
@@ -760,8 +766,6 @@ public class Unit {
 	/**
 	 * @param dt
 	 * 			  Time interval
-	 * 
-	 * 				  
 	 */
 	private void advanceWhileMoving(double dt) {
 		if (this.isSprinting()) {
@@ -790,11 +794,11 @@ public class Unit {
 	 * Returns whether or not this unit is currently sprinting.
 	 *
 	 * @return	  true if the unit is sprinting, false otherwise.
-	 * 			| result == this.isSprinting
+	 * 			| result == this.sprinting
 	 */
 	@Basic
 	public boolean isSprinting(){
-		return this.isSprinting;
+		return this.sprinting;
 	}
 
 	/**
@@ -824,6 +828,7 @@ public class Unit {
 	 * 			| if( getSprinting())
 	 * 			|	then totalSpeed *2
 	 * 			| result == totalSpeed
+	 * TODO: 16/03/16 Update speed when falling.
 	 */
 	private double getUnitWalkSpeed() {
 		double moveSpeed;
@@ -833,7 +838,7 @@ public class Unit {
 			moveSpeed =1.2* getUnitBaseSpeed();
 		else
 			moveSpeed = getUnitBaseSpeed();
-		if(isSprinting)
+		if(sprinting)
 			moveSpeed = 2*moveSpeed;
 		return moveSpeed;
 	}
@@ -879,10 +884,10 @@ public class Unit {
 	 * Stop the sprint of this unit.
 	 *
 	 * @post 	  if the unit is sprinting set sprinting to false
-	 * 			| new.isSprinting == false
+	 * 			| new.sprinting == false
 	 */
 	public void stopSprinting(){
-		this.isSprinting = false;
+		this.sprinting = false;
 	}
 
 	/**
@@ -1074,6 +1079,7 @@ public class Unit {
 					this.position.getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
 					this.position.getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
 			});
+            // TODO: 16/03/16 Increment experience points, except when interrupted.
 			if (Arrays.equals(this.position.getCubeCoordinates(), this.getTargetPosition())) {
 				this.setState(State.NONE);
 				this.stopSprinting();
@@ -1274,6 +1280,8 @@ public class Unit {
 	/**
 	 * @param dt
 	 * 		  Time interval
+     *
+     * TODO: 16/03/16 Specify work activity.
 	 */
 	private void advanceWhileWorking(double dt) {
 		this.setWorkCounter(this.getWorkCounter()-dt);
@@ -1435,7 +1443,7 @@ public class Unit {
 	 * @throws IllegalStateException
 	 *			  If the unit is currently executing an activity
 	 *			| if(this.getState() != State.NONE)
-	 *
+	 * TODO: 16/03/16 If unit is falling, abort.
 	 */
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
@@ -1548,7 +1556,7 @@ public class Unit {
 	 * 			| new.position.getUnitCoordinates() == targetPosition
 	 * @throws IllegalArgumentException
 	 * 			  When the given cube coordinates aren't from a neighboring cube of this unit.
-	 *
+	 * TODO: 16/03/16 If unit is falling, abort.
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
 		if(!this.isValidPosition(new int[]{
@@ -1578,12 +1586,12 @@ public class Unit {
 	 *
 	 * @post 	  if the unit is moving set sprinting to true
 	 * 			| if(this.getState()==State.MOVING)
-	 * 			|	then new.isSprinting == true
+	 * 			|	then new.sprinting == true
 	 *
 	 */
 	public void startSprinting(){
 		if(this.getState()==State.MOVING)
-			this.isSprinting = true;
+			this.sprinting = true;
 	}
 
 	/**
@@ -1604,7 +1612,8 @@ public class Unit {
 	 * 			| this.Position.getPositon() == targetPosition
 	 * 			| new.setState(State.MOVING)
 	 * @post      if the unit is moving set the newTargetPosition equals to targetPosition
-	 *
+	 * TODO: 16/03/16 If unit is falling, abort.
+     * TODO: 16/03/16 Integr
 	 */
 	public void moveTo(int[] targetPosition) throws IllegalCoordinateException {
 		if (! this.isValidPosition(targetPosition) || targetPosition == null) {
@@ -1629,7 +1638,8 @@ public class Unit {
 	 * @throws IllegalStateException
 	 * 			  The unit is attacking or defending or working or moving
 	 * 			| if(this.getState() != State.NONE)
-	 */
+	 * TODO: 16/03/16 If unit is falling, abort.
+     */
 	public void work() throws IllegalStateException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
@@ -1666,8 +1676,10 @@ public class Unit {
 	 * 			|	this.getDefender().defend(this.getAgility(), this.getStrength())
 	 * @post	  Set the fight counter equals to the fight time
 	 * 			|	new.setFightCoutner() == this.getFightTime()
-	 * 
-	 */
+	 * TODO: 16/03/16 If attacker or defender is falling, abort.
+     * TODO: 16/03/16 Attacker and defender must be of different factions.
+     * TODO: 16/03/16 Increase experience points by 20 if successful.
+     */
 	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
 		// when there is no unit 
 		if (defender == null) {
@@ -1766,6 +1778,9 @@ public class Unit {
 	 * 			  this unit's hitPoints are lowered,
 	 * 			  relative to the strength of the attacker.
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - this.damge(attackerStrength)
+     *
+     * TODO: 16/03/16 Increase experience points by 20 if successful.
+     *
 	 */
 	private void defend(double attackerAgility, double attackerStrength) {
 		this.isDefending = true;
@@ -1808,6 +1823,7 @@ public class Unit {
 	 * @post	  Set the position of the unit to those coordinates
 	 * 			| new.position.setUnitCoordinates(randomNeighboringCube)
 	 *
+     * TODO: 16/03/16 Cube to dodge to must feature passable terrain.
 	 *
 	 */
 	private void dodge() {
@@ -1952,6 +1968,74 @@ public class Unit {
 	@Raw
 	private void setCubeCoordinates(int[] cubeCoordinates) {
 		// TODO - implement Unit.setCubeCoordinates
+		throw new UnsupportedOperationException();
+	}
+
+	public Faction getFaction() {
+		return this.faction;
+	}
+
+	public void setFaction(Faction faction) {
+		this.faction = faction;
+	}
+
+	/**
+	 * 
+	 * @param faction
+	 */
+	private boolean canHaveAsFaction(Faction faction) {
+		// TODO - implement Unit.canHaveAsFaction
+		throw new UnsupportedOperationException();
+	}
+
+	public int getCurrentExperiencePoints() {
+		return this.currentExperiencePoints;
+	}
+
+	public void setCurrentExperiencePoints(int currentExperiencePoints) {
+		this.currentExperiencePoints = currentExperiencePoints;
+	}
+
+	public int getRandomAttributePointCounter() {
+		return this.randomAttributePointCounter;
+	}
+
+	public void setRandomAttributePointCounter(int randomAttributePointCounter) {
+		this.randomAttributePointCounter = randomAttributePointCounter;
+	}
+
+	public void incrementRandomAtrributeValue() {
+		// TODO - implement Unit.incrementRandomAtrributeValue
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * 
+	 *  * (To increment random attribute)
+	 */
+	public boolean hasEnoughExperiencePoints() {
+		// TODO - implement Unit.hasEnoughExperiencePoints
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isFalling() {
+		return this.falling;
+	}
+
+	public void setFalling(boolean falling) {
+		this.falling = falling;
+	}
+
+	/**
+	 * @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
+	 */
+	public boolean neighboringCubeHasSolidTerrain() {
+		// TODO - implement Unit.neighboringCubeHasSolidTerrain
+		throw new UnsupportedOperationException();
+	}
+
+	public void die() {
+		// TODO - implement Unit.die
 		throw new UnsupportedOperationException();
 	}
 }

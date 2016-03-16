@@ -8,8 +8,7 @@ public class Cube {
 	private List<Cube> directlyAdjacentCubes;
 	private Position position;
 	private boolean isConnectedToBorder;
-	Boulder boulder;
-	Log log;
+	private boolean passable;
 
 	private List<Cube> calculateDirectlyAdjacentCubes() {
 		// TODO - implement Cube.calculateDirectlyAdjacentCubes
@@ -34,6 +33,14 @@ public class Cube {
 	private double getChanceForMaterial() {
 		// TODO - implement Cube.getChanceForMaterial
 		throw new UnsupportedOperationException();
+	}
+
+	public boolean isPassable() {
+		return this.passable;
+	}
+
+	public void setPassable(boolean isPassable) {
+		this.passable = isPassable;
 	}
 
 }
