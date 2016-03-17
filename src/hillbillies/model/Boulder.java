@@ -1,4 +1,4 @@
 package hillbillies.model;
 
-public class Boulder extends GameObject {
+public class Boulder extends Material {
 }

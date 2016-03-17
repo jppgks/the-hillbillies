@@ -10,20 +10,20 @@ import java.util.Random;
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
  * 
- * @author 	  Iwein Bau & Joppe Geluykens
- *
- * @note 	  A Unit is a basic type of in-game character with the ability to move around,
- * 			  interact with other such characters and manipulate the game world.
- *
- * @invar 	  The amount of current hit points must be valid
- * 			  hit points for any unit.
- * 		  	| isValidHitPoints(this.getCurrentHitPoints())
- * @invar  	  The current stamina points of each unit must be valid
- * 			  stamina points for any unit.
- *        	| isValidStamina(this.getCurrentStaminaPoints())
- * @invar  	  The name of each unit must be a valid
- * 			  name for any unit.
- *        	| isValidName(this.getName())
+ * @author  Iwein Bau & Joppe Geluykens
+ * 
+ * @note  A Unit is a basic type of in-game character with the ability to move around,
+ * interact with other such characters and manipulate the game world.
+ * 
+ * @invar  The amount of current hit points must be valid
+ * hit points for any unit.
+ * | isValidHitPoints(this.getCurrentHitPoints())
+ * @invar    The current stamina points of each unit must be valid
+ * stamina points for any unit.
+ * | isValidStamina(this.getCurrentStaminaPoints())
+ * @invar    The name of each unit must be a valid
+ * name for any unit.
+ * | isValidName(this.getName())
  */
 public class Unit {
 	/**
@@ -64,7 +64,7 @@ public class Unit {
 		} catch (IllegalArgumentException exc) {
 			this.setName("\"Billy The Hill\"");
 		}
-		this.position = this.new Position(initialPosition);
+		this.position = new Position(initialPosition);
 		this.initializeAttribute("w", weight);
 		this.initializeAttribute("a", agility);
 		this.initializeAttribute("s", strength);
@@ -79,11 +79,6 @@ public class Unit {
 	 * Variable registering the current name of this Unit.
 	 */
 	private String name;
-
-	/**
-	 * Variable registering the current unit position of this unit.
-	 */
-	public Unit.Position position;
 
 	/**
 	 * Variable registering the target cube this unit is
@@ -112,7 +107,7 @@ public class Unit {
 	 * Variable registering whether this unit is
 	 * conducting a sprint.
 	 */
-	private boolean isSprinting = false;
+	private boolean sprinting = false;
 
 	/**
 	 * Variable registering the current orientation of this unit.
@@ -142,7 +137,7 @@ public class Unit {
 	/**
 	 * Variable registering the current state of this unit.
 	 */
-	private State state = State.NONE;
+	private State state;
 
 	/**
 	 * Variable registering whether or not this unit's
@@ -292,6 +287,13 @@ public class Unit {
 	 */
 	private static final double NEED_TO_REST_TIME = 180;
 	Faction faction;
+	World world;
+	public Position position;
+	private int currentExperiencePoints;
+	private int randomAttributePointCounter;
+	private boolean falling;
+	Log log;
+	Boulder boulder;
 
 	/**
 	 * Set the name of this Unit to the given name.
@@ -324,135 +326,6 @@ public class Unit {
 	 */
 	private static boolean isValidName(String name) {
 		return name.matches("[A-Z][a-zA-Z\'\"\\s]+");
-	}
-
-	/**
-	 * A nested class in Unit for maintaining its position.
-	 *
-	 * @invar  	  The unit coordinates of each unit position must be valid
-	 * 			  unit coordinates for any unit position.
-	 *       	| isValidPosition(this.getUnitCoordinates())
-	 *
-	 */
-	public class Position {
-		/**
-		 * Initialize this new unit position with given cube coordinates.
-		 *
-		 * @param cubeCoordinates
-		 *            The coordinates of the cube that this new unit position is occupying.
-		 * @effect 	  Sets the unit coordinates to the given cube coordinates if they are valid.
-		 * 			  If that's not the case, an error message is printed out.
-		 *       	| this.setUnitCoordinates(cubeCoordinates)
-		 */
-		public Position(int[] cubeCoordinates){
-			try {
-				this.setUnitCoordinates(cubeCoordinates);
-			} catch (IllegalCoordinateException exc) {
-				System.out.println("++++++++++ "+exc.getMessage()+" ++++++++++");
-			}
-		}
-
-		/**
-		 * Variables registering the unit coordinates of this unit position.
-		 */
-		private double unitX, unitY, unitZ;
-
-		/**
-		 * Variables registering the cube coordinates of this unit position.
-		 */
-		private int cubeX, cubeY, cubeZ;
-
-		/**
-		 * Variable registering the length of a cube side in meters.
-		 */
-		public final double cubeSideLength = 1;
-
-		/**
-		 * Set the unit coordinates of this unit position to the sum of
-		 * the given cube coordinates and 1/2 of a cube side.
-		 *
-		 * @param cubeCoordinates
-		 *         	  The cube coordinates of this unit position.
-		 * @post 	  The unit coordinates of this new unit position are equal to
-		 *         	  the given cube coordinates + 1/2 of a cube side.
-		 *        	| new.getUnitCoordinates() ==
-		 *        	|	{
-		 *        	|	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
-		 *        	| 	  (cubeCoordinates[1] + 1/2 * cubeSideLength),
-		 *        	| 	  (cubeCoordinates[2] + 1/2 * cubeSideLength)
-		 *        	| 	}
-		 * @throws IllegalCoordinateException
-		 *         	  The given coordinates are not valid coordinates for any
-		 *         	  position or the passed in parameter is null.
-		 *       	| ! isValidPosition(cubeCoordinates) || cubeCoordinates == null
-		 */
-		@Raw
-		private void setUnitCoordinates(int[] cubeCoordinates) throws IllegalCoordinateException {
-			if(!isValidPosition(cubeCoordinates) || cubeCoordinates == null)
-				throw new IllegalCoordinateException(cubeCoordinates);
-			this.setCubeCoordinates(cubeCoordinates);
-			double halfCubeSideLength = cubeSideLength / 2;
-			this.unitX = cubeCoordinates[0] + halfCubeSideLength;
-			this.unitY = cubeCoordinates[1] + halfCubeSideLength;
-			this.unitZ = cubeCoordinates[2] + halfCubeSideLength;
-		}
-
-		/**
-		 * Check whether the given coordinates are valid coordinates for
-		 * any position.
-		 *
-		 * @param cubeCoordinates
-		 *         	  The coordinates to check.
-		 * @return 	  True if all coordinates are within range, false otherwise.
-		 *       	| result ==
-		 *       	|	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
-		 *       	|	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
-		 *       	| 	(coordinates[2] >= 0) && (coordinates[2] < 50)
-		 */
-		private boolean isValidPosition(int[] cubeCoordinates) {
-			return (
-					(cubeCoordinates[0] >= 0 && cubeCoordinates[0] < 50) &&
-							(cubeCoordinates[1] >= 0 && cubeCoordinates[1] < 50) &&
-							(cubeCoordinates[2] >= 0 && cubeCoordinates[2] < 50)
-			);
-		}
-
-		/**
-		 * Set the cube coordinates of this position to the given coordinates.
-		 *
-		 * @param cubeCoordinates
-		 * 			  The coordinates to initialize this position's cube coordinates with.
-		 * @post 	  The cube coordinates of this position are equal to the given coordinates.
-		 * 			| new.getCubeCoordinates() == {cubeCoordinates[0], cubeCoordinates[1], cubeCoordinates[2]}
-         */
-		@Raw
-		private void setCubeCoordinates(int[] cubeCoordinates) {
-			this.cubeX = cubeCoordinates[0];
-			this.cubeY = cubeCoordinates[1];
-			this.cubeZ = cubeCoordinates[2];
-		}
-
-		/**
-		 * Return the unit coordinates of this unit position.
-		 *
-		 * @return 	  The unit coordinates.
-		 * 			| result = {this.unitX, this.unitY, this.unitZ}
-		 */
-		@Basic @Raw
-		public double[] getUnitCoordinates() {
-			return new double[] {this.unitX, this.unitY, this.unitZ};
-		}
-
-		/**
-		 * Returns this position's cube coordinates.
-		 *
-		 * @return 	  The cube coordinates.
-		 * 			| result == {this.cubeX, this.cubeY, this.cubeZ}
-         */
-		@Basic @Raw
-		public int[] getCubeCoordinates() {
-			return new int[] {this.cubeX, this.cubeY, this.cubeZ};
-		}
 	}
 
 	/**
@@ -726,8 +599,8 @@ public class Unit {
 	 * @post 	  If the given hit points are valid,
 	 * 			  the hit points of this unit are set to them.
 	 *			| new.getCurrentHitPoints() == hitPoints
+     * TODO: 16/03/16 Die when 0 hitpoints left.
 	 */
-
 	private void setCurrentHitPoints(double hitPoints) {
 		assert isValidHitPoints(hitPoints);
 		this.currentHitPoints = hitPoints;
@@ -830,7 +703,8 @@ public class Unit {
 	 *
 	 * @param dt
 	 * 			  Time interval
-	 */
+     * TODO: 16/03/16 Update hitpoints when falling.
+     */
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		if(dt <= 0 && dt >= 0.2)
 			throw new IllegalArgumentException();
@@ -892,8 +766,6 @@ public class Unit {
 	/**
 	 * @param dt
 	 * 			  Time interval
-	 * 
-	 * 				  
 	 */
 	private void advanceWhileMoving(double dt) {
 		if (this.isSprinting()) {
@@ -922,11 +794,11 @@ public class Unit {
 	 * Returns whether or not this unit is currently sprinting.
 	 *
 	 * @return	  true if the unit is sprinting, false otherwise.
-	 * 			| result == this.isSprinting
+	 * 			| result == this.sprinting
 	 */
 	@Basic
 	public boolean isSprinting(){
-		return this.isSprinting;
+		return this.sprinting;
 	}
 
 	/**
@@ -956,6 +828,7 @@ public class Unit {
 	 * 			| if( getSprinting())
 	 * 			|	then totalSpeed *2
 	 * 			| result == totalSpeed
+	 * TODO: 16/03/16 Update speed when falling.
 	 */
 	private double getUnitWalkSpeed() {
 		double moveSpeed;
@@ -965,7 +838,7 @@ public class Unit {
 			moveSpeed =1.2* getUnitBaseSpeed();
 		else
 			moveSpeed = getUnitBaseSpeed();
-		if(isSprinting)
+		if(sprinting)
 			moveSpeed = 2*moveSpeed;
 		return moveSpeed;
 	}
@@ -1011,10 +884,10 @@ public class Unit {
 	 * Stop the sprint of this unit.
 	 *
 	 * @post 	  if the unit is sprinting set sprinting to false
-	 * 			| new.isSprinting == false
+	 * 			| new.sprinting == false
 	 */
 	public void stopSprinting(){
-		this.isSprinting = false;
+		this.sprinting = false;
 	}
 
 	/**
@@ -1201,11 +1074,12 @@ public class Unit {
 		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(getInitialPosition()[2]) <= 0) {
-			this.position.setUnitCoordinates(new int[]{
+			this.setUnitCoordinates(new int[]{
 					this.position.getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
 					this.position.getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
 					this.position.getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
 			});
+            // TODO: 16/03/16 Increment experience points, except when interrupted.
 			if (Arrays.equals(this.position.getCubeCoordinates(), this.getTargetPosition())) {
 				this.setState(State.NONE);
 				this.stopSprinting();
@@ -1406,6 +1280,8 @@ public class Unit {
 	/**
 	 * @param dt
 	 * 		  Time interval
+     *
+     * TODO: 16/03/16 Specify work activity.
 	 */
 	private void advanceWhileWorking(double dt) {
 		this.setWorkCounter(this.getWorkCounter()-dt);
@@ -1444,11 +1320,11 @@ public class Unit {
 	 */
 	private void advanceWhileAttacking(double dt) {
 		this.setOrientation((float) Math.atan2(
-				this.getDefender().position.getUnitCoordinates()[1] - this.position.getUnitCoordinates()[1],
-				this.getDefender().position.getUnitCoordinates()[0] - this.position.getUnitCoordinates()[0]));
+				this.getDefender().position.getDoubleCoordinates()[1] - this.position.getDoubleCoordinates()[1],
+				this.getDefender().position.getDoubleCoordinates()[0] - this.position.getDoubleCoordinates()[0]));
 		this.getDefender().setOrientation((float) Math.atan2(
-				this.position.getUnitCoordinates()[1] - this.getDefender().position.getUnitCoordinates()[1],
-				this.position.getUnitCoordinates()[0] - this.getDefender().position.getUnitCoordinates()[0])
+				this.position.getDoubleCoordinates()[1] - this.getDefender().position.getDoubleCoordinates()[1],
+				this.position.getDoubleCoordinates()[0] - this.getDefender().position.getDoubleCoordinates()[0])
 		);
 		this.setFightCounter(this.getFightCounter() -dt);
 		if (this.getFightCounter() <= 0) {
@@ -1567,7 +1443,7 @@ public class Unit {
 	 * @throws IllegalStateException
 	 *			  If the unit is currently executing an activity
 	 *			| if(this.getState() != State.NONE)
-	 *
+	 * TODO: 16/03/16 If unit is falling, abort.
 	 */
 	public void rest()throws IllegalStateException{
 		if( this.getCurrentHitPoints() == this.getMaxHitPoints() && this.getCurrentStaminaPoints() == this.getMaxStaminaPoints())
@@ -1680,10 +1556,10 @@ public class Unit {
 	 * 			| new.position.getUnitCoordinates() == targetPosition
 	 * @throws IllegalArgumentException
 	 * 			  When the given cube coordinates aren't from a neighboring cube of this unit.
-	 *
+	 * TODO: 16/03/16 If unit is falling, abort.
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
-		if(!this.position.isValidPosition(new int[]{
+		if(!this.isValidPosition(new int[]{
 				this.position.getCubeCoordinates()[0]+dx,
 				this.position.getCubeCoordinates()[1]+dy,
 				this.position.getCubeCoordinates()[2]+dz})) {
@@ -1710,12 +1586,12 @@ public class Unit {
 	 *
 	 * @post 	  if the unit is moving set sprinting to true
 	 * 			| if(this.getState()==State.MOVING)
-	 * 			|	then new.isSprinting == true
+	 * 			|	then new.sprinting == true
 	 *
 	 */
 	public void startSprinting(){
 		if(this.getState()==State.MOVING)
-			this.isSprinting = true;
+			this.sprinting = true;
 	}
 
 	/**
@@ -1736,10 +1612,11 @@ public class Unit {
 	 * 			| this.Position.getPositon() == targetPosition
 	 * 			| new.setState(State.MOVING)
 	 * @post      if the unit is moving set the newTargetPosition equals to targetPosition
-	 *
+	 * TODO: 16/03/16 If unit is falling, abort.
+     * TODO: 16/03/16 Integr
 	 */
 	public void moveTo(int[] targetPosition) throws IllegalCoordinateException {
-		if (! this.position.isValidPosition(targetPosition) || targetPosition == null) {
+		if (! this.isValidPosition(targetPosition) || targetPosition == null) {
 			throw new IllegalCoordinateException(targetPosition);
 		}
 		if(this.getState()== State.MOVING){
@@ -1761,7 +1638,8 @@ public class Unit {
 	 * @throws IllegalStateException
 	 * 			  The unit is attacking or defending or working or moving
 	 * 			| if(this.getState() != State.NONE)
-	 */
+	 * TODO: 16/03/16 If unit is falling, abort.
+     */
 	public void work() throws IllegalStateException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
@@ -1798,8 +1676,10 @@ public class Unit {
 	 * 			|	this.getDefender().defend(this.getAgility(), this.getStrength())
 	 * @post	  Set the fight counter equals to the fight time
 	 * 			|	new.setFightCoutner() == this.getFightTime()
-	 * 
-	 */
+	 * TODO: 16/03/16 If attacker or defender is falling, abort.
+     * TODO: 16/03/16 Attacker and defender must be of different factions.
+     * TODO: 16/03/16 Increase experience points by 20 if successful.
+     */
 	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
 		// when there is no unit 
 		if (defender == null) {
@@ -1829,7 +1709,7 @@ public class Unit {
 	 */
 	private boolean isNeighboringCube(int[] cubeCoordinatesOfPossibleNeighbor) {
 		if(cubeCoordinatesOfPossibleNeighbor == null ||
-				(! this.position.isValidPosition(cubeCoordinatesOfPossibleNeighbor))) {
+				(! this.isValidPosition(cubeCoordinatesOfPossibleNeighbor))) {
 			return false;
 		}
 		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.position.getCubeCoordinates()[0]) == 1) {
@@ -1898,6 +1778,9 @@ public class Unit {
 	 * 			  this unit's hitPoints are lowered,
 	 * 			  relative to the strength of the attacker.
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - this.damge(attackerStrength)
+     *
+     * TODO: 16/03/16 Increase experience points by 20 if successful.
+     *
 	 */
 	private void defend(double attackerAgility, double attackerStrength) {
 		this.isDefending = true;
@@ -1940,14 +1823,15 @@ public class Unit {
 	 * @post	  Set the position of the unit to those coordinates
 	 * 			| new.position.setUnitCoordinates(randomNeighboringCube)
 	 *
+     * TODO: 16/03/16 Cube to dodge to must feature passable terrain.
 	 *
 	 */
 	private void dodge() {
 		int[] randomNeighboringCube = calculateRandomNeighboringCube();
-		while (! this.position.isValidPosition(randomNeighboringCube)) {
+		while (! this.isValidPosition(randomNeighboringCube)) {
 			randomNeighboringCube = calculateRandomNeighboringCube();
 		}
-		this.position.setUnitCoordinates(randomNeighboringCube);
+		this.setUnitCoordinates(randomNeighboringCube);
 	}
 
 	/**
@@ -2042,5 +1926,116 @@ public class Unit {
 	 */
 	private void setPreviousOrientation(float previousOrientation){
 		this.previousOrientation = previousOrientation;
+	}
+
+	/**
+	 * Set the unit coordinates of this unit position to the sum of
+	 * the given cube coordinates and 1/2 of a cube side.
+	 * @post The unit coordinates of this new unit position are equal to the given cube coordinates + 1/2 of a cube side.
+	 * | new.getUnitCoordinates() ==
+	 * |	{
+	 * |	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
+	 * | 	  (cubeCoordinates[1] + 1/2 * cubeSideLength),
+	 * | 	  (cubeCoordinates[2] + 1/2 * cubeSideLength)
+	 * | 	}
+	 * @param cubeCoordinates The cube coordinates of this unit position.
+	 */
+	@Raw
+	private void setUnitCoordinates(int[] cubeCoordinates) throws hillbillies.model.IllegalCoordinateException {
+		// TODO - implement Unit.setUnitCoordinates
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Check whether the given coordinates are valid coordinates for
+	 * any position.
+	 * @param cubeCoordinates The coordinates to check.
+	 * @return True if all coordinates are within range, false otherwise. | result ==
+	 * |	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
+	 * |	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
+	 * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
+	 */
+	private boolean isValidPosition(int[] cubeCoordinates) {
+		// TODO - implement Unit.isValidPosition
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Set the cube coordinates of this position to the given coordinates.
+	 * @post The cube coordinates of this position are equal to the given coordinates. | new.getCubeCoordinates() == {cubeCoordinates[0], cubeCoordinates[1], cubeCoordinates[2]}
+	 * @param cubeCoordinates The coordinates to initialize this position's cube coordinates with.
+	 */
+	@Raw
+	private void setCubeCoordinates(int[] cubeCoordinates) {
+		// TODO - implement Unit.setCubeCoordinates
+		throw new UnsupportedOperationException();
+	}
+
+	public Faction getFaction() {
+		return this.faction;
+	}
+
+	public void setFaction(Faction faction) {
+		this.faction = faction;
+	}
+
+	/**
+	 * 
+	 * @param faction
+	 */
+	private boolean canHaveAsFaction(Faction faction) {
+		// TODO - implement Unit.canHaveAsFaction
+		throw new UnsupportedOperationException();
+	}
+
+	public int getCurrentExperiencePoints() {
+		return this.currentExperiencePoints;
+	}
+
+	public void setCurrentExperiencePoints(int currentExperiencePoints) {
+		this.currentExperiencePoints = currentExperiencePoints;
+	}
+
+	public int getRandomAttributePointCounter() {
+		return this.randomAttributePointCounter;
+	}
+
+	public void setRandomAttributePointCounter(int randomAttributePointCounter) {
+		this.randomAttributePointCounter = randomAttributePointCounter;
+	}
+
+	public void incrementRandomAtrributeValue() {
+		// TODO - implement Unit.incrementRandomAtrributeValue
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * 
+	 *  * (To increment random attribute)
+	 */
+	public boolean hasEnoughExperiencePoints() {
+		// TODO - implement Unit.hasEnoughExperiencePoints
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean isFalling() {
+		return this.falling;
+	}
+
+	public void setFalling(boolean falling) {
+		this.falling = falling;
+	}
+
+	/**
+	 * @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
+	 */
+	public boolean neighboringCubeHasSolidTerrain() {
+		// TODO - implement Unit.neighboringCubeHasSolidTerrain
+		throw new UnsupportedOperationException();
+	}
+
+	public void die() {
+		// TODO - implement Unit.die
+		throw new UnsupportedOperationException();
 	}
 }

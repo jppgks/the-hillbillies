@@ -14,7 +14,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getPosition(Unit unit) throws ModelException {
-		return unit.position.getUnitCoordinates();
+		return unit.position.getDoubleCoordinates();
 	}
 
 	@Override

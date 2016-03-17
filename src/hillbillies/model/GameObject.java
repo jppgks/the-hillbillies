@@ -1,4 +1,4 @@
 package hillbillies.model;
 
-public class GameObject {
+public abstract class GameObject {
 }

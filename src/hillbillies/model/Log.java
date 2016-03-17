@@ -1,4 +1,4 @@
 package hillbillies.model;
 
-public class Log extends GameObject {
+public class Log extends Material {
 }

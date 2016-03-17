@@ -1,4 +1,8 @@
 package hillbillies.model;
 
-public class Terrain {
+public abstract class Terrain {
+	
+	public Terrain() {
+		// TODO Auto-generated constructor stub
+	}
 }
