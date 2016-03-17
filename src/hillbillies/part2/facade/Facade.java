@@ -6,28 +6,30 @@ import ogp.framework.util.ModelException;
 
 import java.util.Set;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
+
 /**
  * Created by joppegeluykens on 14/03/16.
  */
 public class Facade implements IFacade {
     @Override
     public World createWorld(int[][][] terrainTypes, TerrainChangeListener modelListener) throws ModelException {
-        return new World();
+    	return new World(terrainTypes);
     }
 
     @Override
     public int getNbCubesX(World world) throws ModelException {
-        return 0;
+        return world.getDementionGameWorldX();
     }
 
     @Override
     public int getNbCubesY(World world) throws ModelException {
-        return 0;
+        return world.getDementionGameWorldY();
     }
 
     @Override
     public int getNbCubesZ(World world) throws ModelException {
-        return 0;
+        return world.getDementionGameWorldZ();
     }
 
     @Override
@@ -37,12 +39,12 @@ public class Facade implements IFacade {
 
     @Override
     public int getCubeType(World world, int x, int y, int z) throws ModelException {
-        return 0;
+        return world.getCube(x, y, z).getTerainOfCube();
     }
 
     @Override
     public void setCubeType(World world, int x, int y, int z, int value) throws ModelException {
-
+    	
     }
 
     @Override

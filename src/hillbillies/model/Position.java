@@ -37,7 +37,9 @@ public class Position {
 	public final double cubeSideLength = 1;
 
 	public Position(int[] initialPosition) {
-
+		this.cubeX = initialPosition[0];
+		this.cubeY = initialPosition[1];
+		this.cubeZ = initialPosition[2];
 	}
 
 	/**
