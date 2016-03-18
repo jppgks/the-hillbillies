@@ -10,9 +10,13 @@ import java.util.Set;
  * Created by joppegeluykens on 14/03/16.
  */
 public class Facade implements IFacade {
+    public Facade() {
+
+    }
+
     @Override
     public World createWorld(int[][][] terrainTypes, TerrainChangeListener modelListener) throws ModelException {
-        return new World();
+        return new World(terrainTypes, modelListener);
     }
 
     @Override
@@ -218,14 +222,6 @@ public class Facade implements IFacade {
     }
 
     @Override
-    public void advanceTime(Unit unit, double dt) throws ModelException {
-        try {
-            unit.advanceTime(dt);
-        } catch (IllegalArgumentException exc) {
-
-        }
-    }
-    @Override
     public void moveToAdjacent(Unit unit, int dx, int dy, int dz) throws ModelException {
         try {
             unit.moveToAdjacent(dx, dy, dz);
@@ -271,16 +267,6 @@ public class Facade implements IFacade {
         } catch (IllegalArgumentException exc) {
 
         }
-    }
-
-    @Override
-    public void work(Unit unit) throws ModelException {
-        try {
-            unit.work();
-        } catch (IllegalStateException exc){
-
-        }
-
     }
 
     @Override
