@@ -3,6 +3,7 @@ package hillbillies.model;
 import hillbillies.part2.listener.TerrainChangeListener;
 
 import java.util.Collection;
+import java.util.Set;
 
 public class World {
 
@@ -16,11 +17,16 @@ public class World {
 		throw new UnsupportedOperationException();
 	}
 
-	public Collection<Unit> getUnits() {
+    /**
+     * Return all units that are currently part of the world.
+     *
+     * @return A set containing all units from the world.
+     */
+	public Set<Unit> getUnits() {
 		return this.units;
 	}
 
-	public void setUnits(Collection<Unit> units) {
+	public void setUnits(Set<Unit> units) {
 		this.units = units;
 	}
 
@@ -32,11 +38,16 @@ public class World {
 		this.cubes = cubes;
 	}
 
-	public Collection<Faction> getFactions() {
+    /**
+     * Return all the active factions of the world.
+     *
+     * @return A set of all active (i.e., non-empty) factions in the world.
+     */
+	public Collection<Faction> getActiveFactions() {
 		return this.factions;
 	}
 
-	public void setFactions(Collection<Faction> factions) {
+	public void setActiveFactions(Collection<Faction> factions) {
 		this.factions = factions;
 	}
 
@@ -119,8 +130,81 @@ public class World {
 		throw new UnsupportedOperationException();
 	}
 
-	Collection<Unit> units;
+    /**
+     * Return whether the cube at the given coordinates is solid and connected
+     * to the border of the world.
+     *
+     * @param x
+     *            The x-coordinate of the cube
+     * @param y
+     *            The y-coordinate of the cube
+     * @param z
+     *            The z-coordinate of the cube
+     * @return true if the given cube is solid and connected to the border of
+     *         the world; false otherwise.
+     *
+     */
+	public boolean isSolidConnectedToBorder(int x, int y, int z) {
+		// TODO - implement World.isSolidConnectedToBorder
+		throw new UnsupportedOperationException();
+	}
+
+    /**
+     * Spawn a new unit in the world, according to the rules in the assignment
+     * (section 1.1.2).
+     *
+     * @param enableDefaultBehavior
+     *            Whether the unit should act according to the default behaviour
+     *            or not.
+     * @return The newly spawned unit.
+     */
+	public Unit spawnUnit(boolean enableDefaultBehavior) {
+		// TODO - implement World.spawnUnit
+		throw new UnsupportedOperationException();
+	}
+
+    /**
+     * Adds the given unit to the world.
+     *
+     * @param unit
+     */
+	public void addUnit(Unit unit) {
+		// TODO - implement World.addUnit
+		throw new UnsupportedOperationException();
+	}
+
+
+    /**
+     * Return all boulders that are part of the world.
+     *
+     * @return A set containing all boulders present in the given world (i.e.,
+     *         not picked up, consumed, destroyed, ...).
+     */
+    public Set<Boulder> getBoulders(World world) {
+		return this.boulders;
+	}
+
+	public void setBoulders(Set<Boulder> boulders) {
+		this.boulders = boulders;
+	}
+
+    /**
+     * Return all logs that are part of the given world.
+     *
+     * @return A set containing all logs present in the given world (i.e., not
+     *         picked up, consumed, destroyed, ...).
+     */
+	public Set<Log> getLogs() {
+		return this.logs;
+	}
+
+	public void setLogs(Set<Log> logs) {
+		this.logs = logs;
+	}
+
+	Set<Unit> units;
 	Collection<Cube> cubes;
 	Collection<Faction> factions;
-
+	private Set<Boulder> boulders;
+	private Set<Log> logs;
 }
