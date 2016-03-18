@@ -6,8 +6,6 @@ import ogp.framework.util.ModelException;
 
 import java.util.Set;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
-
 /**
  * Created by joppegeluykens on 14/03/16.
  */
@@ -23,17 +21,17 @@ public class Facade implements IFacade {
 
     @Override
     public int getNbCubesX(World world) throws ModelException {
-        return world.getDementionGameWorldX();
+        return world.getDimensionGameWorldX();
     }
 
     @Override
     public int getNbCubesY(World world) throws ModelException {
-        return world.getDementionGameWorldY();
+        return world.getDimensionGameWorldY();
     }
 
     @Override
     public int getNbCubesZ(World world) throws ModelException {
-        return world.getDementionGameWorldZ();
+        return world.getDimensionGameWorldZ();
     }
 
     @Override

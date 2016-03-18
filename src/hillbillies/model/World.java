@@ -35,11 +35,11 @@ public class World {
      *              method during the construction of your world.
      */
     public World(int[][][] terrainTypes, TerrainChangeListener modelListener) {
-		this.setDementionGameWorld(new int[]{terrainTypes.length,terrainTypes[0].length,terrainTypes[0][0].length});
+		this.setDimensionGameWorld(new int[]{terrainTypes.length,terrainTypes[0].length,terrainTypes[0][0].length});
 		cubes = new ArrayList<>();
-		for (int i = 0; i < getDementionGameWorldZ(); i++) {
-			for (int j = 0; j < getDementionGameWorldY(); j++) {
-				for (int z = 0; z < getDementionGameWorldX(); z++) {
+		for (int i = 0; i < getDimensionGameWorldZ(); i++) {
+			for (int j = 0; j < getDimensionGameWorldY(); j++) {
+				for (int z = 0; z < getDimensionGameWorldX(); z++) {
 					Cube cube= new Cube(i, j, z, terrainTypes[z][j][i]);
 					cubes.add(cube);
 				}
@@ -195,8 +195,8 @@ public class World {
 	}
 	
 	public int cubeIndexInCubeList(int x, int y, int z) {
-        return x+getDementionGameWorldX()*y+
-                (getDementionGameWorldX()*getDementionGameWorldY())*z;
+        return x+getDimensionGameWorldX()*y+
+                (getDimensionGameWorldX()*getDimensionGameWorldY())*z;
     }
 
     /**
@@ -240,39 +240,36 @@ public class World {
 
 	/**
 	 * Set the dementionGameWorld of this World to the given dementionGameWorldX.
-	 *
-	 * @param  dementionGameWorld
-	 *         The dementionGameWorld to set.
-	 * @post   The dementionGameWorld of this of this World is equal to the given dementionGameWorld.
-	 *       | new.getdementionGameWorldX() == dementionGameWorldx
+	 * @post The dementionGameWorld of this of this World is equal to the given dementionGameWorld. | new.getdementionGameWorldX() == dementionGameWorldx
+	 * @param dementionGameWorld The dementionGameWorld to set.
 	 */
-	public void setDementionGameWorld(int[] dementionGameWorld) {
-		this.dementionGameWorldX = dementionGameWorld[0];
-		this.dementionGameWorldY = dementionGameWorld[1];
-		this.dementionGameWorldZ = dementionGameWorld[2];
+	public void setDimensionGameWorld(int[] dementionGameWorld) {
+		this.dimensionGameWorldX = dementionGameWorld[0];
+		this.dimensionGameWorldY = dementionGameWorld[1];
+		this.dimensionGameWorldZ = dementionGameWorld[2];
 	}
 	/**
 	 * Return the dementionGameWorldY of this World.
 	 */
-	public int getDementionGameWorldY() {
-		return dementionGameWorldY;
+	public int getDimensionGameWorldY() {
+		return dimensionGameWorldY;
 	}
 	/**
 	 * Return the dementionGameWorldX of this World.
 	 */
-	public int getDementionGameWorldX() {
-		return dementionGameWorldX;
+	public int getDimensionGameWorldX() {
+		return dimensionGameWorldX;
 	}
 	/**
 	 * Return the dementionGameWorldZ of this World.
 	 */
-	public int getDementionGameWorldZ() {
-		return dementionGameWorldZ;
+	public int getDimensionGameWorldZ() {
+		return dimensionGameWorldZ;
 	}
 	
-	private int dementionGameWorldX;
-	private int dementionGameWorldY;
-	private int dementionGameWorldZ;
+	private int dimensionGameWorldX;
+	private int dimensionGameWorldY;
+	private int dimensionGameWorldZ;
 	Set<Unit> units;
 	public List<Cube> cubes;
 	List<Faction> factions;
