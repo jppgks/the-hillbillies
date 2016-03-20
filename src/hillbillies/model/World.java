@@ -4,6 +4,8 @@ import hillbillies.part2.listener.TerrainChangeListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +39,7 @@ public class World {
     public World(int[][][] terrainTypes, TerrainChangeListener modelListener) {
 		this.setDimensionGameWorld(new int[]{terrainTypes.length,terrainTypes[0].length,terrainTypes[0][0].length});
 		cubes = new ArrayList<>();
+		units =	new HashSet<>();
 		for (int i = 0; i < getDimensionGameWorldZ(); i++) {
 			for (int j = 0; j < getDimensionGameWorldY(); j++) {
 				for (int z = 0; z < getDimensionGameWorldX(); z++) {
@@ -101,8 +104,7 @@ public class World {
 	 * @return The number of cubes in the x-direction.
 	 */
 	public int getNbCubesX() {
-		// TODO - implement World.getNbCubesX
-		throw new UnsupportedOperationException();
+		return this.getDimensionGameWorldX();
 	}
 
 	/**
@@ -111,8 +113,7 @@ public class World {
 	 * @return The number of cubes in the y-direction.
 	 */
 	public int getNbCubesY() {
-		// TODO - implement World.getNbCubesY
-		throw new UnsupportedOperationException();
+		return this.getDimensionGameWorldY();
 	}
 
 	/**
@@ -121,8 +122,7 @@ public class World {
 	 * @return The number of cubes in the z-direction.
 	 */
 	public int getNbCubesZ() {
-		// TODO - implement World.getNbCubesZ
-		throw new UnsupportedOperationException();
+		return this.getDimensionGameWorldZ();
 	}
 
     /**
@@ -138,8 +138,7 @@ public class World {
      *         according to the values in IFacade.
      */
 	public int getCubeType(int x, int y, int z) {
-		// TODO - implement World.getCubeType
-		throw new UnsupportedOperationException();
+		return this.getCube(x, y, z).getTerainOfCube();
 	}
 
     /**
@@ -157,8 +156,7 @@ public class World {
      *            integer according to the values in IFacade.
      */
 	public void setCubeType(int x, int y, int z, int value) {
-		// TODO - implement World.setCubeType
-		throw new UnsupportedOperationException();
+			this.getCube(x, y, z).setTerainOfCube(value);
 	}
 
     /**
@@ -190,8 +188,10 @@ public class World {
      * @return The newly spawned unit.
      */
 	public Unit spawnUnit(boolean enableDefaultBehavior) {
-		// TODO - implement World.spawnUnit
-		throw new UnsupportedOperationException();
+		Unit unit = new Unit("Hilly", new int[]{0,0,0},50, 50, 50, 50, false);
+		unit.world = this;
+		units.add(unit);
+		return unit;
 	}
 	
 	public int cubeIndexInCubeList(int x, int y, int z) {
@@ -205,8 +205,7 @@ public class World {
      * @param unit
      */
 	public void addUnit(Unit unit) {
-		// TODO - implement World.addUnit
-		throw new UnsupportedOperationException();
+		this.units.add(unit);
 	}
 
 
@@ -243,7 +242,7 @@ public class World {
 	 * @post The dementionGameWorld of this of this World is equal to the given dementionGameWorld. | new.getdementionGameWorldX() == dementionGameWorldx
 	 * @param dementionGameWorld The dementionGameWorld to set.
 	 */
-	public void setDimensionGameWorld(int[] dementionGameWorld) {
+	private void setDimensionGameWorld(int[] dementionGameWorld) {
 		this.dimensionGameWorldX = dementionGameWorld[0];
 		this.dimensionGameWorldY = dementionGameWorld[1];
 		this.dimensionGameWorldZ = dementionGameWorld[2];
@@ -251,26 +250,26 @@ public class World {
 	/**
 	 * Return the dementionGameWorldY of this World.
 	 */
-	public int getDimensionGameWorldY() {
+	private int getDimensionGameWorldY() {
 		return dimensionGameWorldY;
 	}
 	/**
 	 * Return the dementionGameWorldX of this World.
 	 */
-	public int getDimensionGameWorldX() {
+	private int getDimensionGameWorldX() {
 		return dimensionGameWorldX;
 	}
 	/**
 	 * Return the dementionGameWorldZ of this World.
 	 */
-	public int getDimensionGameWorldZ() {
+	private int getDimensionGameWorldZ() {
 		return dimensionGameWorldZ;
 	}
 	
 	private int dimensionGameWorldX;
 	private int dimensionGameWorldY;
 	private int dimensionGameWorldZ;
-	Set<Unit> units;
+	public Set<Unit> units;
 	public List<Cube> cubes;
 	List<Faction> factions;
     private Set<Boulder> boulders;

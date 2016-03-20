@@ -10,15 +10,15 @@ public class Position {
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	public double unitX;
+	public double doubleX;
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	public double unitY;
+	public double doubleY;
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	public double unitZ;
+	public double doubleZ;
 	/**
 	 * Variables registering the cube coordinates of this unit position.
 	 */
@@ -40,6 +40,17 @@ public class Position {
 		this.cubeX = initialPosition[0];
 		this.cubeY = initialPosition[1];
 		this.cubeZ = initialPosition[2];
+		this.setDoubleCoordinates(initialPosition);
+	}
+
+	/**
+	 * @param initialPosition
+	 */
+	private void setDoubleCoordinates(int[] initialPosition) {
+		this.doubleX = initialPosition[0] +  cubeSideLength/2;
+		this.doubleY = initialPosition[1] +  cubeSideLength/2;
+		this.doubleZ = initialPosition[2] +  cubeSideLength/2;
+		
 	}
 
 	/**
@@ -49,8 +60,7 @@ public class Position {
 	@Basic
 	@Raw
 	public double[] getDoubleCoordinates() {
-		// TODO - implement Position.getUnitCoordinates
-		throw new UnsupportedOperationException();
+		return new double[] {this.doubleX,this.doubleY,this.doubleZ};
 	}
 
 	/**
@@ -60,7 +70,6 @@ public class Position {
 	@Basic
 	@Raw
 	public int[] getCubeCoordinates() {
-		// TODO - implement Position.getCubeCoordinates
-		throw new UnsupportedOperationException();
+		return new int[] {this.cubeX,this.cubeY,this.cubeZ};
 	}
 }

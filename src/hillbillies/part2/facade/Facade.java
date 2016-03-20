@@ -21,17 +21,17 @@ public class Facade implements IFacade {
 
     @Override
     public int getNbCubesX(World world) throws ModelException {
-        return world.getDimensionGameWorldX();
+        return world.getNbCubesX();
     }
 
     @Override
     public int getNbCubesY(World world) throws ModelException {
-        return world.getDimensionGameWorldY();
+        return world.getNbCubesY();
     }
 
     @Override
     public int getNbCubesZ(World world) throws ModelException {
-        return world.getDimensionGameWorldZ();
+        return world.getNbCubesZ();
     }
 
     @Override
@@ -41,32 +41,32 @@ public class Facade implements IFacade {
 
     @Override
     public int getCubeType(World world, int x, int y, int z) throws ModelException {
-        return world.getCube(x, y, z).getTerainOfCube();
+        return world.getCubeType(x, y, z);
     }
 
     @Override
     public void setCubeType(World world, int x, int y, int z, int value) throws ModelException {
-    	
+    	world.setCubeType(x, y, z, value);
     }
 
     @Override
     public boolean isSolidConnectedToBorder(World world, int x, int y, int z) throws ModelException {
-        return false;
+        return world.isSolidConnectedToBorder(x, y, z);
     }
 
     @Override
     public Unit spawnUnit(World world, boolean enableDefaultBehavior) throws ModelException {
-        return null;
+        return world.spawnUnit(enableDefaultBehavior);
     }
 
     @Override
     public void addUnit(Unit unit, World world) throws ModelException {
-
+    	world.addUnit(unit);
     }
 
     @Override
     public Set<Unit> getUnits(World world) throws ModelException {
-        return null;
+        return world.units;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class Facade implements IFacade {
 
     @Override
     public Faction getFaction(Unit unit) throws ModelException {
-        return null;
+        return unit.getFaction();
     }
 
     @Override

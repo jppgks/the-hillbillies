@@ -74,7 +74,9 @@ public class Unit {
 		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
 		this.setState(State.NONE);
 	}
-
+	
+	public World unitsWorld;
+	
 	/**
 	 * Variable registering the current name of this Unit.
 	 */
@@ -1065,11 +1067,11 @@ public class Unit {
 	 * 		  Difference in time
 	 */
 	private void updatePosition(double dt) {
-		this.position.unitX += this.getUnitVelocity()[0] * dt;
+		this.position.doubleX += this.getUnitVelocity()[0] * dt;
 		this.getInitialPosition()[0] += this.getUnitVelocity()[0] * dt;
-		this.position.unitY += this.getUnitVelocity()[1] * dt;
+		this.position.doubleY += this.getUnitVelocity()[1] * dt;
 		this.getInitialPosition()[1] += this.getUnitVelocity()[1] * dt;
-		this.position.unitZ += this.getUnitVelocity()[2] * dt;
+		this.position.doubleZ += this.getUnitVelocity()[2] * dt;
 		this.getInitialPosition()[2] += this.getUnitVelocity()[2] * dt;
 		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
