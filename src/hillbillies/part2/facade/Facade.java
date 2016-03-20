@@ -81,7 +81,7 @@ public class Facade implements IFacade {
 
     @Override
     public boolean isAlive(Unit unit) throws ModelException {
-        return false;
+        return true;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class Facade implements IFacade {
 
     @Override
     public Faction getFaction(Unit unit) throws ModelException {
-        return unit.getFaction();
+        return null;
     }
 
     @Override
