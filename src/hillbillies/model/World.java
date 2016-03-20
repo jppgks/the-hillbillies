@@ -81,6 +81,12 @@ public class World {
 		this.cubes = cubes;
 	}
 
+	/**
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return the cube at the given position
+	 */
 	public Cube getCube(int x, int y, int z) {
 		return cubes.get(cubeIndexInCubeList(x, y, z));
 	}
@@ -91,11 +97,11 @@ public class World {
      * @return A set of all active (i.e., non-empty) factions in the world.
      */
 	public Collection<Faction> getActiveFactions() {
-		return this.factions;
+		return this.activeFactions;
 	}
 
-	public void setActiveFactions(List<Faction> factions) {
-		this.factions = factions;
+	public void setActiveFaction(Faction factions) {
+		this.activeFactions.add(factions);
 	}
 
 	/**
@@ -271,7 +277,8 @@ public class World {
 	private int dimensionGameWorldZ;
 	public Set<Unit> units;
 	public List<Cube> cubes;
-	List<Faction> factions;
+	List<Faction> faction;
+	List<Faction> activeFactions;
     private Set<Boulder> boulders;
     private Set<Log> logs;
 }
