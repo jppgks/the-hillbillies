@@ -101,5 +101,19 @@ public class Cube {
 	public int getTerainOfCube(){
 		return this.terainOfCube;
 	}
+	/**
+	 * @return
+	 */
+	public boolean hasSolidNeighboringCubes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	/**
+	 * @return
+	 */
+	public boolean isSolid() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

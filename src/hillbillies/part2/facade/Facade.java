@@ -96,17 +96,17 @@ public class Facade implements IFacade {
 
     @Override
     public Faction getFaction(Unit unit) throws ModelException {
-        return null;
+        return unit.getFaction();
     }
 
     @Override
     public Set<Unit> getUnitsOfFaction(Faction faction) throws ModelException {
-        return null;
+        return faction.getMembers();
     }
 
     @Override
     public Set<Faction> getActiveFactions(World world) throws ModelException {
-        return null;
+        return world.getActiveFactions();
     }
 
     @Override
