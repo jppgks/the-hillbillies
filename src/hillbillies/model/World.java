@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 public class World {
@@ -40,6 +41,12 @@ public class World {
 		this.setDimensionGameWorld(new int[]{terrainTypes.length,terrainTypes[0].length,terrainTypes[0][0].length});
 		cubes = new ArrayList<>();
 		units =	new HashSet<>();
+		faction = new HashSet<>();
+		faction.add(faction1);
+		faction.add(faction2);
+		faction.add(faction3);
+		faction.add(faction4);
+		faction.add(faction5);
 		for (int i = 0; i < getDimensionGameWorldZ(); i++) {
 			for (int j = 0; j < getDimensionGameWorldY(); j++) {
 				for (int z = 0; z < getDimensionGameWorldX(); z++) {
@@ -96,12 +103,8 @@ public class World {
      *
      * @return A set of all active (i.e., non-empty) factions in the world.
      */
-	public Collection<Faction> getActiveFactions() {
-		return this.activeFactions;
-	}
-
-	public void setActiveFaction(Faction factions) {
-		this.activeFactions.add(factions);
+	public Set<Faction> getActiveFactions() {
+		return this.faction;
 	}
 
 	/**
@@ -194,12 +197,65 @@ public class World {
      * @return The newly spawned unit.
      */
 	public Unit spawnUnit(boolean enableDefaultBehavior) {
-		Unit unit = new Unit("Hilly", new int[]{0,0,0},50, 50, 50, 50, false);
+		int cubeX;
+		int cubeY;
+		int cubeZ; 
+		do {
+			cubeX = new Random().nextInt(this.getNbCubesX()-1);
+			cubeY = new Random().nextInt(this.getNbCubesY()-1);
+			cubeZ = new Random().nextInt(this.getNbCubesZ()-1);
+			
+		} while (validSpawnCoordinates(cubeX,cubeY,cubeZ));
+		Unit unit = new Unit("Hilly", new int[]{cubeX,cubeY,cubeZ},50, 50, 50, 50, false);
 		unit.world = this;
 		units.add(unit);
+		addUnitToFaction(unit);
 		return unit;
 	}
 	
+	/**
+	 * @param cubeX
+	 * @param cubeY
+	 * @param cubeZ
+	 * @return neighboring 
+	 */
+	private boolean validSpawnCoordinates(int x, int y, int z) {
+		if(!(this.getCube(x, y, z).isSolid())){
+			if(this.getCube(x, y, z).hasSolidNeighboringCubes()){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param unit
+	 */
+	private void addUnitToFaction(Unit unit) {
+		Random rd = new Random();
+		int factionNumer = rd.nextInt(4);
+		switch (factionNumer) {
+		case 0:
+			faction1.addUnitToFaction(unit);
+			break;
+		case 1:
+			faction2.addUnitToFaction(unit);
+			break;
+		case 2:
+			faction3.addUnitToFaction(unit);
+			break;
+		case 3:
+			faction4.addUnitToFaction(unit);
+			break;
+		case 4:
+			faction5.addUnitToFaction(unit);
+			break;	
+		default:
+			break;
+		}
+		
+	}
+
 	public int cubeIndexInCubeList(int x, int y, int z) {
         return x+getDimensionGameWorldX()*y+
                 (getDimensionGameWorldX()*getDimensionGameWorldY())*z;
@@ -277,8 +333,12 @@ public class World {
 	private int dimensionGameWorldZ;
 	public Set<Unit> units;
 	public List<Cube> cubes;
-	List<Faction> faction;
-	List<Faction> activeFactions;
+	public Set<Faction> faction;
     private Set<Boulder> boulders;
     private Set<Log> logs;
+	Faction faction1 = new Faction("team 1");
+	Faction faction2 = new Faction("team 2");
+	Faction faction3 = new Faction("team 3");
+	Faction faction4 = new Faction("team 4");
+	Faction faction5 = new Faction("team 5");
 }
