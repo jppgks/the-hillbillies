@@ -29,7 +29,7 @@ public class Cube {
 	 */
 	public Cube(int x, int y, int z, int type, World world){
 		this.setWorldOfCube(world);
-		position = new Position(new int[] {x,y,z});
+		this.position = new Position(new int[] {x,y,z});
 		this.setTerrain(type);
 	}
 	/**

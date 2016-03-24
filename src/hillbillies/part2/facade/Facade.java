@@ -9,9 +9,6 @@ import ogp.framework.util.ModelException;
 
 import java.util.Set;
 
-/**
- * Created by joppegeluykens on 14/03/16.
- */
 public class Facade implements IFacade {
     public Facade() {
 
@@ -77,27 +74,27 @@ public class Facade implements IFacade {
 
     @Override
     public boolean isCarryingLog(Unit unit) throws ModelException {
-        return false;
+        return unit.isCarryingLog();
     }
 
     @Override
     public boolean isCarryingBoulder(Unit unit) throws ModelException {
-        return false;
+        return unit.isCarryingBoulder();
     }
 
     @Override
     public boolean isAlive(Unit unit) throws ModelException {
-        return true;
+        return unit.isAlive();
     }
 
     @Override
     public int getExperiencePoints(Unit unit) throws ModelException {
-        return 0;
+        return unit.getCurrentExperiencePoints();
     }
 
     @Override
     public void workAt(Unit unit, int x, int y, int z) throws ModelException {
-
+        //TODO implement
     }
 
     @Override
@@ -117,22 +114,22 @@ public class Facade implements IFacade {
 
     @Override
     public double[] getPosition(Boulder boulder) throws ModelException {
-        return new double[0];
+        return boulder.getPosition().getDoubleCoordinates();
     }
 
     @Override
     public Set<Boulder> getBoulders(World world) throws ModelException {
-        return null;
+        return world.getBoulders();
     }
 
     @Override
     public double[] getPosition(Log log) throws ModelException {
-        return new double[0];
+        return log.getPosition().getDoubleCoordinates();
     }
 
     @Override
     public Set<Log> getLogs(World world) throws ModelException {
-        return null;
+        return world.getLogs();
     }
 
     @Override
