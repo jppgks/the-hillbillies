@@ -3,14 +3,10 @@ package hillbillies.model;
 import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
+import hillbillies.model.terrain.*;
 import hillbillies.part2.listener.TerrainChangeListener;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class World {
     /**
@@ -41,14 +37,14 @@ public class World {
      */
     public World(int[][][] terrainTypes, TerrainChangeListener modelListener) {
 		this.setDimensionGameWorld(new int[]{terrainTypes.length,terrainTypes[0].length,terrainTypes[0][0].length});
-		cubes = new ArrayList<>();
-		units =	new HashSet<>();
-		faction = new HashSet<>();
-		faction.add(faction1);
-		faction.add(faction2);
-		faction.add(faction3);
-		faction.add(faction4);
-		faction.add(faction5);
+		this.cubes = new ArrayList<>();
+		this.units =	new HashSet<>();
+		this.factions = new HashSet<>();
+		this.factions.add(faction1);
+		this.factions.add(faction2);
+		this.factions.add(faction3);
+		this.factions.add(faction4);
+		this.factions.add(faction5);
 		for (int z = 0; z < getDimensionGameWorldZ(); z++) {
 			for (int y = 0; y < getDimensionGameWorldY(); y++) {
 				for (int x = 0; x < getDimensionGameWorldX(); x++) {
@@ -106,7 +102,7 @@ public class World {
      * @return A set of all active (i.e., non-empty) factions in the world.
      */
 	public Set<Faction> getActiveFactions() {
-		return this.faction;
+		return this.factions;
 	}
 
 	/**
@@ -149,7 +145,20 @@ public class World {
      *         according to the values in IFacade.
      */
 	public int getCubeType(int x, int y, int z) {
-		return this.getCube(x, y, z).getTerainOfCube();
+		Terrain terrain = this.getCube(x, y, z).getTerrain();
+		if (terrain instanceof Air) {
+			return 0;
+		}
+		if (terrain instanceof Rock) {
+			return 1;
+		}
+		if (terrain instanceof Tree) {
+			return 2;
+		}
+		if (terrain instanceof Workshop) {
+			return 3;
+		}
+		return -1;
 	}
 
     /**
@@ -167,7 +176,7 @@ public class World {
      *            integer according to the values in IFacade.
      */
 	public void setCubeType(int x, int y, int z, int value) {
-			this.getCube(x, y, z).setTerainOfCube(value);
+			this.getCube(x, y, z).setTerrain(value);
 	}
 
     /**
@@ -208,7 +217,7 @@ public class World {
 			cubeZ = new Random().nextInt(this.getNbCubesZ());
 		}
 		Unit unit = new Unit("Hilly", new int[]{cubeX,cubeY,cubeZ},50, 50, 50, 50, false);
-		this.getCube(cubeX, cubeY, cubeZ).setUnitOnThisCube(unit);
+		this.getCube(cubeX, cubeY, cubeZ).setUnit(unit);
 		unit.world = this;
 		this.addUnit(unit);
 		addUnitToFaction(unit);
@@ -216,9 +225,6 @@ public class World {
 	}
 	
 	/**
-	 * @param cubeX
-	 * @param cubeY
-	 * @param cubeZ
 	 * @return neighboring 
 	 */
 	private boolean validSpawnCoordinates(int x, int y, int z) {
@@ -237,19 +243,19 @@ public class World {
 		int factionNumer = rd.nextInt(4);
 		switch (factionNumer) {
 		case 0:
-			faction1.addUnitToFaction(unit);
+			faction1.addMember(unit);
 			break;
 		case 1:
-			faction2.addUnitToFaction(unit);
+			faction2.addMember(unit);
 			break;
 		case 2:
-			faction3.addUnitToFaction(unit);
+			faction3.addMember(unit);
 			break;
 		case 3:
-			faction4.addUnitToFaction(unit);
+			faction4.addMember(unit);
 			break;
 		case 4:
-			faction5.addUnitToFaction(unit);
+			faction5.addMember(unit);
 			break;	
 		default:
 			break;
@@ -334,12 +340,12 @@ public class World {
 	private int dimensionGameWorldZ;
 	public Set<Unit> units;
 	public List<Cube> cubes;
-	public Set<Faction> faction;
+	public Set<Faction> factions;
     private Set<Boulder> boulders;
     private Set<Log> logs;
-	Faction faction1 = new Faction("team 1");
-	Faction faction2 = new Faction("team 2");
-	Faction faction3 = new Faction("team 3");
-	Faction faction4 = new Faction("team 4");
-	Faction faction5 = new Faction("team 5");
+	private Faction faction1 = new Faction("team 1");
+	private Faction faction2 = new Faction("team 2");
+	private Faction faction3 = new Faction("team 3");
+	private Faction faction4 = new Faction("team 4");
+	private Faction faction5 = new Faction("team 5");
 }

@@ -32,7 +32,7 @@ public class Faction extends GameObject {
 		this.factionName = factionName;
 	}
 	
-	public void addUnitToFaction(Unit unit) {
+	public void addMember(Unit unit) {
 		unit.setFaction(this);
 		members.add(unit);
 	}

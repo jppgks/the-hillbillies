@@ -1,6 +1,6 @@
 package hillbillies.model;
 
-import hillbillies.model.terrain.Terrain;
+import hillbillies.model.terrain.*;
 
 import java.util.List;
 
@@ -9,11 +9,10 @@ public class Cube {
 	private Terrain terrain;
 	private List<Cube> directlyAdjacentCubes;
 	private Position position;
-	private boolean isConnectedToBorder;
+	private boolean connectedToBorder;
 	private boolean passable;
-	private int terainOfCube;
 	private World worldOfCube;
-	private Unit unitOnThisCube = null;
+	private Unit unit = null;
 	
 	/**
 	 * @param x
@@ -31,7 +30,7 @@ public class Cube {
 	public Cube(int x, int y, int z, int type, World world){
 		this.setWorldOfCube(world);
 		position = new Position(new int[] {x,y,z});
-		this.setTerainOfCube(type);
+		this.setTerrain(type);
 	}
 	/**
 	 * @param world
@@ -64,7 +63,7 @@ public class Cube {
 	 * @return true if the cube is connected; false otherwise
 	 */
 	private boolean isConnectedToBorder() {
-		// TODO - implement Cube.isConnectedToBorder
+		// TODO - implement Cube.connectedToBorder
 		throw new UnsupportedOperationException();
 	}
 	
@@ -107,14 +106,27 @@ public class Cube {
 	 * 
 	 * @psot the terain type of the cube is set to the given type
 	 */
-	public void setTerainOfCube(int type){
-		this.terainOfCube = type;
+	public void setTerrain(int type){
+        switch (type) {
+            case 0:
+                this.terrain = new Air();
+                break;
+            case 1:
+                this.terrain = new Rock();
+                break;
+            case 2:
+                this.terrain = new Tree();
+                break;
+            case 3:
+                this.terrain = new Workshop();
+                break;
+        }
 	}
 	/**
 	 * @return the terrain type of the cube.
 	 */
-	public int getTerainOfCube(){
-		return this.terainOfCube;
+	public Terrain getTerrain(){
+		return this.terrain;
 	}
 	/**
 	 * @return
@@ -142,20 +154,20 @@ public class Cube {
 		}
 		return false;
 	}
-	public void  setUnitOnThisCube(Unit unit) {
-		this.unitOnThisCube = unit;
+	public void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 	
-	private Unit getunitOnThisCube() {
-		return unitOnThisCube;
+	private Unit getUnit() {
+		return unit;
 	}
 	/**
 	 * @return
 	 */
 	public boolean isSolid() {
-		return(this.getTerainOfCube()== 1 || this.getTerainOfCube()== 2);
+		return (this.getTerrain() instanceof Passable);
 	}
-	public Boolean isOccupied() {
-		return (this.getunitOnThisCube() != null);
+	public boolean isOccupied() {
+		return (this.getUnit() != null);
 	}
 }
