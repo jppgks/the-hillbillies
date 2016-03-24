@@ -1946,8 +1946,7 @@ public class Unit {
 	 */
 	@Raw
 	private void setUnitCoordinates(int[] cubeCoordinates) throws hillbillies.model.IllegalCoordinateException {
-		// TODO - implement Unit.setUnitCoordinates
-		throw new UnsupportedOperationException();
+		position = new Position(cubeCoordinates);
 	}
 
 	/**
@@ -1960,8 +1959,7 @@ public class Unit {
 	 * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
 	 */
 	private boolean isValidPosition(int[] cubeCoordinates) {
-		// TODO - implement Unit.isValidPosition
-		throw new UnsupportedOperationException();
+		return true;
 	}
 
 	/**
@@ -1971,8 +1969,7 @@ public class Unit {
 	 */
 	@Raw
 	private void setCubeCoordinates(int[] cubeCoordinates) {
-		// TODO - implement Unit.setCubeCoordinates
-		throw new UnsupportedOperationException();
+		this.position.setCubeCoordinates(cubeCoordinates);
 	}
 
 	public Faction getFaction() {

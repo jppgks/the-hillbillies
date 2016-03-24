@@ -72,4 +72,9 @@ public class Position {
 	public int[] getCubeCoordinates() {
 		return new int[] {this.cubeX,this.cubeY,this.cubeZ};
 	}
+	public void setCubeCoordinates(int[] initialPosition) {
+		this.cubeX = initialPosition[0];
+		this.cubeY = initialPosition[1];
+		this.cubeZ = initialPosition[2];
+	}
 }

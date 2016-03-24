@@ -165,7 +165,7 @@ public class Cube {
 	 * @return
 	 */
 	public boolean isSolid() {
-		return (this.getTerrain() instanceof Passable);
+		return !(this.getTerrain() instanceof Passable);
 	}
 	public boolean isOccupied() {
 		return (this.getUnit() != null);
