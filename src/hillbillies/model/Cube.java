@@ -10,6 +10,8 @@ public class Cube {
 	private boolean isConnectedToBorder;
 	private boolean passable;
 	private int terainOfCube;
+	private World worldOfCube;
+	private Unit unitOnThisCube = null;
 	
 	/**
 	 * @param x
@@ -24,9 +26,20 @@ public class Cube {
 	 * @post create an new cube with the given coordinates and terrain type
 	 * 	
 	 */
-	public Cube(int x, int y, int z, int type){
+	public Cube(int x, int y, int z, int type, World world){
+		this.setWorldOfCube(world);
 		position = new Position(new int[] {x,y,z});
 		this.setTerainOfCube(type);
+	}
+	/**
+	 * @param world
+	 */
+	private void setWorldOfCube(World world) {
+		this.worldOfCube = world;
+		
+	}
+	private World getWorldOfCube() {
+		return this.worldOfCube;
 	}
 	private List<Cube> calculateDirectlyAdjacentCubes() {
 		// TODO - implement Cube.calculateDirectlyAdjacentCubes
@@ -105,15 +118,42 @@ public class Cube {
 	 * @return
 	 */
 	public boolean hasSolidNeighboringCubes() {
-		// TODO Auto-generated method stub
+		for (int i = -1; i < 1; i++) {
+			if( 0 <= (position.getCubeCoordinates()[0]-i) && 
+					(position.getCubeCoordinates()[0]-i) < this.worldOfCube.getNbCubesX())
+				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0]-i,
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]).isSolid())
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[1]-i) && 
+					(position.getCubeCoordinates()[1]-i) < this.worldOfCube.getNbCubesY())
+				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0], 
+						 position.getCubeCoordinates()[1]-i,
+						 position.getCubeCoordinates()[2]).isSolid())
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[2]-i) && 
+					(position.getCubeCoordinates()[2]-i) < this.worldOfCube.getNbCubesZ())
+				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0], 
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]-i).isSolid())
+					return true;
+		}
 		return false;
+	}
+	public void  setUnitOnThisCube(Unit unit) {
+		this.unitOnThisCube = unit;
+	}
+	
+	private Unit getunitOnThisCube() {
+		return unitOnThisCube;
 	}
 	/**
 	 * @return
 	 */
 	public boolean isSolid() {
-		// TODO Auto-generated method stub
-		return false;
+		return(this.getTerainOfCube()== 1 || this.getTerainOfCube()== 2);
 	}
-
+	public Boolean isOccupied() {
+		return (this.getunitOnThisCube() != null);
+	}
 }

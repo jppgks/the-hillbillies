@@ -1,6 +1,8 @@
 package hillbillies.model;
 
 import hillbillies.part2.listener.TerrainChangeListener;
+import javafx.scene.control.TreeTableRow;
+import ogp.framework.util.ModelException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,10 +49,10 @@ public class World {
 		faction.add(faction3);
 		faction.add(faction4);
 		faction.add(faction5);
-		for (int i = 0; i < getDimensionGameWorldZ(); i++) {
-			for (int j = 0; j < getDimensionGameWorldY(); j++) {
-				for (int z = 0; z < getDimensionGameWorldX(); z++) {
-					Cube cube= new Cube(i, j, z, terrainTypes[z][j][i]);
+		for (int z = 0; z < getDimensionGameWorldZ(); z++) {
+			for (int y = 0; y < getDimensionGameWorldY(); y++) {
+				for (int x = 0; x < getDimensionGameWorldX(); x++) {
+					Cube cube= new Cube(x, y, z, terrainTypes[x][y][z],this);
 					cubes.add(cube);
 				}
 			}
@@ -196,19 +198,19 @@ public class World {
      *            or not.
      * @return The newly spawned unit.
      */
-	public Unit spawnUnit(boolean enableDefaultBehavior) {
-		int cubeX;
-		int cubeY;
-		int cubeZ; 
-		do {
-			cubeX = new Random().nextInt(this.getNbCubesX()-1);
-			cubeY = new Random().nextInt(this.getNbCubesY()-1);
-			cubeZ = new Random().nextInt(this.getNbCubesZ()-1);
-			
-		} while (validSpawnCoordinates(cubeX,cubeY,cubeZ));
+	public Unit spawnUnit(boolean enableDefaultBehavior){
+		int cubeX = new Random().nextInt(this.getNbCubesX());
+		int cubeY = new Random().nextInt(this.getNbCubesY());
+		int cubeZ = new Random().nextInt(this.getNbCubesZ());
+		while(! validSpawnCoordinates(cubeX, cubeY, cubeZ)) {
+			cubeX = new Random().nextInt(this.getNbCubesX());
+			cubeY = new Random().nextInt(this.getNbCubesY());
+			cubeZ = new Random().nextInt(this.getNbCubesZ());
+		}
 		Unit unit = new Unit("Hilly", new int[]{cubeX,cubeY,cubeZ},50, 50, 50, 50, false);
+		this.getCube(cubeX, cubeY, cubeZ).setUnitOnThisCube(unit);
 		unit.world = this;
-		units.add(unit);
+		this.addUnit(unit);
 		addUnitToFaction(unit);
 		return unit;
 	}
@@ -220,18 +222,17 @@ public class World {
 	 * @return neighboring 
 	 */
 	private boolean validSpawnCoordinates(int x, int y, int z) {
-		if(!(this.getCube(x, y, z).isSolid())){
-			if(this.getCube(x, y, z).hasSolidNeighboringCubes()){
+		if((!this.getCube(x, y, z).isSolid()) && (this.getCube(x, y, z).hasSolidNeighboringCubes()) && !(this.getCube(x, y, z).isOccupied()))
+			{
 				return true;
 			}
-		}
 		return false;
 	}
 
 	/**
 	 * @param unit
 	 */
-	private void addUnitToFaction(Unit unit) {
+	private void addUnitToFaction(Unit unit){
 		Random rd = new Random();
 		int factionNumer = rd.nextInt(4);
 		switch (factionNumer) {
