@@ -3,6 +3,9 @@ package hillbillies.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
+import hillbillies.model.gameobject.Boulder;
+import hillbillies.model.gameobject.Faction;
+import hillbillies.model.gameobject.Log;
 
 import java.util.Arrays;
 import java.util.Random;

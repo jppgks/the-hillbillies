@@ -2,11 +2,11 @@ package hillbillies.part2.facade;
 
 import java.util.Set;
 
-import hillbillies.model.Faction;
+import hillbillies.model.gameobject.Faction;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
-import hillbillies.model.Boulder;
-import hillbillies.model.Log;
+import hillbillies.model.gameobject.Boulder;
+import hillbillies.model.gameobject.Log;
 
 import hillbillies.part2.listener.TerrainChangeListener;
 import ogp.framework.util.ModelException;
