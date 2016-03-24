@@ -1,5 +1,7 @@
 package hillbillies.model;
 
+import hillbillies.model.terrain.Terrain;
+
 import java.util.List;
 
 public class Cube {

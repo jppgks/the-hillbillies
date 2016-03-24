@@ -1,13 +1,13 @@
 package hillbillies.model;
 
+import hillbillies.model.gameobject.Boulder;
+import hillbillies.model.gameobject.Faction;
+import hillbillies.model.gameobject.Log;
 import hillbillies.part2.listener.TerrainChangeListener;
-import javafx.scene.control.TreeTableRow;
-import ogp.framework.util.ModelException;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;

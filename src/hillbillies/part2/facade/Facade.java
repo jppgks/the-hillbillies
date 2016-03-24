@@ -1,6 +1,9 @@
 package hillbillies.part2.facade;
 
 import hillbillies.model.*;
+import hillbillies.model.gameobject.Boulder;
+import hillbillies.model.gameobject.Faction;
+import hillbillies.model.gameobject.Log;
 import hillbillies.part2.listener.TerrainChangeListener;
 import ogp.framework.util.ModelException;
 

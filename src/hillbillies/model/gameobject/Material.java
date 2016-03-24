@@ -1,4 +1,6 @@
-package hillbillies.model;
+package hillbillies.model.gameobject;
+
+import hillbillies.model.Position;
 
 public abstract class Material extends GameObject {
 
