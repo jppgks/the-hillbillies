@@ -117,7 +117,7 @@ public class Facade implements IFacade {
 
     @Override
     public double[] getPosition(Boulder boulder) throws ModelException {
-        return new double[0];
+        return boulder.getPosition().getDoubleCoordinates();
     }
 
     @Override
@@ -127,12 +127,12 @@ public class Facade implements IFacade {
 
     @Override
     public double[] getPosition(Log log) throws ModelException {
-        return new double[0];
+        return log.getPosition().getDoubleCoordinates();
     }
 
     @Override
     public Set<Log> getLogs(World world) throws ModelException {
-        return null;
+        return world.getLogs();
     }
 
     @Override
