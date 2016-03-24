@@ -77,9 +77,7 @@ public class Unit {
 		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
 		this.setState(State.NONE);
 	}
-	
-	public World unitsWorld;
-	
+
 	/**
 	 * Variable registering the current name of this Unit.
 	 */
@@ -297,8 +295,9 @@ public class Unit {
 	private int currentExperiencePoints;
 	private int randomAttributePointCounter;
 	private boolean falling;
-	Log log;
-	Boulder boulder;
+	Log log = null;
+	Boulder boulder = null;
+    boolean alive = true;
 
 	/**
 	 * Set the name of this Unit to the given name.
@@ -2043,4 +2042,23 @@ public class Unit {
 		// TODO - implement Unit.die
 		throw new UnsupportedOperationException();
 	}
+
+
+	public boolean isCarryingLog() {
+		return (this.log != null);
+	}
+
+	public boolean isCarryingBoulder() {
+		return (this.boulder != null);
+	}
+
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
 }

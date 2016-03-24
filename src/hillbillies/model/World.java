@@ -284,7 +284,7 @@ public class World {
      * @return A set containing all boulders present in the given world (i.e.,
      *         not picked up, consumed, destroyed, ...).
      */
-    public Set<Boulder> getBoulders(World world) {
+    public Set<Boulder> getBoulders() {
 		return this.boulders;
 	}
 
