@@ -1069,11 +1069,13 @@ public class Unit {
 	 * 		  Difference in time
 	 */
 	private void updatePosition(double dt) {
-		this.position.doubleX += this.getUnitVelocity()[0] * dt;
+		this.position = new Position(new double[]{
+				this.position.getDoubleCoordinates()[0] += this.getUnitVelocity()[0] * dt,
+				this.position.getDoubleCoordinates()[1] += this.getUnitVelocity()[1] * dt,
+				this.position.getDoubleCoordinates()[2] += this.getUnitVelocity()[2] * dt
+		});
 		this.getInitialPosition()[0] += this.getUnitVelocity()[0] * dt;
-		this.position.doubleY += this.getUnitVelocity()[1] * dt;
 		this.getInitialPosition()[1] += this.getUnitVelocity()[1] * dt;
-		this.position.doubleZ += this.getUnitVelocity()[2] * dt;
 		this.getInitialPosition()[2] += this.getUnitVelocity()[2] * dt;
 		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
@@ -1969,7 +1971,7 @@ public class Unit {
 	 */
 	@Raw
 	private void setCubeCoordinates(int[] cubeCoordinates) {
-		this.position.setCubeCoordinates(cubeCoordinates);
+		this.position = new Position(cubeCoordinates);
 	}
 
 	public Faction getFaction() {

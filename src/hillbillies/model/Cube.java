@@ -88,7 +88,7 @@ public class Cube {
 	/**
 	 * @return true if the cube is passeble and the unit can walk through the cube false otherwise 
 	 */
-	public boolean isPassable() {
+	private boolean isPassable() {
 		return this.passable;
 	}
 
@@ -98,7 +98,7 @@ public class Cube {
 	 * @post set the instance true or false if the cube is passable or inpasseble
 	 * 			  
 	 */
-	public void setPassable(boolean isPassable) {
+	private void setPassable(boolean isPassable) {
 		this.passable = isPassable;
 	}
 	/**
@@ -133,21 +133,21 @@ public class Cube {
 	 */
 	public boolean hasSolidNeighboringCubes() {
 		for (int i = -1; i < 1; i++) {
-			if( 0 <= (position.getCubeCoordinates()[0]-i) && 
+			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.worldOfCube.getNbCubesX())
 				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0]-i,
 						 position.getCubeCoordinates()[1],
 						 position.getCubeCoordinates()[2]).isSolid())
 					return true;
-			if( 0 <= (position.getCubeCoordinates()[1]-i) && 
+			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
 					(position.getCubeCoordinates()[1]-i) < this.worldOfCube.getNbCubesY())
-				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0], 
+				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0],
 						 position.getCubeCoordinates()[1]-i,
 						 position.getCubeCoordinates()[2]).isSolid())
 					return true;
-			if( 0 <= (position.getCubeCoordinates()[2]-i) && 
+			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
 					(position.getCubeCoordinates()[2]-i) < this.worldOfCube.getNbCubesZ())
-				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0], 
+				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0],
 						 position.getCubeCoordinates()[1],
 						 position.getCubeCoordinates()[2]-i).isSolid())
 					return true;
@@ -165,7 +165,7 @@ public class Cube {
 	 * @return
 	 */
 	public boolean isSolid() {
-		return !(this.getTerrain() instanceof Passable);
+		return (this.getTerrain() instanceof Impassable);
 	}
 	public boolean isOccupied() {
 		return (this.getUnit() != null);

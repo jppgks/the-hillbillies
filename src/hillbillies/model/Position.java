@@ -7,18 +7,32 @@ import be.kuleuven.cs.som.annotate.Value;
 @Value
 public class Position {
 
+	public Position(int[] initialPosition) {
+		this.cubeX = initialPosition[0];
+		this.cubeY = initialPosition[1];
+		this.cubeZ = initialPosition[2];
+		this.setDoubleCoordinates(initialPosition);
+	}
+
+    public Position(double[] initialPosition) {
+        this.doubleX = initialPosition[0];
+        this.doubleY = initialPosition[1];
+        this.doubleZ = initialPosition[2];
+        this.setCubeCoordinates(initialPosition);
+    }
+
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	public double doubleX;
+	private double doubleX;
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	public double doubleY;
+	private double doubleY;
 	/**
 	 * Variables registering the unit coordinates of this unit position.
 	 */
-	public double doubleZ;
+	private double doubleZ;
 	/**
 	 * Variables registering the cube coordinates of this unit position.
 	 */
@@ -36,13 +50,6 @@ public class Position {
 	 */
 	public final double cubeSideLength = 1;
 
-	public Position(int[] initialPosition) {
-		this.cubeX = initialPosition[0];
-		this.cubeY = initialPosition[1];
-		this.cubeZ = initialPosition[2];
-		this.setDoubleCoordinates(initialPosition);
-	}
-
 	/**
 	 * @param initialPosition
 	 */
@@ -50,8 +57,18 @@ public class Position {
 		this.doubleX = initialPosition[0] +  cubeSideLength/2;
 		this.doubleY = initialPosition[1] +  cubeSideLength/2;
 		this.doubleZ = initialPosition[2] +  cubeSideLength/2;
-		
+
 	}
+
+    /**
+     * @param initialPosition
+     */
+    private void setCubeCoordinates(double[] initialPosition) {
+        this.cubeX = (int) initialPosition[0];
+        this.cubeY = (int) initialPosition[1];
+        this.cubeY = (int) initialPosition[2];
+
+    }
 
 	/**
 	 * Return the unit coordinates of this unit position.
@@ -71,10 +88,5 @@ public class Position {
 	@Raw
 	public int[] getCubeCoordinates() {
 		return new int[] {this.cubeX,this.cubeY,this.cubeZ};
-	}
-	public void setCubeCoordinates(int[] initialPosition) {
-		this.cubeX = initialPosition[0];
-		this.cubeY = initialPosition[1];
-		this.cubeZ = initialPosition[2];
 	}
 }

@@ -7,7 +7,7 @@ import java.util.*;
 public class Faction extends GameObject {
 
 	/**
-	 * @param string
+	 * @param name
 	 */
 	public Faction(String name) {
 		this.setFactionName(name);
