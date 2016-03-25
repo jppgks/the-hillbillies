@@ -1,4 +1,4 @@
-package hillbillies.test.unit;
+package hillbillies.tests;
 
 import hillbillies.model.Position;
 import hillbillies.model.State;
@@ -9,8 +9,8 @@ import org.junit.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
-import static hillbillies.tests.util.PositionAsserts.assertIntegerPositionEquals;
+import static tests.util.PositionAsserts.assertDoublePositionEquals;
+import static tests.util.PositionAsserts.assertIntegerPositionEquals;
 import static org.junit.Assert.*;
 
 /**

@@ -74,7 +74,7 @@ public class World {
 		return this.units;
 	}
 
-	public void setUnits(Set<Unit> units) {
+	private void setUnits(Set<Unit> units) {
 		this.units = units;
 	}
 
@@ -82,7 +82,7 @@ public class World {
 		return this.cubes;
 	}
 
-	public void setCubes(List<Cube> cubes) {
+	private void setCubes(List<Cube> cubes) {
 		this.cubes = cubes;
 	}
 
@@ -263,7 +263,7 @@ public class World {
 		
 	}
 
-	public int cubeIndexInCubeList(int x, int y, int z) {
+	private int cubeIndexInCubeList(int x, int y, int z) {
         return x+getDimensionGameWorldX()*y+
                 (getDimensionGameWorldX()*getDimensionGameWorldY())*z;
     }
@@ -288,7 +288,7 @@ public class World {
 		return this.boulders;
 	}
 
-	public void setBoulders(Set<Boulder> boulders) {
+	private void setBoulders(Set<Boulder> boulders) {
 		this.boulders = boulders;
 	}
 
@@ -302,7 +302,7 @@ public class World {
 		return this.logs;
 	}
 
-	public void setLogs(Set<Log> logs) {
+	private void setLogs(Set<Log> logs) {
 		this.logs = logs;
 	}
 
@@ -338,9 +338,9 @@ public class World {
 	private int dimensionGameWorldX;
 	private int dimensionGameWorldY;
 	private int dimensionGameWorldZ;
-	public Set<Unit> units;
-	public List<Cube> cubes;
-	public Set<Faction> factions;
+	private Set<Unit> units;
+	private List<Cube> cubes;
+	private Set<Faction> factions;
     private Set<Boulder> boulders;
     private Set<Log> logs;
 	private Faction faction1 = new Faction("team 1");

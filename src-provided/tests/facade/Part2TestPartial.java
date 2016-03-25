@@ -1,4 +1,4 @@
-package hillbillies.tests.facade;
+package tests.facade;
 
 import hillbillies.model.Unit;
 import hillbillies.model.World;
