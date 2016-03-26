@@ -10,51 +10,53 @@ import hillbillies.util.ConnectedToBorder;
 import java.util.*;
 
 public class World {
+
     /**
      * Create a new world of the given size and with the given terrain. To keep
      * the GUI display up to date, the method in the given listener must be
      * called whenever the terrain type of a cube in the world changes.
-     * @param terrainTypes
-     *              A three-dimensional array (structured as [x][y][z]) with the
-     *              types of the terrain, encoded as integers. The terrain always
-     *              has the shape of a box (i.e., the array terrainTypes[0] has
-     *              the same length as terrainTypes[1] etc.). The integer types
-     *              are as follows:
-     *              <ul>
-     *                  <li>0: air</li>
-     *                  <li>1: rock</li>
-     *                  <li>2: tree</li>
-     *                  <li>3: workshop</li>
-     *              </ul>
-     * @param modelListener
-     *              An object with a single method,
-     *              {@link TerrainChangeListener#notifyTerrainChanged(int, int, int)}
-     *              . This method must be called by your implementation whenever
-     *              the terrain type of a cube changes (e.g., as a consequence of
-     *              cave-ins), so that the GUI will correctly update the display.
-     *              The coordinate of the changed cube must be given in the form
-     *              of the parameters x, y and z. You do not need to call this
-     *              method during the construction of your world.
+     *
+     * @param terrainTypes  A three-dimensional array (structured as [x][y][z]) with the
+     *                      types of the terrain, encoded as integers. The terrain always
+     *                      has the shape of a box (i.e., the array terrainTypes[0] has
+     *                      the same length as terrainTypes[1] etc.). The integer types
+     *                      are as follows:
+     *                      <ul>
+     *                      <li>0: air</li>
+     *                      <li>1: rock</li>
+     *                      <li>2: tree</li>
+     *                      <li>3: workshop</li>
+     *                      </ul>
+     * @param modelListener An object with a single method,
+     *                      {@link TerrainChangeListener#notifyTerrainChanged(int, int, int)}
+     *                      . This method must be called by your implementation whenever
+     *                      the terrain type of a cube changes (e.g., as a consequence of
+     *                      cave-ins), so that the GUI will correctly update the display.
+     *                      The coordinate of the changed cube must be given in the form
+     *                      of the parameters x, y and z. You do not need to call this
+     *                      method during the construction of your world.
      */
     public World(int[][][] terrainTypes, TerrainChangeListener modelListener) {
-		this.setDimensionGameWorld(new int[]{terrainTypes.length,terrainTypes[0].length,terrainTypes[0][0].length});
-		this.cubes = new ArrayList<>();
-		this.units =	new HashSet<>();
-		this.factions = new HashSet<>();
-		this.factions.add(faction1);
-		this.factions.add(faction2);
-		this.factions.add(faction3);
-		this.factions.add(faction4);
-		this.factions.add(faction5);
-		for (int z = 0; z < getDimensionGameWorldZ(); z++) {
-			for (int y = 0; y < getDimensionGameWorldY(); y++) {
-				for (int x = 0; x < getDimensionGameWorldX(); x++) {
-					Cube cube= new Cube(x, y, z, terrainTypes[x][y][z],this);
-					cubes.add(cube);
-				}
-			}
-		}
-	}
+        this.setDimensionGameWorld(new int[]{terrainTypes.length, terrainTypes[0].length, terrainTypes[0][0].length});
+        this.cubes = new ArrayList<>();
+        this.units = new HashSet<>();
+        this.factions = new HashSet<>();
+        this.factions.add(faction1);
+        this.factions.add(faction2);
+        this.factions.add(faction3);
+        this.factions.add(faction4);
+        this.factions.add(faction5);
+        for (int z = 0; z < getDimensionGameWorldZ(); z++) {
+            for (int y = 0; y < getDimensionGameWorldY(); y++) {
+                for (int x = 0; x < getDimensionGameWorldX(); x++) {
+                    Cube cube = new Cube(x, y, z, terrainTypes[x][y][z], this);
+                    cubes.add(cube);
+                }
+            }
+        }
+        this.calculateConnectedToBorder();
+        this.setTerrainChangeListener(modelListener);
+    }
 
     /**
      * Advance the state of this world by the given time period.
@@ -80,8 +82,7 @@ public class World {
 	}
 
     private boolean canHaveAsUnit(Unit unit) {
-        return false;
-        //TODO implementation (no more than 100 units)
+        return this.getUnits().size() < 100;
     }
 
 	public Collection<Cube> getCubes() {
@@ -200,8 +201,7 @@ public class World {
      *
      */
 	public boolean isSolidConnectedToBorder(int x, int y, int z) {
-		// TODO - implement World.isSolidConnectedToBorder
-		throw new UnsupportedOperationException();
+		return (this.getCube(x, y, z).isSolid() && this.getCube(x, y, z).isConnectedToBorder());
 	}
 
     /**
@@ -342,19 +342,30 @@ public class World {
 	}
 
 	public void calculateConnectedToBorder() {
-		connectedToBorder = new ConnectedToBorder(this.getDimensionGameWorldX(), this.getDimensionGameWorldY(), this.getDimensionGameWorldZ());
+        List<int[]> newlyDisconnectedCubes = new ArrayList<>();
+        List<int[]> newlyConnectedCubes = new ArrayList<>();
+        ConnectedToBorder connectedToBorder = new ConnectedToBorder(this.getDimensionGameWorldX(), this.getDimensionGameWorldY(), this.getDimensionGameWorldZ());
 		for (int i = 0; i < this.getDimensionGameWorldX(); i++) {
 			for (int j = 0; j < this.getDimensionGameWorldY(); j++) {
 				for (int k = 0; k < this.getDimensionGameWorldZ(); k++) {
 					if (this.getCube(i, j, k).getTerrain() instanceof Passable) {
-						connectedToBorder.changeSolidToPassable(i,j,k);
-					}
+						newlyDisconnectedCubes.addAll(connectedToBorder.changeSolidToPassable(i,j,k));
+					} else {
+                        newlyConnectedCubes.addAll(connectedToBorder.changePassableToSolid(i,j,k));
+                    }
 				}
 			}
 		}
-	}
+        for (int[] cubeCoordinate :
+                newlyConnectedCubes) {
+            this.getCube(cubeCoordinate[0], cubeCoordinate[1], cubeCoordinate[2]).setConnectedToBorder(true);
+        }
+        for (int[] cubeCoordinate :
+                newlyDisconnectedCubes) {
+            this.getCube(cubeCoordinate[0], cubeCoordinate[1], cubeCoordinate[2]).setConnectedToBorder(false);
+        }
+    }
 
-	ConnectedToBorder connectedToBorder;
 	private int dimensionGameWorldX;
 	private int dimensionGameWorldY;
 	private int dimensionGameWorldZ;
@@ -368,4 +379,15 @@ public class World {
 	private Faction faction3 = new Faction("team 3");
 	private Faction faction4 = new Faction("team 4");
 	private Faction faction5 = new Faction("team 5");
+
+
+    private TerrainChangeListener terrainChangeListener;
+
+    public void setTerrainChangeListener(TerrainChangeListener terrainChangeListener) {
+        this.terrainChangeListener = terrainChangeListener;
+    }
+
+    public void notifyTerrainChangeListener(int x, int y, int z) {
+        this.terrainChangeListener.notifyTerrainChanged(x, y, z);
+    }
 }

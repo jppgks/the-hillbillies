@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Cube {
 
-	/**
+    /**
      * Creates a new cube and initializes it with given position, terrain type and associated world.
      *
 	 * @param x
@@ -49,11 +49,6 @@ public class Cube {
     private Position position;
 
     /**
-     * Variable registering whether or not this cube is connected to a border.
-     */
-    private boolean connectedToBorder;
-
-    /**
      * Variable registering the world this cube is in.
      */
     private World world;
@@ -62,6 +57,8 @@ public class Cube {
      * Variable registering the units currently present on this cube.
      */
     private Set<Unit> unit = new HashSet<>();
+
+    private boolean connectedToBorder;
 
     /**
      * Set the position of this cube to the given position.
@@ -108,6 +105,12 @@ public class Cube {
                 this.terrain = new Workshop();
                 break;
         }
+        this.getWorld().notifyTerrainChangeListener(
+                this.getPosition().getCubeCoordinates()[0],
+                this.getPosition().getCubeCoordinates()[1],
+                this.getPosition().getCubeCoordinates()[2]
+        );
+        this.getWorld().calculateConnectedToBorder();
     }
     /**
      * Returns the terrain type of this cube.
@@ -188,21 +191,13 @@ public class Cube {
         this.directlyAdjacentCubes.add(over);
 	}
 
-	/**
-	 * Returns whether this cube is a solid cube that is
-	 * connected to a border of the world through other directly adjacent solid
-	 * cubes.
-     *
-	 * @return true if the cube is connected; false otherwise
-	 */
-	public boolean isSolidConnectedToBorder() {
-		this.getWorld().calculateConnectedToBorder();
-        return this.getWorld().connectedToBorder.isSolidConnectedToBorder(
-                this.getPosition().getCubeCoordinates()[0],
-                this.getPosition().getCubeCoordinates()[1],
-                this.getPosition().getCubeCoordinates()[2]
-        );
-	}
+    public void setConnectedToBorder(boolean value) {
+        this.connectedToBorder = value;
+    }
+
+    public boolean isConnectedToBorder() {
+        return this.connectedToBorder;
+    }
 	
 	/**
 	 * Method that's invoked when a solid cube is not connected to border.
@@ -223,16 +218,6 @@ public class Cube {
             this.getWorld().addBoulder(new Boulder(this.getPosition(), this.getWorld()));
         }
     }
-
-    /**
-	 * Returns whether or not the terrain of this cube is passable.
-     *
-     * @return  True if the cube is passable and the unit can walk through,
-     *          false otherwise.
-	 */
-	private boolean isPassable() {
-		return (this.getTerrain() instanceof Passable);
-	}
 
 	/**
      * Returns whether or not this cube has solid neighbouring cubes.
@@ -290,7 +275,7 @@ public class Cube {
      *         false otherwise.
 	 */
 	public boolean isSolid() {
-		return (this.getTerrain() instanceof Impassable);
+		return (this.getTerrain() instanceof Solid);
 	}
 
     /**
@@ -313,7 +298,7 @@ public class Cube {
      */
     public void advanceTime(double dt) {
         // TODO - implement World.advanceTime
-        if (!this.isSolidConnectedToBorder()) {
+        if (this.isSolid() && ! this.isConnectedToBorder()) {
             this.caveIn();
         }
     }

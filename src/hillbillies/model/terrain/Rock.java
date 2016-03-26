@@ -1,4 +1,4 @@
 package hillbillies.model.terrain;
 
-public class Rock extends Impassable {
+public class Rock extends Solid {
 }

@@ -2,7 +2,7 @@ package hillbillies.model.gameobject;
 
 import hillbillies.model.Position;
 import hillbillies.model.World;
-import hillbillies.model.terrain.Impassable;
+import hillbillies.model.terrain.Solid;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -75,7 +75,7 @@ public abstract class Material extends GameObject {
      */
 	public boolean isAboveSolidCube() {
         int[] positionCoordinates = this.getPosition().getCubeCoordinates();
-		return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Impassable);
+		return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Solid);
 	}
 
 	public void advanceTime() {
