@@ -7,46 +7,66 @@ import java.util.*;
 public class Faction extends GameObject {
 
 	/**
+	 * Creates a new faction object and initializes it with the given name.
+     *
+     * @post      The name of this new faction is equal to the given name.
+     *
 	 * @param name
+     *            The name to initialize this faction with.
 	 */
 	public Faction(String name) {
-		this.setFactionName(name);
+		this.setName(name);
 	}
 
+    /**
+     * Variable registering this faction's name.
+     */
+    private String name;
+
+    /**
+     * Variable registering the members of this faction.
+     */
+    Set<Unit> members = new HashSet<>();
+
 	/**
-	 * Return the factionName of this Faction.
+	 * Returns the name of this Faction.
+     *
+     * @return The name of this faction.
 	 */
-	public String getFactionName() {
-		return factionName;
+	public String getName() {
+		return name;
 	}
 
 	/**
-	 * Set the factionName of this Faction to the given factionName.
+	 * Set the name of this Faction to the given name.
 	 *
-	 * @param  factionName
-	 *         The factionName to set.
-	 * @post   The factionName of this of this Faction is equal to the given factionName.
-	 *       | new.getfactionName() == factionName
+     * @post   The name of this faction is equal to the given name.
+     *       | new.getName() == name
+     *
+     * @param name
+	 *         The name to set.
 	 */
-	public void setFactionName(String factionName) {
-		this.factionName = factionName;
+	public void setName(String name) {
+		this.name = name;
 	}
-	
+
+    /**
+     * Add the given unit to the set of members of this faction.
+     *
+     * @param unit
+     *         The unit to add to the set of members.
+     */
 	public void addMember(Unit unit) {
 		unit.setFaction(this);
 		members.add(unit);
 	}
 
-	Set<Unit> members = new HashSet<>();
-	
 	/**
-	 * Return the members of this Faction.
+	 * Returns the members of this faction.
+     *
+     * @return The set of members of this faction.
 	 */
 	public Set<Unit> getMembers() {
 		return members;
 	}
-
-	private String factionName;
-	
-
 }
