@@ -5,6 +5,7 @@ import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
 import hillbillies.model.terrain.*;
 import hillbillies.part2.listener.TerrainChangeListener;
+import hillbillies.util.ConnectedToBorder;
 
 import java.util.*;
 
@@ -334,7 +335,21 @@ public class World {
 	private int getDimensionGameWorldZ() {
 		return dimensionGameWorldZ;
 	}
-	
+
+	public void calculateConnectedToBorder() {
+		connectedToBorder = new ConnectedToBorder(this.getDimensionGameWorldX(), this.getDimensionGameWorldY(), this.getDimensionGameWorldZ());
+		for (int i = 0; i < this.getDimensionGameWorldX(); i++) {
+			for (int j = 0; j < this.getDimensionGameWorldY(); j++) {
+				for (int k = 0; k < this.getDimensionGameWorldZ(); k++) {
+					if (this.getCube(i, j, k).getTerrain() instanceof Passable) {
+						connectedToBorder.changeSolidToPassable(i,j,k);
+					}
+				}
+			}
+		}
+	}
+
+	ConnectedToBorder connectedToBorder;
 	private int dimensionGameWorldX;
 	private int dimensionGameWorldY;
 	private int dimensionGameWorldZ;

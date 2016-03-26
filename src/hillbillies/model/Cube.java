@@ -192,9 +192,13 @@ public class Cube {
      *
 	 * @return true if the cube is connected; false otherwise
 	 */
-	private boolean isConnectedToBorder() {
-		// TODO - implement Cube.connectedToBorder
-		throw new UnsupportedOperationException();
+	public boolean isSolidConnectedToBorder() {
+		this.getWorld().calculateConnectedToBorder();
+        return this.getWorld().connectedToBorder.isSolidConnectedToBorder(
+                this.getPosition().getCubeCoordinates()[0],
+                this.getPosition().getCubeCoordinates()[1],
+                this.getPosition().getCubeCoordinates()[2]
+        );
 	}
 	
 	/**
