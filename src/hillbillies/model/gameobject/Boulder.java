@@ -1,6 +1,7 @@
 package hillbillies.model.gameobject;
 
 import hillbillies.model.Position;
+import hillbillies.model.World;
 
 public class Boulder extends Material {
 
@@ -12,8 +13,9 @@ public class Boulder extends Material {
      * @param position
      *            The position to initialize this boulder with.
      */
-    public Boulder(Position position) {
+    public Boulder(Position position, World world) {
         this.position = position;
+        this.world = world;
     }
 
 }

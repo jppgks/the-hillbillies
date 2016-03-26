@@ -218,9 +218,9 @@ public class Cube {
 
     private void spawnBoulderOrLog() {
         if (ThreadLocalRandom.current().nextInt(2) == 0) {
-            this.getWorld().addLog(new Log(this.getPosition()));
+            this.getWorld().addLog(new Log(this.getPosition(), this.getWorld()));
         } else {
-            this.getWorld().addBoulder(new Boulder(this.getPosition()));
+            this.getWorld().addBoulder(new Boulder(this.getPosition(), this.getWorld()));
         }
     }
 
@@ -231,7 +231,7 @@ public class Cube {
      *          false otherwise.
 	 */
 	private boolean isPassable() {
-		return (this.terrain instanceof Passable);
+		return (this.getTerrain() instanceof Passable);
 	}
 
 	/**
