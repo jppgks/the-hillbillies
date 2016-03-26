@@ -2,9 +2,7 @@ package hillbillies.model;
 
 import hillbillies.model.terrain.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Cube {
@@ -40,7 +38,7 @@ public class Cube {
     /**
      * Variable registering the directly adjacent cubes of this cube.
      */
-    private List<Cube> directlyAdjacentCubes = new ArrayList<>();
+    private Set<Cube> directlyAdjacentCubes = new HashSet<>();
 
     /**
      * Variable registering the position of this cube.
@@ -140,20 +138,51 @@ public class Cube {
      * @post      The set of directly adjacent cubes for this cube is updated.
      */
     private void calculateDirectlyAdjacentCubes() {
-//		// TODO - implement Cube.calculateDirectlyAdjacentCubes
-//		throw new UnsupportedOperationException();
+        int thisX = this.getPosition().getCubeCoordinates()[0];
+        int thisY = this.getPosition().getCubeCoordinates()[1];
+        int thisZ = this.getPosition().getCubeCoordinates()[2];
         Cube left = this.getWorld()
                 .getCube(
-                        this.getPosition().getCubeCoordinates()[0],
-                        this.getPosition().getCubeCoordinates()[1],
-                        this.getPosition().getCubeCoordinates()[2]
+                        thisX-1,
+                        thisY,
+                        thisZ
                 );
-        Cube right;
-        Cube front;
-        Cube back;
-        Cube under;
-        Cube over;
-//        this.directlyAdjacentCubes.add();
+        Cube right = this.getWorld()
+                .getCube(
+                        thisX+1,
+                        thisY,
+                        thisZ
+                );
+        Cube front = this.getWorld()
+                .getCube(
+                        thisX,
+                        thisY+1,
+                        thisZ
+                );
+        Cube back = this.getWorld()
+                .getCube(
+                        thisX,
+                        thisY-1,
+                        thisZ
+                );
+        Cube under = this.getWorld()
+                .getCube(
+                        thisX,
+                        thisY,
+                        thisZ-1
+                );
+        Cube over = this.getWorld()
+                .getCube(
+                        thisX,
+                        thisY,
+                        thisZ+1
+                );
+        this.directlyAdjacentCubes.add(left);
+        this.directlyAdjacentCubes.add(right);
+        this.directlyAdjacentCubes.add(front);
+        this.directlyAdjacentCubes.add(back);
+        this.directlyAdjacentCubes.add(under);
+        this.directlyAdjacentCubes.add(over);
 	}
 
 	/**
