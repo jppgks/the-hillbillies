@@ -2,28 +2,36 @@ package hillbillies.model;
 
 import hillbillies.model.terrain.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Cube {
 
 	/**
+     * Creates a new cube and initializes it with given position, terrain type and associated world.
+     *
 	 * @param x
-	 * 			coordinate
+	 * 			X-coordinate for this new cube
 	 * @param y
-	 * 			coordinate
+	 * 			Y-coordinate for this new cube
 	 * @param z
-	 * 			coordinate
+	 * 			Z-coordinate for this new cube
 	 * @param type
-	 * 			the terrain type if the cube
+	 * 			The terrain type for this new cube, encoded as integer.
+     * @param world
+     *          The world this cube is part of.
+     *
+     * @note Is this association with World necessary?
 	 *
-	 * @post create an new cube with the given coordinates and terrain type
+	 * @post An new cube is created and initialized with the given position, terrain type and world.
 	 *
 	 */
 	public Cube(int x, int y, int z, int type, World world){
-		this.setWorld(world);
-		this.setPosition(new Position(new int[] {x,y,z}));
-		this.setTerrain(type);
+        this.setPosition(new Position(new int[] {x,y,z}));
+        this.setTerrain(type);
+        this.setWorld(world);
 	}
 
     /**
@@ -34,7 +42,7 @@ public class Cube {
     /**
      * Variable registering the directly adjacent cubes of this cube.
      */
-    private List<Cube> directlyAdjacentCubes;
+    private List<Cube> directlyAdjacentCubes = new ArrayList<>();
 
     /**
      * Variable registering the position of this cube.
@@ -54,7 +62,7 @@ public class Cube {
     /**
      * Variable registering the units currently present on this cube.
      */
-    private Set<Unit> unit; // To initialize with empty set
+    private Set<Unit> unit = new HashSet<>();
 
 	/**
 	 * @param world
@@ -64,28 +72,30 @@ public class Cube {
 		
 	}
 
+    /**
+     *
+     *
+     * @return
+     */
 	private World getWorld() {
 		return this.world;
 	}
 
-    private List<Cube> calculateDirectlyAdjacentCubes() {
+    /**
+     * Returns the directly adjacent cubes for this cube.
+     *
+     * @return A set of directly adjacent cubes for this cube.
+     */
+    private Set<Cube> calculateDirectlyAdjacentCubes() {
 		// TODO - implement Cube.calculateDirectlyAdjacentCubes
 		throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * Returns whether the cube at the given position is a solid cube that is
+	 * Returns whether this cube is a solid cube that is
 	 * connected to a border of the world through other directly adjacent solid
 	 * cubes.
-	 * 
-	 * @note The result is pre-computed, so this query returns immediately.
-	 * 
-	 * @param x
-	 *            The x-coordinate of the cube to test
-	 * @param y
-	 *            The y-coordinate of the cube to test
-	 * @param z
-	 *            The z-coordinate of the cube to test
+     *
 	 * @return true if the cube is connected; false otherwise
 	 */
 	private boolean isConnectedToBorder() {
@@ -187,21 +197,44 @@ public class Cube {
 		}
 		return false;
 	}
+
+    /**
+     * Places a given unit at this cube.
+     *
+     * @param     unit
+     *            The unit to add to this cube.
+     */
 	public void setUnit(Unit unit) {
 		this.unit.add(unit);
 	}
-	
-	private Set<Unit> getUnit() {
+
+    /**
+     * Returns all units present on this cube.
+     *
+     * @return A set of units present on this cube, empty set when none such exist.
+     */
+	private Set<Unit> getUnits() {
 		return unit;
 	}
+
 	/**
-	 * @return
+     * Returns whether or not the terrain type of this cube is solid.
+     *
+	 * @return true when the terrain type of this cube is impassable;
+     *         false otherwise.
 	 */
 	public boolean isSolid() {
 		return (this.getTerrain() instanceof Impassable);
 	}
+
+    /**
+     * Returns whether or not there are units on this cube.
+     *
+     * @return true if there are units present on this cube;
+     *         false otherwise.
+     */
 	public boolean isOccupied() {
-		return (this.getUnit() != null);
+		return (this.getUnits().size() > 0);
 	}
 
     /** 
@@ -216,11 +249,11 @@ public class Cube {
     /** 
      * Set the position of this cube to the given position.
      *
-     * @post The position of this cube is equal to the given position.
-     *       | new.getposition() == position
+     * @post      The position of this cube is equal to the given position.
+     *          | new.getposition() == position
      *
-     * @param position
-     *         The position to set.
+     * @param     position
+     *            The position to set.
      */
     private void setPosition(Position position) {
         this.position = position;

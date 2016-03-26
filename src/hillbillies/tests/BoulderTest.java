@@ -17,4 +17,5 @@ public class BoulderTest {
     public void testGetPosition() throws Exception {
 
     }
+
 }

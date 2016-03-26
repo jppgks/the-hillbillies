@@ -338,11 +338,11 @@ public class World {
 	private int dimensionGameWorldX;
 	private int dimensionGameWorldY;
 	private int dimensionGameWorldZ;
-	private Set<Unit> units;
-	private List<Cube> cubes;
-	private Set<Faction> factions;
-    private Set<Boulder> boulders;
-    private Set<Log> logs;
+	private Set<Unit> units = new HashSet<>();
+	private List<Cube> cubes = new ArrayList<>();
+	private Set<Faction> factions = new HashSet<>();
+    private Set<Boulder> boulders = new HashSet<>();
+    private Set<Log> logs = new HashSet<>();
 	private Faction faction1 = new Faction("team 1");
 	private Faction faction2 = new Faction("team 2");
 	private Faction faction3 = new Faction("team 3");
