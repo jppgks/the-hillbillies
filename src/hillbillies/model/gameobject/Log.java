@@ -1,6 +1,7 @@
 package hillbillies.model.gameobject;
 
 import hillbillies.model.Position;
+import hillbillies.model.World;
 
 public class Log extends Material {
 
@@ -12,7 +13,8 @@ public class Log extends Material {
      * @param position
      *            The position to initialize this log with.
      */
-    public Log(Position position) {
+    public Log(Position position, World world) {
         this.position = position;
+        this.world = world;
     }
 }

@@ -1,6 +1,8 @@
 package hillbillies.model.gameobject;
 
 import hillbillies.model.Position;
+import hillbillies.model.World;
+import hillbillies.model.terrain.Solid;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -21,10 +23,10 @@ public abstract class Material extends GameObject {
 	 */
 	boolean falling;
 
-	/**
-	 * Variable registering whether or not this material is above a solid cube.
-	 */
-	boolean aboveSolidCube;
+    /**
+     * Variable registering the world this material is on.
+     */
+    World world;
 
     /**
      * Returns the weight of this material.
@@ -72,12 +74,15 @@ public abstract class Material extends GameObject {
      * @return Whether or not this material is currently above a solid cube.
      */
 	public boolean isAboveSolidCube() {
-		return this.aboveSolidCube;
+        int[] positionCoordinates = this.getPosition().getCubeCoordinates();
+		return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Solid);
 	}
 
 	public void advanceTime() {
 		// TODO - implement Material.advanceTime
-		throw new UnsupportedOperationException();
+        if (! this.isAboveSolidCube()) {
+            this.setFalling(true);
+        }
 	}
 
 }

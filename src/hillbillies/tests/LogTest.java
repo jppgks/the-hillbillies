@@ -9,7 +9,6 @@ public class LogTest {
 
     @Test
     public void testGetPosition() throws Exception {
-
     }
 
 
