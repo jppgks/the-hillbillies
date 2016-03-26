@@ -65,8 +65,11 @@ public class World {
      */
     public void advanceTime(double dt) {
 		// TODO - implement World.advanceTime
-		throw new UnsupportedOperationException();
-	}
+        for (Cube cube :
+                this.getCubes()) {
+            cube.advanceTime(dt);
+        }
+    }
 
     /**
      * Return all units that are currently part of the world.
@@ -183,7 +186,7 @@ public class World {
      *            integer according to the values in IFacade.
      */
 	public void setCubeType(int x, int y, int z, int value) {
-			this.getCube(x, y, z).setTerrain(value);
+			this.getCube(x, y, z).setTerrain(value, false);
 	}
 
     /**
@@ -201,7 +204,7 @@ public class World {
      *
      */
 	public boolean isSolidConnectedToBorder(int x, int y, int z) {
-		return (this.getCube(x, y, z).isSolid() && this.getCube(x, y, z).isConnectedToBorder());
+		return this.connectedToBorder.isSolidConnectedToBorder(x, y, z);
 	}
 
     /**
@@ -343,26 +346,21 @@ public class World {
 
 	public void calculateConnectedToBorder() {
         List<int[]> newlyDisconnectedCubes = new ArrayList<>();
-        List<int[]> newlyConnectedCubes = new ArrayList<>();
-        ConnectedToBorder connectedToBorder = new ConnectedToBorder(this.getDimensionGameWorldX(), this.getDimensionGameWorldY(), this.getDimensionGameWorldZ());
+        connectedToBorder = new ConnectedToBorder(this.getDimensionGameWorldX(), this.getDimensionGameWorldY(), this.getDimensionGameWorldZ());
 		for (int i = 0; i < this.getDimensionGameWorldX(); i++) {
 			for (int j = 0; j < this.getDimensionGameWorldY(); j++) {
 				for (int k = 0; k < this.getDimensionGameWorldZ(); k++) {
 					if (this.getCube(i, j, k).getTerrain() instanceof Passable) {
 						newlyDisconnectedCubes.addAll(connectedToBorder.changeSolidToPassable(i,j,k));
 					} else {
-                        newlyConnectedCubes.addAll(connectedToBorder.changePassableToSolid(i,j,k));
+                        connectedToBorder.changePassableToSolid(i,j,k);
                     }
 				}
 			}
 		}
         for (int[] cubeCoordinate :
-                newlyConnectedCubes) {
-            this.getCube(cubeCoordinate[0], cubeCoordinate[1], cubeCoordinate[2]).setConnectedToBorder(true);
-        }
-        for (int[] cubeCoordinate :
                 newlyDisconnectedCubes) {
-            this.getCube(cubeCoordinate[0], cubeCoordinate[1], cubeCoordinate[2]).setConnectedToBorder(false);
+            this.getCube(cubeCoordinate[0], cubeCoordinate[1], cubeCoordinate[2]).caveIn();
         }
     }
 
@@ -380,6 +378,7 @@ public class World {
 	private Faction faction4 = new Faction("team 4");
 	private Faction faction5 = new Faction("team 5");
 
+    ConnectedToBorder connectedToBorder;
 
     private TerrainChangeListener terrainChangeListener;
 
