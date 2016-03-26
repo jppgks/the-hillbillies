@@ -79,6 +79,11 @@ public class World {
 		this.units = units;
 	}
 
+    private boolean canHaveAsUnit(Unit unit) {
+        return false;
+        //TODO implementation (no more than 100 units)
+    }
+
 	public Collection<Cube> getCubes() {
 		return this.cubes;
 	}
