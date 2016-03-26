@@ -3,46 +3,72 @@ package hillbillies.model;
 import hillbillies.model.terrain.*;
 
 import java.util.List;
+import java.util.Set;
 
 public class Cube {
 
-	private Terrain terrain;
-	private List<Cube> directlyAdjacentCubes;
-	private Position position;
-	private boolean connectedToBorder;
-	private boolean passable;
-	private World worldOfCube;
-	private Unit unit = null;
-	
 	/**
 	 * @param x
 	 * 			coordinate
 	 * @param y
 	 * 			coordinate
 	 * @param z
-	 * 			coordinate 
+	 * 			coordinate
 	 * @param type
 	 * 			the terrain type if the cube
-	 * 
+	 *
 	 * @post create an new cube with the given coordinates and terrain type
-	 * 	
+	 *
 	 */
 	public Cube(int x, int y, int z, int type, World world){
-		this.setWorldOfCube(world);
-		this.position = new Position(new int[] {x,y,z});
+		this.setWorld(world);
+		this.setPosition(new Position(new int[] {x,y,z}));
 		this.setTerrain(type);
 	}
+
+    /**
+     * Variable registering the terrain type of this cube.
+     */
+	private Terrain terrain;
+
+    /**
+     * Variable registering the directly adjacent cubes of this cube.
+     */
+    private List<Cube> directlyAdjacentCubes;
+
+    /**
+     * Variable registering the position of this cube.
+     */
+    private Position position;
+
+    /**
+     * Variable registering whether or not this cube is connected to a border.
+     */
+    private boolean connectedToBorder;
+
+    /**
+     * Variable registering the world this cube is in.
+     */
+    private World world;
+
+    /**
+     * Variable registering the units currently present on this cube.
+     */
+    private Set<Unit> unit; // To initialize with empty set
+
 	/**
 	 * @param world
 	 */
-	private void setWorldOfCube(World world) {
-		this.worldOfCube = world;
+	private void setWorld(World world) {
+		this.world = world;
 		
 	}
-	private World getWorldOfCube() {
-		return this.worldOfCube;
+
+	private World getWorld() {
+		return this.world;
 	}
-	private List<Cube> calculateDirectlyAdjacentCubes() {
+
+    private List<Cube> calculateDirectlyAdjacentCubes() {
 		// TODO - implement Cube.calculateDirectlyAdjacentCubes
 		throw new UnsupportedOperationException();
 	}
@@ -68,9 +94,9 @@ public class Cube {
 	}
 	
 	/**
-	 * Method that's invoke when a solid cup is nog connected to border whit other solid cubes
+	 * Method that's invoked when a solid cube is not connected to border.
 	 * 			
-	 * 
+	 * @post ...
 	 */
 	private void caveIn() {
 		// TODO - implement Cube.caveIn
@@ -78,7 +104,11 @@ public class Cube {
 	}
 
 	/**
-	 * @return the change when a cube is caving in to spawn a log or a boulder 
+     * Returns the chance for spawning a log or a boulder.
+     *
+     * @pre The cube is caved in.
+     *
+	 * @return The chance for spawning a log or a boulder.
 	 */
 	private double getChanceForMaterial() {
 		// TODO - implement Cube.getChanceForMaterial
@@ -86,26 +116,23 @@ public class Cube {
 	}
 
 	/**
-	 * @return true if the cube is passeble and the unit can walk through the cube false otherwise 
+	 * Returns whether or not the terrain of this cube is passable.
+     *
+     * @return  True if the cube is passable and the unit can walk through,
+     *          false otherwise.
 	 */
 	private boolean isPassable() {
-		return this.passable;
+		return (this.terrain instanceof Passable);
 	}
 
 	/**
-	 * @param isPassable
-	 * 
-	 * @post set the instance true or false if the cube is passable or inpasseble
-	 * 			  
-	 */
-	private void setPassable(boolean isPassable) {
-		this.passable = isPassable;
-	}
-	/**
-	 * @param type
-	 * 
-	 * @psot the terain type of the cube is set to the given type
-	 */
+     * Sets the terrain of this cube according to the given terrain type.
+     *
+	 * @post The terrain type of this cube is equal to the given type.
+	 *
+     * @param type
+     *          The terrain type encoded as an integer value as described in IFacade.
+     */
 	public void setTerrain(int type){
         switch (type) {
             case 0:
@@ -123,31 +150,37 @@ public class Cube {
         }
 	}
 	/**
-	 * @return the terrain type of the cube.
+     * Returns the terrain type of this cube.
+     *
+	 * @return The terrain type of this cube.
 	 */
 	public Terrain getTerrain(){
 		return this.terrain;
 	}
+
 	/**
-	 * @return
+     * Returns whether or not this cube has solid neighbouring cubes.
+     *
+	 * @return  True if this cube has solid neighbouring cubes,
+     *          false otherwise.
 	 */
 	public boolean hasSolidNeighboringCubes() {
 		for (int i = -1; i < 1; i++) {
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
-					(position.getCubeCoordinates()[0]-i) < this.worldOfCube.getNbCubesX())
-				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0]-i,
+					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
 						 position.getCubeCoordinates()[1],
 						 position.getCubeCoordinates()[2]).isSolid())
 					return true;
 			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
-					(position.getCubeCoordinates()[1]-i) < this.worldOfCube.getNbCubesY())
-				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0],
+					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
 						 position.getCubeCoordinates()[1]-i,
 						 position.getCubeCoordinates()[2]).isSolid())
 					return true;
 			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
-					(position.getCubeCoordinates()[2]-i) < this.worldOfCube.getNbCubesZ())
-				if(this.getWorldOfCube().getCube(position.getCubeCoordinates()[0],
+					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
 						 position.getCubeCoordinates()[1],
 						 position.getCubeCoordinates()[2]-i).isSolid())
 					return true;
@@ -155,10 +188,10 @@ public class Cube {
 		return false;
 	}
 	public void setUnit(Unit unit) {
-		this.unit = unit;
+		this.unit.add(unit);
 	}
 	
-	private Unit getUnit() {
+	private Set<Unit> getUnit() {
 		return unit;
 	}
 	/**
@@ -170,4 +203,26 @@ public class Cube {
 	public boolean isOccupied() {
 		return (this.getUnit() != null);
 	}
+
+    /** 
+     * Return the position of this cube.
+     *
+     * @return The position of this cube.
+     */
+    private Position getPosition() {
+        return position;
+    }
+
+    /** 
+     * Set the position of this cube to the given position.
+     *
+     * @post The position of this cube is equal to the given position.
+     *       | new.getposition() == position
+     *
+     * @param position
+     *         The position to set.
+     */
+    private void setPosition(Position position) {
+        this.position = position;
+    }
 }
