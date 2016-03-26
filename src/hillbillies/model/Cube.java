@@ -22,8 +22,6 @@ public class Cube {
 	 * 			The terrain type for this new cube, encoded as integer.
      * @param world
      *          The world this cube is part of.
-     *
-     * @note Is this association with World necessary?
 	 *
 	 * @post An new cube is created and initialized with the given position, terrain type and world.
 	 *
@@ -64,6 +62,61 @@ public class Cube {
      */
     private Set<Unit> unit = new HashSet<>();
 
+    /**
+     * Set the position of this cube to the given position.
+     *
+     * @post      The position of this cube is equal to the given position.
+     *          | new.getposition() == position
+     *
+     * @param     position
+     *            The position to set.
+     */
+    private void setPosition(Position position) {
+        this.position = position;
+    }
+
+    /**
+     * Return the position of this cube.
+     *
+     * @return The position of this cube.
+     */
+    private Position getPosition() {
+        return position;
+    }
+
+    /**
+     * Sets the terrain of this cube according to the given terrain type.
+     *
+     * @post The terrain type of this cube is equal to the given type.
+     *
+     * @param type
+     *          The terrain type encoded as an integer value as described in IFacade.
+     */
+    public void setTerrain(int type){
+        switch (type) {
+            case 0:
+                this.terrain = new Air();
+                break;
+            case 1:
+                this.terrain = new Rock();
+                break;
+            case 2:
+                this.terrain = new Tree();
+                break;
+            case 3:
+                this.terrain = new Workshop();
+                break;
+        }
+    }
+    /**
+     * Returns the terrain type of this cube.
+     *
+     * @return The terrain type of this cube.
+     */
+    public Terrain getTerrain(){
+        return this.terrain;
+    }
+
 	/**
 	 * @param world
 	 */
@@ -82,13 +135,25 @@ public class Cube {
 	}
 
     /**
-     * Returns the directly adjacent cubes for this cube.
+     * Calculates the directly adjacent cubes for this cube.
      *
-     * @return A set of directly adjacent cubes for this cube.
+     * @post      The set of directly adjacent cubes for this cube is updated.
      */
-    private Set<Cube> calculateDirectlyAdjacentCubes() {
-		// TODO - implement Cube.calculateDirectlyAdjacentCubes
-		throw new UnsupportedOperationException();
+    private void calculateDirectlyAdjacentCubes() {
+//		// TODO - implement Cube.calculateDirectlyAdjacentCubes
+//		throw new UnsupportedOperationException();
+        Cube left = this.getWorld()
+                .getCube(
+                        this.getPosition().getCubeCoordinates()[0],
+                        this.getPosition().getCubeCoordinates()[1],
+                        this.getPosition().getCubeCoordinates()[2]
+                );
+        Cube right;
+        Cube front;
+        Cube back;
+        Cube under;
+        Cube over;
+//        this.directlyAdjacentCubes.add();
 	}
 
 	/**
@@ -133,39 +198,6 @@ public class Cube {
 	 */
 	private boolean isPassable() {
 		return (this.terrain instanceof Passable);
-	}
-
-	/**
-     * Sets the terrain of this cube according to the given terrain type.
-     *
-	 * @post The terrain type of this cube is equal to the given type.
-	 *
-     * @param type
-     *          The terrain type encoded as an integer value as described in IFacade.
-     */
-	public void setTerrain(int type){
-        switch (type) {
-            case 0:
-                this.terrain = new Air();
-                break;
-            case 1:
-                this.terrain = new Rock();
-                break;
-            case 2:
-                this.terrain = new Tree();
-                break;
-            case 3:
-                this.terrain = new Workshop();
-                break;
-        }
-	}
-	/**
-     * Returns the terrain type of this cube.
-     *
-	 * @return The terrain type of this cube.
-	 */
-	public Terrain getTerrain(){
-		return this.terrain;
 	}
 
 	/**
@@ -237,25 +269,16 @@ public class Cube {
 		return (this.getUnits().size() > 0);
 	}
 
-    /** 
-     * Return the position of this cube.
+    /**
+     * Advance the state of this cube by the given time period.
      *
-     * @return The position of this cube.
+     * @param     dt
+     *            The time period, in seconds, by which to advance the cube's state.
+     *
+     * @note Need to check whether or not this cube needs to cave in.
      */
-    private Position getPosition() {
-        return position;
-    }
-
-    /** 
-     * Set the position of this cube to the given position.
-     *
-     * @post      The position of this cube is equal to the given position.
-     *          | new.getposition() == position
-     *
-     * @param     position
-     *            The position to set.
-     */
-    private void setPosition(Position position) {
-        this.position = position;
+    public void advanceTime(double dt) {
+        // TODO - implement World.advanceTime
+        throw new UnsupportedOperationException();
     }
 }
