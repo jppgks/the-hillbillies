@@ -79,6 +79,11 @@ public class World {
 		this.units = units;
 	}
 
+    private boolean canHaveAsUnit(Unit unit) {
+        return false;
+        //TODO implementation (no more than 100 units)
+    }
+
 	public Collection<Cube> getCubes() {
 		return this.cubes;
 	}
@@ -289,8 +294,8 @@ public class World {
 		return this.boulders;
 	}
 
-	private void setBoulders(Set<Boulder> boulders) {
-		this.boulders = boulders;
+	public void addBoulder(Boulder boulder) {
+		this.boulders.add(boulder);
 	}
 
     /**
@@ -303,8 +308,8 @@ public class World {
 		return this.logs;
 	}
 
-	private void setLogs(Set<Log> logs) {
-		this.logs = logs;
+	public void addLog(Log log) {
+		this.logs.add(log);
 	}
 
 	/**
