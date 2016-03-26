@@ -2,12 +2,14 @@ package hillbillies.model.gameobject;
 
 import hillbillies.model.Position;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public abstract class Material extends GameObject {
 
 	/**
 	 * Variable registering the weight of this material.
 	 */
-	double weight;
+	double weight = ThreadLocalRandom.current().nextInt(10,51);
 
 	/**
 	 * Variable registering the position of this material.

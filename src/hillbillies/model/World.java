@@ -289,8 +289,8 @@ public class World {
 		return this.boulders;
 	}
 
-	private void setBoulders(Set<Boulder> boulders) {
-		this.boulders = boulders;
+	public void addBoulder(Boulder boulder) {
+		this.boulders.add(boulder);
 	}
 
     /**
@@ -303,8 +303,8 @@ public class World {
 		return this.logs;
 	}
 
-	private void setLogs(Set<Log> logs) {
-		this.logs = logs;
+	public void addLog(Log log) {
+		this.logs.add(log);
 	}
 
 	/**

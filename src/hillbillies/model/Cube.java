@@ -1,9 +1,12 @@
 package hillbillies.model;
 
+import hillbillies.model.gameobject.Boulder;
+import hillbillies.model.gameobject.Log;
 import hillbillies.model.terrain.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Cube {
 
@@ -207,23 +210,21 @@ public class Cube {
 	 * @post ...
 	 */
 	private void caveIn() {
-		// TODO - implement Cube.caveIn
-		throw new UnsupportedOperationException();
+        this.setTerrain(0);
+        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+            this.spawnBoulderOrLog();
+        }
 	}
 
-	/**
-     * Returns the chance for spawning a log or a boulder.
-     *
-     * @pre The cube is caved in.
-     *
-	 * @return The chance for spawning a log or a boulder.
-	 */
-	private double getChanceForMaterial() {
-		// TODO - implement Cube.getChanceForMaterial
-		throw new UnsupportedOperationException();
-	}
+    private void spawnBoulderOrLog() {
+        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+            this.getWorld().addLog(new Log(this.getPosition()));
+        } else {
+            this.getWorld().addBoulder(new Boulder(this.getPosition()));
+        }
+    }
 
-	/**
+    /**
 	 * Returns whether or not the terrain of this cube is passable.
      *
      * @return  True if the cube is passable and the unit can walk through,
@@ -312,6 +313,8 @@ public class Cube {
      */
     public void advanceTime(double dt) {
         // TODO - implement World.advanceTime
-        throw new UnsupportedOperationException();
+        if (!this.isSolidConnectedToBorder()) {
+            this.caveIn();
+        }
     }
 }
