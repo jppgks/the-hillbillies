@@ -51,7 +51,7 @@ public class World {
                 }
             }
         }
-        this.calculateConnectedToBorder();
+        //this.calculateConnectedToBorder();
         this.setTerrainChangeListener(modelListener);
     }
 
@@ -128,21 +128,21 @@ public class World {
     /**
      * Return the number of cubes in the x-direction of this world.
      */
-    int getNbCubesX() {
+    public int getNbCubesX() {
         return sizeX;
     }
 
     /**
      * Return the number of cubes in the y-direction of this world.
      */
-    int getNbCubesY() {
+    public int getNbCubesY() {
         return sizeY;
     }
 
     /**
      * Return the number of cubes in the z-direction of this world.
      */
-    int getNbCubesZ() {
+    public int getNbCubesZ() {
         return sizeZ;
     }
 
@@ -316,7 +316,7 @@ public class World {
      *
      * @return A collection containing all units from the world.
      */
-	private Set<Unit> getUnits() {
+    public Set<Unit> getUnits() {
 		return this.units;
 	}
 
@@ -341,7 +341,7 @@ public class World {
      *
      * @return The newly spawned unit.
      */
-	private Unit spawnUnit(boolean enableDefaultBehavior){
+    public Unit spawnUnit(boolean enableDefaultBehavior){
 		int cubeX = new Random().nextInt(this.getNbCubesX());
 		int cubeY = new Random().nextInt(this.getNbCubesY());
 		int cubeZ = new Random().nextInt(this.getNbCubesZ());
@@ -408,7 +408,7 @@ public class World {
      * @param     unit
      *            The unit to add to the collection of units in this world.
      */
-	private void addUnit(Unit unit) {
+    public void addUnit(Unit unit) {
 		this.units.add(unit);
 	}
 
