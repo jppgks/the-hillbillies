@@ -53,4 +53,33 @@ public class WorldTest {
 
     }
 
+    @Test
+    public void testGetUnits() throws Exception {
+
+    }
+
+    @Test
+    public void testAddUnits() throws Exception {
+
+    }
+
+    @Test
+    public void testSpawnUnit() throws Exception {
+
+    }
+
+    @Test
+    public void testGetNbCubesX() throws Exception {
+
+    }
+
+    @Test
+    public void testGetNbCubesY() throws Exception {
+
+    }
+
+    @Test
+    public void testGetNbCubesZ() throws Exception {
+
+    }
 }
