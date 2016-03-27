@@ -207,7 +207,7 @@ public class Cube {
         if (ThreadLocalRandom.current().nextInt(2) == 0) {
             this.getWorld().addLog(new Log(this.getPosition(), this.getWorld()));
         } else {
-            this.getWorld().addBoulder(new Boulder(this.getPosition(), this.getWorld()));
+            this.getWorld().addBoulder(new Boulder(this.getPosition(), this.getWorld())); // TODO: I really hate this piece of code
         }
     }
 
@@ -285,11 +285,8 @@ public class Cube {
      *
      * @param     dt
      *            The time period, in seconds, by which to advance the cube's state.
-     *
-     * @note Need to check whether or not this cube needs to cave in.
      */
     public void advanceTime(double dt) {
-        // TODO - implement World.advanceTime
         if (! this.getWorld().isSolidConnectedToBorder(
                 this.getPosition().getCubeCoordinates()[0],
                 this.getPosition().getCubeCoordinates()[1],

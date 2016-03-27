@@ -7,6 +7,12 @@ import be.kuleuven.cs.som.annotate.Value;
 @Value
 public class Position {
 
+	/**
+	 * Creates a new position from given integer coordinates.
+	 *
+	 * @param 	  initialPosition
+     *			  The coordinates for this position.
+	 */
 	public Position(int[] initialPosition) {
 		this.cubeX = initialPosition[0];
 		this.cubeY = initialPosition[1];
@@ -14,6 +20,12 @@ public class Position {
 		this.setDoubleCoordinates(initialPosition);
 	}
 
+	/**
+	 * Creates a new position from given double coordinates.
+	 *
+	 * @param 	  initialPosition
+	 *			  The coordinates for this position.
+	 */
     public Position(double[] initialPosition) {
         this.doubleX = initialPosition[0];
         this.doubleY = initialPosition[1];
@@ -51,7 +63,9 @@ public class Position {
 	public final double cubeSideLength = 1;
 
 	/**
-	 * @param initialPosition
+	 * Sets the double coordinates of this position from the given integer coordinates.
+	 *
+	 * @param 	  initialPosition
 	 */
 	private void setDoubleCoordinates(int[] initialPosition) {
 		this.doubleX = initialPosition[0] +  cubeSideLength/2;
@@ -61,7 +75,9 @@ public class Position {
 	}
 
     /**
-     * @param initialPosition
+	 * Sets the cube coordinates of this position from the given double coordinates.
+	 *
+     * @param 	  initialPosition
      */
     private void setCubeCoordinates(double[] initialPosition) {
         this.cubeX = (int) initialPosition[0];
@@ -72,7 +88,9 @@ public class Position {
 
 	/**
 	 * Return the unit coordinates of this unit position.
-	 * @return The unit coordinates. | result = {this.unitX, this.unitY, this.unitZ}
+	 *
+	 * @return 	  The unit coordinates.
+	 * 			| result = {this.unitX, this.unitY, this.unitZ}
 	 */
 	@Basic
 	@Raw
@@ -82,7 +100,9 @@ public class Position {
 
 	/**
 	 * Returns this position's cube coordinates.
-	 * @return The cube coordinates. | result == {this.cubeX, this.cubeY, this.cubeZ}
+	 *
+	 * @return 	  The cube coordinates.
+	 * 			| result == {this.cubeX, this.cubeY, this.cubeZ}
 	 */
 	@Basic
 	@Raw
