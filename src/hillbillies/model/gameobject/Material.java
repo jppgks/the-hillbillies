@@ -78,7 +78,7 @@ public abstract class Material extends GameObject {
 		return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Solid);
 	}
 
-	public void advanceTime() {
+	public void advanceTime(double dt) {
 		// TODO - implement Material.advanceTime
         if (! this.isAboveSolidCube()) {
             this.setFalling(true);
