@@ -43,6 +43,7 @@ public class World {
         this.factions.add(faction3);
         this.factions.add(faction4);
         this.factions.add(faction5);
+        connectedToBorder =new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ());
         for (int z = 0; z < getNbCubesZ(); z++) {
             for (int y = 0; y < getNbCubesY(); y++) {
                 for (int x = 0; x < getNbCubesX(); x++) {
