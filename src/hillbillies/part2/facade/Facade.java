@@ -58,7 +58,7 @@ public class Facade implements IFacade {
     @Override
     public Unit spawnUnit(World world, boolean enableDefaultBehavior) throws ModelException {
 		if (world.getUnits().size() > 100) {
-			throw new ModelException("To Many Units in this world, lets kick some ass");
+			throw new ModelException("To Many Units in this world");
 		}
     		return world.spawnUnit(enableDefaultBehavior);       
     }

@@ -68,10 +68,10 @@ public class Unit {
 			this.setName("\"Billy The Hill\"");
 		}
 		this.position = new Position(initialPosition);
-		this.initializeAttribute("w", weight);
-		this.initializeAttribute("a", agility);
-		this.initializeAttribute("s", strength);
-		this.initializeAttribute("t", toughness);
+		this.initializeAttribute(0, toughness);
+		this.initializeAttribute(1, agility);
+		this.initializeAttribute(2, strength);
+		this.initializeAttribute(3, weight);
 		this.setCurrentHitPoints(this.getMaxHitPoints());
 		this.setCurrentStaminaPoints(this.getMaxStaminaPoints());
 		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
@@ -89,7 +89,7 @@ public class Unit {
 	 */
 	private int[] targetPosition = new int[] {0, 0, 0};
 
-	/*
+	/**
 	 * Variable registering the relative difference
 	 * of the unit's current position and the target position.
 	 */
@@ -352,7 +352,7 @@ public class Unit {
 	 * 			  maximum initial attribute value.
 	 * 			| this.setAttribute(attributeKind, this.getMaxInitialAttributeValue())
      */
-	private void initializeAttribute(String attributeKind, int attributeValue) {
+	private void initializeAttribute(int attributeKind, int attributeValue) {
 		if (this.isWithinInitialAttributeValueRange(attributeValue)) {
 			this.setAttribute(attributeKind, attributeValue);
 		} else if (attributeValue < this.getMinInitialAttributeValue()) {
@@ -413,18 +413,18 @@ public class Unit {
 	 * 				| if( attributeKind == "t")
 	 * 				| 	Then this.setToughness(attributeValue)
 	 */
-	private void setAttribute(String attributeKind, int attributeValue) {
+	private void setAttribute(int attributeKind, int attributeValue) {
 		switch (attributeKind) {
-			case "w":
+			case 3:
 				this.setWeight(attributeValue);
 				break;
-			case "a":
+			case 1:
 				this.setAgility(attributeValue);
 				break;
-			case "s":
+			case 2:
 				this.setStrength(attributeValue);
 				break;
-			case "t":
+			case 0:
 				this.setToughness(attributeValue);
 				break;
 			default:
@@ -738,7 +738,7 @@ public class Unit {
 			if (this.getState() != State.ATTACKING) {
 				try {
 					this.rest();
-				} catch (Exception e) {
+				} catch (Exception exc) {
 					// Do Nothing
 				}
 				//reset the NEEDTOREST_COUNTER
@@ -753,6 +753,9 @@ public class Unit {
 			} catch (IllegalStateException exc) {
 
 			}
+		}
+		if(this.hasEnoughExperiencePoints()){
+			this.incrementRandomAtrributeValue();
 		}
 	}
 
@@ -2007,18 +2010,43 @@ public class Unit {
 		this.randomAttributePointCounter = randomAttributePointCounter;
 	}
 
+	/**
+	 * increase 
+	 */
 	public void incrementRandomAtrributeValue() {
-		// TODO - implement Unit.incrementRandomAtrributeValue
-		throw new UnsupportedOperationException();
+		this.setRandomAttributePointCounter(this.getCurrentExperiencePoints() % 10);
+		this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()- this.getRandomAttributePointCounter()*10);
+		for (int i = 0; i < this.getRandomAttributePointCounter(); i++) {
+			Random rd = new Random();
+			int atribute = rd.nextInt(3);
+			setAttribute(atribute, this.getAttributeValueToincrease(atribute)+1);
+		}
+	}
+	
+	/**
+	 * @param atribute
+	 * @return
+	 */
+	private int getAttributeValueToincrease(int atribute) {
+		switch (atribute) {
+		case 0:
+			return (int) this.getWeight();
+		case 1:
+			return (int) this.getAgility();
+		case 2:
+			return (int) this.getStrength();
+		case 3:
+			return (int) this.getToughness();
+		}
+		return 0;
 	}
 
 	/**
 	 * 
-	 *  * (To increment random attribute)
+	 *@return if the unit has more or equals to 10 xp. then return true
 	 */
 	public boolean hasEnoughExperiencePoints() {
-		// TODO - implement Unit.hasEnoughExperiencePoints
-		throw new UnsupportedOperationException();
+		return this.getCurrentExperiencePoints() <= 10;
 	}
 
 	public boolean isFalling() {
@@ -2030,8 +2058,8 @@ public class Unit {
 	}
 
 	/**
-	 * @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
-	 */
+	�* @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
+	 */
 	public boolean neighboringCubeHasSolidTerrain() {
 		// TODO - implement Unit.neighboringCubeHasSolidTerrain
 		throw new UnsupportedOperationException();
