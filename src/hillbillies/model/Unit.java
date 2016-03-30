@@ -303,6 +303,7 @@ public class Unit {
 	Log log = null;
 	Boulder boulder = null;
     boolean alive = true;
+    private int[] cubeWorkOn;
 
 	/**
 	 * Set the name of this Unit to the given name.
@@ -1205,7 +1206,7 @@ public class Unit {
 	 *
 	 */
 	private void advanceWhileResting(double dt) {
-		if (this.getCurrentHitPoints() != this.getMaxHitPoints()) {
+		if (this.getCurrentHitPoints() < this.getMaxHitPoints()) {
 			this.setRestCounter(this.getRestCounter()-dt);
 			if (this.getRestCounter() <= 0) {
 				this.setCurrentHitPoints(this.getCurrentHitPoints() + this.getRegenHitPoints());
@@ -1220,7 +1221,7 @@ public class Unit {
 				this.resetCounter("REST_COUNTER");
 			}
 		}
-		if (this.getCurrentStaminaPoints() == this.getMaxStaminaPoints() && this.getCurrentHitPoints() == this.getMaxHitPoints()) {
+		if (this.getCurrentStaminaPoints() >= this.getMaxStaminaPoints() && this.getCurrentHitPoints() >= this.getMaxHitPoints()) {
 			if(this.getPreviousState()== State.MOVING){
 				this.updateUnitState();
 				this.setRestRequestedWhileMoving(false);
@@ -1300,6 +1301,7 @@ public class Unit {
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.resetCounter("WORK_COUNTER");
 		}
@@ -1657,7 +1659,7 @@ public class Unit {
 	 * 			| if(this.getState() != State.NONE)
 	 * TODO: 16/03/16 If unit is falling, abort.
      */
-	public void work(int x, int y, int z) throws IllegalStateException {
+	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
 		this.setWorkCounter(this.getTimeForWork());
@@ -1673,18 +1675,20 @@ public class Unit {
 		if (world.getCube(x, y, z).hasBoulder()){
 			
 		}
-		// terrain type is log
+		// terrain type is wood
 		if (world.getCubeType(x, y, z)== 2){
-			
+			this.setCubeToWorkOn(x, y, z);
 		}
-		// terrain type is boulder
+		// terrain type is rock
 		if (world.getCubeType(x, y, z) == 1){
-			
+			this.setCubeToWorkOn(x, y, z);
 		}
 		// terrain type is workshop
 		if (world.getCubeType(x, y, z) == 3) {
-						
+
 		}
+		if (world.getCubeType(x, y, z) == 0)
+			return;
 		this.setState(State.WORKING);
 	}
 
@@ -2071,8 +2075,8 @@ public class Unit {
 			break;
 		case 2:
 			this.setToughness(this.getToughness()+1);
-			this.setCurrentHitPoints(this.getCurrentHitPoints()+1);
-			this.setCurrentStaminaPoints(this.getCurrentStaminaPoints()+1);
+			//this.setCurrentHitPoints(this.getCurrentHitPoints()+1);
+			//this.setCurrentStaminaPoints(this.getCurrentStaminaPoints()+1);
 			break;
 		}
 	}
@@ -2123,5 +2127,24 @@ public class Unit {
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
+
+	/**
+	 * Return the cubeToWorkOn of this Unit.
+	 */
+	public int[] getCubeToWorkOn() {
+		return cubeWorkOn;
+	}
+
+	/**
+	 * Set the cubeToWorkOn of this Unit to the given cubeToWorkOn.
+	 *
+	 * @param  cubeToWorkOn
+	 *         The cubeToWorkOn to set.
+	 * @post   The cubeToWorkOn of this of this Unit is equal to the given cubeToWorkOn.
+	 *       | new.getcubeToWorkOn() == cubeToWorkOn
+	 */
+	public void setCubeToWorkOn(int x, int y, int z) {
+		this.cubeWorkOn = new int[]{x,y,z};
+	}
 
 }
