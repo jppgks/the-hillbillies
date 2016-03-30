@@ -6,9 +6,14 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
+import hillbillies.model.terrain.Solid;
+import hillbillies.model.terrain.Terrain;
+import hillbillies.model.terrain.Tree;
 
 import java.util.Arrays;
 import java.util.Random;
+
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Woodstox;
 
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
@@ -1495,11 +1500,12 @@ public class Unit {
 			throw new IllegalStateException();
 		int randomBehaviorNumber =new Random().nextInt(5);
 		if(randomBehaviorNumber== 0) {
-			moveTo(new int[]{new Random().nextInt(50), new Random().nextInt(50), new Random().nextInt(50)});
+			moveTo(new int[]{new Random().nextInt(world.getNbCubesX()), new Random().nextInt(world.getNbCubesY()), new Random().nextInt(world.getNbCubesZ())});
 			this.startSprinting();
 		}
 		else if(randomBehaviorNumber == 1) {
-			work();
+			int[] cubeToWorkOn = calculateRandomNeighboringCube();
+			work(calculateRandomNeighboringCube()[0],calculateRandomNeighboringCube()[1],calculateRandomNeighboringCube()[2]);
 		}
 		else
 			try {
@@ -1637,6 +1643,9 @@ public class Unit {
 	}
 
 	/**
+	 * @param z 
+	 * @param y 
+	 * @param x 
 	 * @post 	  the state of the unit is set to work
 	 * 			| new.setState(State.WORKING)
 	 *
@@ -1648,10 +1657,34 @@ public class Unit {
 	 * 			| if(this.getState() != State.NONE)
 	 * TODO: 16/03/16 If unit is falling, abort.
      */
-	public void work() throws IllegalStateException {
+	public void work(int x, int y, int z) throws IllegalStateException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
 		this.setWorkCounter(this.getTimeForWork());
+		if(this.isCarryingLog()){
+			
+		}
+		if(this.isCarryingBoulder()){
+			
+		}
+		if (world.getCube(x, y, z).hasLog()) {
+			
+		}
+		if (world.getCube(x, y, z).hasBoulder()){
+			
+		}
+		// terrain type is log
+		if (world.getCubeType(x, y, z)== 2){
+			
+		}
+		// terrain type is boulder
+		if (world.getCubeType(x, y, z) == 1){
+			
+		}
+		// terrain type is workshop
+		if (world.getCubeType(x, y, z) == 3) {
+						
+		}
 		this.setState(State.WORKING);
 	}
 
