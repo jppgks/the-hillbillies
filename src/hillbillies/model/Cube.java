@@ -295,4 +295,20 @@ public class Cube {
             this.caveIn();
         }
     }
+
+	/**
+	 * @return
+	 */
+	public boolean hasLog() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean hasBoulder() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
