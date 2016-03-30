@@ -606,7 +606,6 @@ public class Unit {
      * TODO: 16/03/16 Die when 0 hitpoints left.
 	 */
 	private void setCurrentHitPoints(double hitPoints) {
-		assert isValidHitPoints(hitPoints);
 		this.currentHitPoints = hitPoints;
 	}
 
@@ -653,7 +652,6 @@ public class Unit {
 	 */
 	@Raw
 	private void setCurrentStaminaPoints(double stamina) {
-		assert isValidStamina(stamina);
 		this.currentStaminaPoints = stamina;
 	}
 
@@ -712,6 +710,9 @@ public class Unit {
 	public void advanceTime(double dt) throws IllegalArgumentException {
 		if(dt <= 0 && dt >= 0.2)
 			throw new IllegalArgumentException();
+		if(this.hasEnoughExperiencePoints()){
+			this.incrementRandomAtrributeValue();
+		}
 		//When the unit State is MOVING then to this
 		if (this.getState() == State.MOVING)
 			advanceWhileMoving(dt);
@@ -753,9 +754,6 @@ public class Unit {
 			} catch (IllegalStateException exc) {
 
 			}
-		}
-		if(this.hasEnoughExperiencePoints()){
-			this.incrementRandomAtrributeValue();
 		}
 	}
 
@@ -1297,6 +1295,7 @@ public class Unit {
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
+			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.resetCounter("WORK_COUNTER");
 		}
 	}
@@ -2014,31 +2013,35 @@ public class Unit {
 	 * increase 
 	 */
 	public void incrementRandomAtrributeValue() {
-		this.setRandomAttributePointCounter(this.getCurrentExperiencePoints() % 10);
-		this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()- this.getRandomAttributePointCounter()*10);
+		this.setRandomAttributePointCounter(this.getCurrentExperiencePoints()/10);
+		Random rd = new Random();
+		int atribute;
 		for (int i = 0; i < this.getRandomAttributePointCounter(); i++) {
-			Random rd = new Random();
-			int atribute = rd.nextInt(3);
-			setAttribute(atribute, this.getAttributeValueToincrease(atribute)+1);
+			atribute = rd.nextInt(3);
+			this.getAttributeValueIncrease(atribute);
+			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()-10);
 		}
+		
 	}
 	
 	/**
 	 * @param atribute
-	 * @return
 	 */
-	private int getAttributeValueToincrease(int atribute) {
+	private void getAttributeValueIncrease(int atribute) {
 		switch (atribute) {
 		case 0:
-			return (int) this.getWeight();
+			 this.setAgility(this.getAgility()+1);
+			 break;
 		case 1:
-			return (int) this.getAgility();
+			this.setStrength(this.getStrength()+1);
+			
+			break;
 		case 2:
-			return (int) this.getStrength();
-		case 3:
-			return (int) this.getToughness();
+			this.setToughness(this.getToughness()+1);
+			this.setCurrentHitPoints(this.getCurrentHitPoints()+1);
+			this.setCurrentStaminaPoints(this.getCurrentStaminaPoints()+1);
+			break;
 		}
-		return 0;
 	}
 
 	/**
@@ -2046,7 +2049,7 @@ public class Unit {
 	 *@return if the unit has more or equals to 10 xp. then return true
 	 */
 	public boolean hasEnoughExperiencePoints() {
-		return this.getCurrentExperiencePoints() <= 10;
+		return this.getCurrentExperiencePoints() >= 10;
 	}
 
 	public boolean isFalling() {
