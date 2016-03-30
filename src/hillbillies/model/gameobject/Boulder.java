@@ -16,6 +16,7 @@ public class Boulder extends Material {
     public Boulder(Position position, World world) {
         this.position = position;
         this.world = world;
+        world.getBoulders().add(this);
     }
 
 }

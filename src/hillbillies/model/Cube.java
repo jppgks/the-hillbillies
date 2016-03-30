@@ -109,7 +109,7 @@ public class Cube {
                     this.getPosition().getCubeCoordinates()[1],
                     this.getPosition().getCubeCoordinates()[2]
             );
-            this.getWorld().calculateConnectedToBorder();
+            //this.getWorld().calculateConnectedToBorder();
         }
     }
     /**
