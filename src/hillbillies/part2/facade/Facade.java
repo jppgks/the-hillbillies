@@ -95,7 +95,13 @@ public class Facade implements IFacade {
 
     @Override
     public void workAt(Unit unit, int x, int y, int z) throws ModelException {
-        unit.work(x,y,z);
+    	try {
+    		unit.work(x,y,z);
+		} catch (IllegalArgumentException exc) {
+			
+		} catch (IllegalStateException exc) {
+			
+		}       
     }
 
     @Override
