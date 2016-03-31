@@ -157,7 +157,8 @@ public class UnitTest {
 			e.printStackTrace();
 		}
 		try {
-			unit.work();
+			//unit.work();
+			fail();
 		} catch (Exception exc) {
 
 		}
@@ -178,7 +179,8 @@ public class UnitTest {
 			e.printStackTrace();
 		}
 		try {
-			unit.work();
+			//unit.work();
+            fail();
 		} catch (Exception exc) {
 
 		}
