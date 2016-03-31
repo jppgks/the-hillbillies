@@ -1311,6 +1311,9 @@ public class Unit {
 	 */
 	private void advanceWhileWorking(double dt) {
 		this.setWorkCounter(this.getWorkCounter()-dt);
+		this.setOrientation((float) Math.atan2(
+				this.getCubeToWorkOn()[1]+0.5 - this.getPosition().getDoubleCoordinates()[1],
+				this.getCubeToWorkOn()[0]+0.5 - this.getPosition().getDoubleCoordinates()[0]));
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
@@ -1675,6 +1678,9 @@ public class Unit {
 	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
+		if(!this.isNeighboringCube(new int[]{x,y,z})){
+			throw new IllegalArgumentException();
+		}
 		this.setWorkCounter(this.getTimeForWork());
 		if(this.isCarryingLog()){
 			
