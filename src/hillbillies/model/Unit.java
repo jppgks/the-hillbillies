@@ -6,14 +6,9 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
-import hillbillies.model.terrain.Solid;
-import hillbillies.model.terrain.Terrain;
-import hillbillies.model.terrain.Tree;
 
 import java.util.Arrays;
 import java.util.Random;
-
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Woodstox;
 
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
@@ -72,7 +67,7 @@ public class Unit {
 		} catch (IllegalArgumentException exc) {
 			this.setName("\"Billy The Hill\"");
 		}
-		this.position = new Position(initialPosition);
+		this.setPosition(new Position(initialPosition));
 		this.initializeAttribute(0, toughness);
 		this.initializeAttribute(1, agility);
 		this.initializeAttribute(2, strength);
@@ -295,8 +290,18 @@ public class Unit {
 	 */
 	private static final double NEED_TO_REST_TIME = 180;
 	Faction faction;
+
 	World world;
-	public Position position;
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public Position position;
 	private int currentExperiencePoints;
 	private int randomAttributePointCounter;
 	private boolean falling;
@@ -1043,25 +1048,25 @@ public class Unit {
 		int dx;
 		int dy;
 		int dz;
-		if(position.getCubeCoordinates()[0]== this.getTargetPosition()[0]){
+		if(getPosition().getCubeCoordinates()[0]== this.getTargetPosition()[0]){
 			dx = 0;
-		}else if(position.getCubeCoordinates()[0]< this.getTargetPosition()[0]){
+		}else if(getPosition().getCubeCoordinates()[0]< this.getTargetPosition()[0]){
 			dx = 1;
 		}else{
 			dx = -1;
 		}
 
-		if(position.getCubeCoordinates()[1]== this.getTargetPosition()[1]){
+		if(getPosition().getCubeCoordinates()[1]== this.getTargetPosition()[1]){
 			dy = 0;
-		}else if(position.getCubeCoordinates()[1]< this.getTargetPosition()[1]){
+		}else if(getPosition().getCubeCoordinates()[1]< this.getTargetPosition()[1]){
 			dy = 1;
 		}else{
 			dy = -1;
 		}
 
-		if(position.getCubeCoordinates()[2]== this.getTargetPosition()[2]){
+		if(getPosition().getCubeCoordinates()[2]== this.getTargetPosition()[2]){
 			dz = 0;
-		}else if(position.getCubeCoordinates()[2]< this.getTargetPosition()[2]){
+		}else if(getPosition().getCubeCoordinates()[2]< this.getTargetPosition()[2]){
 			dz = 1;
 		}else{
 			dz = -1;
@@ -1076,24 +1081,32 @@ public class Unit {
 	 * 		  Difference in time
 	 */
 	private void updatePosition(double dt) {
-		this.position = new Position(new double[]{
-				this.position.getDoubleCoordinates()[0] += this.getUnitVelocity()[0] * dt,
-				this.position.getDoubleCoordinates()[1] += this.getUnitVelocity()[1] * dt,
-				this.position.getDoubleCoordinates()[2] += this.getUnitVelocity()[2] * dt
-		});
+		this.setPosition(
+                new Position(
+                        new double[]{
+                                this.getPosition().getDoubleCoordinates()[0] + this.getUnitVelocity()[0] * dt,
+                                this.getPosition().getDoubleCoordinates()[1] + this.getUnitVelocity()[1] * dt,
+                                this.getPosition().getDoubleCoordinates()[2] + this.getUnitVelocity()[2] * dt
+                        }
+                )
+        );
 		this.getInitialPosition()[0] += this.getUnitVelocity()[0] * dt;
 		this.getInitialPosition()[1] += this.getUnitVelocity()[1] * dt;
 		this.getInitialPosition()[2] += this.getUnitVelocity()[2] * dt;
 		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(getInitialPosition()[2]) <= 0) {
-			this.setUnitCoordinates(new int[]{
-					this.position.getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
-					this.position.getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
-					this.position.getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
-			});
+			this.setPosition(
+                    new Position(
+                            new int[]{
+                                    this.getPosition().getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
+                                    this.getPosition().getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
+                                    this.getPosition().getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
+                            }
+                    )
+            );
             // TODO: 16/03/16 Increment experience points, except when interrupted.
-			if (Arrays.equals(this.position.getCubeCoordinates(), this.getTargetPosition())) {
+			if (Arrays.equals(this.getPosition().getCubeCoordinates(), this.getTargetPosition())) {
 				this.setState(State.NONE);
 				this.stopSprinting();
 			}
@@ -1335,11 +1348,11 @@ public class Unit {
 	 */
 	private void advanceWhileAttacking(double dt) {
 		this.setOrientation((float) Math.atan2(
-				this.getDefender().position.getDoubleCoordinates()[1] - this.position.getDoubleCoordinates()[1],
-				this.getDefender().position.getDoubleCoordinates()[0] - this.position.getDoubleCoordinates()[0]));
+				this.getDefender().getPosition().getDoubleCoordinates()[1] - this.getPosition().getDoubleCoordinates()[1],
+				this.getDefender().getPosition().getDoubleCoordinates()[0] - this.getPosition().getDoubleCoordinates()[0]));
 		this.getDefender().setOrientation((float) Math.atan2(
-				this.position.getDoubleCoordinates()[1] - this.getDefender().position.getDoubleCoordinates()[1],
-				this.position.getDoubleCoordinates()[0] - this.getDefender().position.getDoubleCoordinates()[0])
+				this.getPosition().getDoubleCoordinates()[1] - this.getDefender().getPosition().getDoubleCoordinates()[1],
+				this.getPosition().getDoubleCoordinates()[0] - this.getDefender().getPosition().getDoubleCoordinates()[0])
 		);
 		this.setFightCounter(this.getFightCounter() -dt);
 		if (this.getFightCounter() <= 0) {
@@ -1576,9 +1589,9 @@ public class Unit {
 	 */
 	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException {
 		if(!this.isValidPosition(new int[]{
-				this.position.getCubeCoordinates()[0]+dx,
-				this.position.getCubeCoordinates()[1]+dy,
-				this.position.getCubeCoordinates()[2]+dz})) {
+				this.getPosition().getCubeCoordinates()[0]+dx,
+				this.getPosition().getCubeCoordinates()[1]+dy,
+				this.getPosition().getCubeCoordinates()[2]+dz})) {
 			throw new IllegalArgumentException();
 		}
 		//when the unit need to move to the same cube as his cube something weird happens
@@ -1590,9 +1603,9 @@ public class Unit {
 
 		// Absolute target position
 		this.setTargetPosition(new int[]{
-				this.position.getCubeCoordinates()[0] + dx,
-				this.position.getCubeCoordinates()[1] + dy,
-				this.position.getCubeCoordinates()[2] + dz
+				this.getPosition().getCubeCoordinates()[0] + dx,
+				this.getPosition().getCubeCoordinates()[1] + dy,
+				this.getPosition().getCubeCoordinates()[2] + dz
 		});
 		this.setState(State.MOVING);
 	}
@@ -1731,7 +1744,7 @@ public class Unit {
 			throw new IllegalArgumentException();
 		}
 		// Can't attack units that not on a neighboring cube of the attacker
-		if(!(this.isNeighboringCube(defender.position.getCubeCoordinates())))
+		if(!(this.isNeighboringCube(defender.getPosition().getCubeCoordinates())))
 			throw new IllegalStateException();
 		if(defender.getCurrentHitPoints()<=0)
 			this.setState(State.NONE);
@@ -1757,20 +1770,20 @@ public class Unit {
 				(! this.isValidPosition(cubeCoordinatesOfPossibleNeighbor))) {
 			return false;
 		}
-		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.position.getCubeCoordinates()[0]) == 1) {
+		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.getPosition().getCubeCoordinates()[0]) == 1) {
 			if (Arrays.
 					stream(new int[]{-1, 0, 1}).
-					anyMatch(i -> i == cubeCoordinatesOfPossibleNeighbor[1] - this.position.getCubeCoordinates()[1])) {
+					anyMatch(i -> i == cubeCoordinatesOfPossibleNeighbor[1] - this.getPosition().getCubeCoordinates()[1])) {
 				return true;
 			}
 		}
-		if (cubeCoordinatesOfPossibleNeighbor[0] == this.position.getCubeCoordinates()[0]) {
-			if (Math.abs(cubeCoordinatesOfPossibleNeighbor[1] - this.position.getCubeCoordinates()[1]) == 1) {
-				if (cubeCoordinatesOfPossibleNeighbor[2] == this.position.getCubeCoordinates()[2]) {
+		if (cubeCoordinatesOfPossibleNeighbor[0] == this.getPosition().getCubeCoordinates()[0]) {
+			if (Math.abs(cubeCoordinatesOfPossibleNeighbor[1] - this.getPosition().getCubeCoordinates()[1]) == 1) {
+				if (cubeCoordinatesOfPossibleNeighbor[2] == this.getPosition().getCubeCoordinates()[2]) {
 					return true;
 				}
-			} else if (cubeCoordinatesOfPossibleNeighbor[1] == this.position.getCubeCoordinates()[1]) {
-				if (Math.abs(cubeCoordinatesOfPossibleNeighbor[2] - this.position.getCubeCoordinates()[2]) == 1) {
+			} else if (cubeCoordinatesOfPossibleNeighbor[1] == this.getPosition().getCubeCoordinates()[1]) {
+				if (Math.abs(cubeCoordinatesOfPossibleNeighbor[2] - this.getPosition().getCubeCoordinates()[2]) == 1) {
 					return true;
 				}
 			}
@@ -1876,7 +1889,7 @@ public class Unit {
 		while (! this.isValidPosition(randomNeighboringCube)) {
 			randomNeighboringCube = calculateRandomNeighboringCube();
 		}
-		this.setUnitCoordinates(randomNeighboringCube);
+		this.setPosition(new Position(randomNeighboringCube));
 	}
 
 	/**
@@ -1891,19 +1904,19 @@ public class Unit {
 	 */
 	private int[] calculateRandomNeighboringCube() {
 		int[] equalXDifferentY = new int[]{
-				this.position.getCubeCoordinates()[0],
-				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
-				this.position.getCubeCoordinates()[2]
+				this.getPosition().getCubeCoordinates()[0],
+				this.getPosition().getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.getPosition().getCubeCoordinates()[2]
 		};
 		int[] equalYDifferentX = new int[]{
-				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
-				this.position.getCubeCoordinates()[1],
-				this.position.getCubeCoordinates()[2]
+				this.getPosition().getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.getPosition().getCubeCoordinates()[1],
+				this.getPosition().getCubeCoordinates()[2]
 		};
 		int[] differentXDifferentY = new int[]{
-				this.position.getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
-				this.position.getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
-				this.position.getCubeCoordinates()[2]
+				this.getPosition().getCubeCoordinates()[0] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.getPosition().getCubeCoordinates()[1] + new int[]{-1, 1}[new Random().nextInt(2)],
+				this.getPosition().getCubeCoordinates()[2]
 		};
 		return new int[][]{equalXDifferentY, equalYDifferentX, differentXDifferentY}[new Random().nextInt(3)];
 	}
@@ -1973,22 +1986,22 @@ public class Unit {
 		this.previousOrientation = previousOrientation;
 	}
 
-	/**
-	 * Set the unit coordinates of this unit position to the sum of
-	 * the given cube coordinates and 1/2 of a cube side.
-	 * @post The unit coordinates of this new unit position are equal to the given cube coordinates + 1/2 of a cube side.
-	 * | new.getUnitCoordinates() ==
-	 * |	{
-	 * |	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
-	 * | 	  (cubeCoordinates[1] + 1/2 * cubeSideLength),
-	 * | 	  (cubeCoordinates[2] + 1/2 * cubeSideLength)
-	 * | 	}
-	 * @param cubeCoordinates The cube coordinates of this unit position.
-	 */
-	@Raw
-	private void setUnitCoordinates(int[] cubeCoordinates) throws hillbillies.model.IllegalCoordinateException {
-		position = new Position(cubeCoordinates);
-	}
+//	/**
+//	 * Set the unit coordinates of this unit position to the sum of
+//	 * the given cube coordinates and 1/2 of a cube side.
+//	 * @post The unit coordinates of this new unit position are equal to the given cube coordinates + 1/2 of a cube side.
+//	 * | new.getUnitCoordinates() ==
+//	 * |	{
+//	 * |	  (cubeCoordinates[0] + 1/2 * cubeSideLength),
+//	 * | 	  (cubeCoordinates[1] + 1/2 * cubeSideLength),
+//	 * | 	  (cubeCoordinates[2] + 1/2 * cubeSideLength)
+//	 * | 	}
+//	 * @param cubeCoordinates The cube coordinates of this unit position.
+//	 */
+//	@Raw
+//	private void setUnitCoordinates(int[] cubeCoordinates) throws hillbillies.model.IllegalCoordinateException {
+//		position = new Position(cubeCoordinates);
+//	}
 
 	/**
 	 * Check whether the given coordinates are valid coordinates for
@@ -2003,15 +2016,15 @@ public class Unit {
 		return true;
 	}
 
-	/**
-	 * Set the cube coordinates of this position to the given coordinates.
-	 * @post The cube coordinates of this position are equal to the given coordinates. | new.getCubeCoordinates() == {cubeCoordinates[0], cubeCoordinates[1], cubeCoordinates[2]}
-	 * @param cubeCoordinates The coordinates to initialize this position's cube coordinates with.
-	 */
-	@Raw
-	private void setCubeCoordinates(int[] cubeCoordinates) {
-		this.position = new Position(cubeCoordinates);
-	}
+//	/**
+//	 * Set the cube coordinates of this position to the given coordinates.
+//	 * @post The cube coordinates of this position are equal to the given coordinates. | new.getCubeCoordinates() == {cubeCoordinates[0], cubeCoordinates[1], cubeCoordinates[2]}
+//	 * @param cubeCoordinates The coordinates to initialize this position's cube coordinates with.
+//	 */
+//	@Raw
+//	private void setCubeCoordinates(int[] cubeCoordinates) {
+//		this.position = new Position(cubeCoordinates);
+//	}
 
 	public Faction getFaction() {
 		return this.faction;
@@ -2098,11 +2111,32 @@ public class Unit {
 	}
 
 	/**
-	 * @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
+	 * @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
 	 */
-	public boolean neighboringCubeHasSolidTerrain() {
-		// TODO - implement Unit.neighboringCubeHasSolidTerrain
-		throw new UnsupportedOperationException();
+	public boolean hasSolidNeighboringCube() {
+		return Arrays.stream(this.getNeighboringCubes()).anyMatch(cube -> cube.isSolid());
+	}
+
+    private Cube[] getNeighboringCubes() {
+        int posX = this.getPosition().getCubeCoordinates()[0];
+        int posY = this.getPosition().getCubeCoordinates()[1];
+        int posZ = this.getPosition().getCubeCoordinates()[2];
+        return new Cube[]{
+                this.getWorld().getCube(posX-1, posY, posZ),
+                this.getWorld().getCube(posX+1, posY, posZ),
+                this.getWorld().getCube(posX, posY-1, posZ),
+                this.getWorld().getCube(posX, posY+1, posZ),
+                this.getWorld().getCube(posX, posY, posZ-1),
+                this.getWorld().getCube(posX, posY, posZ+1),
+        };
+    }
+
+	public World getWorld() {
+		return world;
+	}
+
+	public void setWorld(World world) {
+		this.world = world;
 	}
 
 	public void die() {
@@ -2138,8 +2172,6 @@ public class Unit {
 	/**
 	 * Set the cubeToWorkOn of this Unit to the given cubeToWorkOn.
 	 *
-	 * @param  cubeToWorkOn
-	 *         The cubeToWorkOn to set.
 	 * @post   The cubeToWorkOn of this of this Unit is equal to the given cubeToWorkOn.
 	 *       | new.getcubeToWorkOn() == cubeToWorkOn
 	 */
