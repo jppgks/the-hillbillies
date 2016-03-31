@@ -309,6 +309,26 @@ public class Unit {
 	Boulder boulder = null;
     boolean alive = true;
     private int[] cubeWorkOn;
+    workActivity workActivity;
+
+	/**
+	 * Return the workActivity of this Unit.
+	 */
+	public workActivity getWorkActivity() {
+		return workActivity;
+	}
+
+	/**
+	 * Set the workActivity of this Unit to the given workActivity.
+	 *
+	 * @param  workActivity
+	 *         The workActivity to set.
+	 * @post   The workActivity of this of this Unit is equal to the given workActivity.
+	 *       | new.getworkActivity() == workActivity
+	 */
+	public void setWorkActivity(workActivity workActivity) {
+		this.workActivity = workActivity;
+	}
 
 	/**
 	 * Set the name of this Unit to the given name.
@@ -1317,7 +1337,9 @@ public class Unit {
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
+			if(this.getWorkActivity()== workActivity.DIGING){
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
+			}
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.resetCounter("WORK_COUNTER");
 		}
@@ -1523,13 +1545,18 @@ public class Unit {
 		}
 		else if(randomBehaviorNumber == 1) {
 			int[] cubeToWorkOn = calculateRandomNeighboringCube();
-			work(calculateRandomNeighboringCube()[0],calculateRandomNeighboringCube()[1],calculateRandomNeighboringCube()[2]);
+			try {
+				work(cubeToWorkOn[0],cubeToWorkOn[1],cubeToWorkOn[2]);
+			} catch (IllegalArgumentException exc) {
+				this.startDefaultBehavior();
+			}
+			
 		}
 		else
 			try {
 				rest();
 			} catch (IllegalStateException exc) {
-				startDefaultBehavior();
+				this.startDefaultBehavior();
 			}
 	}
 
@@ -1678,7 +1705,7 @@ public class Unit {
 	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
-		if(!this.isNeighboringCube(new int[]{x,y,z})){
+		if(!this.isNeighboringCube(new int[]{x,y,z}) && !this.isValidPosition(new int[]{x,y,z}) ){
 			throw new IllegalArgumentException();
 		}
 		this.setWorkCounter(this.getTimeForWork());
@@ -1697,9 +1724,11 @@ public class Unit {
 		// terrain type is wood
 		if (world.getCubeType(x, y, z)== 2){
 			this.setCubeToWorkOn(x, y, z);
+			setWorkActivity(workActivity.DIGING);
 		}
 		// terrain type is rock
 		if (world.getCubeType(x, y, z) == 1){
+			this.setWorkActivity(workActivity.DIGING);
 			this.setCubeToWorkOn(x, y, z);
 		}
 		// terrain type is workshop
@@ -2019,7 +2048,9 @@ public class Unit {
 	 * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
 	 */
 	private boolean isValidPosition(int[] cubeCoordinates) {
-		return true;
+		 return	(cubeCoordinates[0] >= 0) && (cubeCoordinates[0] < this.getWorld().getNbCubesX()) &&
+		 	(cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
+		 	(cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
 	}
 
 //	/**
