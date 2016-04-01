@@ -1334,11 +1334,37 @@ public class Unit {
 		this.setOrientation((float) Math.atan2(
 				this.getCubeToWorkOn()[1]+0.5 - this.getPosition().getDoubleCoordinates()[1],
 				this.getCubeToWorkOn()[0]+0.5 - this.getPosition().getDoubleCoordinates()[0]));
+		if (this.getWorkActivity() == workActivity.DROPINGBOULDER){
+			this.boulder.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+			world.getBoulders().add(boulder);
+			this.boulder = null;
+			this.setState(State.NONE);
+		}if (this.getWorkActivity() == workActivity.DROPINGLOG){
+			this.log.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+			world.getLogs().add(log);
+			this.log = null;
+			this.setState(State.NONE);
+		}
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
+			
 			if(this.getWorkActivity()== workActivity.DIGING){
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
+				
+			}if (this.getWorkActivity() == workActivity.PICKINGUPLOG) {
+				this.log=(Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder;
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder=null;
+				world.getLogs().remove(this.log);
+			}if (this.getWorkActivity() == workActivity.PICKINGUPBOULDER) {
+				this.boulder=(Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder;
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder=null;
+				world.getBoulders().remove(boulder);
+			}if (this.getWorkActivity()== workActivity.WORKING){
+				//Increase Toughens
+				this.AttributeValueIncrease(2);
+				//Increase Weight
+				this.AttributeValueIncrease(3);
 			}
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.resetCounter("WORK_COUNTER");
@@ -1705,38 +1731,45 @@ public class Unit {
 	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
-		if(!this.isNeighboringCube(new int[]{x,y,z}) && !this.isValidPosition(new int[]{x,y,z}) ){
+		if(!this.isNeighboringCube(new int[]{x,y,z})){
 			throw new IllegalArgumentException();
 		}
 		this.setWorkCounter(this.getTimeForWork());
-		if(this.isCarryingLog()){
-			
+		if(this.isCarryingLog() && !world.getCube(x,y,z).isSolid()){
+			this.setWorkActivity(workActivity.DROPINGLOG);
 		}
-		if(this.isCarryingBoulder()){
-			
+		if(this.isCarryingBoulder()&& !world.getCube(x,y,z).isSolid()){
+			this.setWorkActivity(workActivity.DROPINGBOULDER);
 		}
 		if (world.getCube(x, y, z).hasLog()) {
-			
+			if(!isCarryingBoulder() && !isCarryingLog())
+				this.setWorkActivity(workActivity.PICKINGUPLOG);
+			else
+				return;
 		}
 		if (world.getCube(x, y, z).hasBoulder()){
-			
+			if(!isCarryingBoulder() && !isCarryingLog())
+				this.setWorkActivity(workActivity.PICKINGUPBOULDER);
+			else
+				return;
 		}
 		// terrain type is wood
 		if (world.getCubeType(x, y, z)== 2){
-			this.setCubeToWorkOn(x, y, z);
 			setWorkActivity(workActivity.DIGING);
 		}
 		// terrain type is rock
 		if (world.getCubeType(x, y, z) == 1){
 			this.setWorkActivity(workActivity.DIGING);
-			this.setCubeToWorkOn(x, y, z);
 		}
 		// terrain type is workshop
 		if (world.getCubeType(x, y, z) == 3) {
-
+			if(world.getCube(x, y, z).hasBoulder() && world.getCube(x, y, z).hasLog())
+				this.setWorkActivity(workActivity.WORKING);
+			else
+				return;
+			
 		}
-		if (world.getCubeType(x, y, z) == 0)
-			return;
+		this.setCubeToWorkOn(x, y, z);
 		this.setState(State.WORKING);
 	}
 
@@ -2105,7 +2138,7 @@ public class Unit {
 		int atribute;
 		for (int i = 0; i < this.getRandomAttributePointCounter(); i++) {
 			atribute = rd.nextInt(3);
-			this.getAttributeValueIncrease(atribute);
+			this.AttributeValueIncrease(atribute);
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()-10);
 		}
 		
@@ -2114,7 +2147,7 @@ public class Unit {
 	/**
 	 * @param atribute
 	 */
-	private void getAttributeValueIncrease(int atribute) {
+	private void AttributeValueIncrease(int atribute) {
 		switch (atribute) {
 		case 0:
 			 this.setAgility(this.getAgility()+1);
@@ -2127,6 +2160,9 @@ public class Unit {
 			this.setToughness(this.getToughness()+1);
 			//this.setCurrentHitPoints(this.getCurrentHitPoints()+1);
 			//this.setCurrentStaminaPoints(this.getCurrentStaminaPoints()+1);
+			break;
+		case 3:
+			this.setWeight(this.getWeight()+1);
 			break;
 		}
 	}
