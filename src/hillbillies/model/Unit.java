@@ -6,9 +6,12 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
+import sun.security.jca.GetInstance.Instance;
 
 import java.util.Arrays;
 import java.util.Random;
+
+import org.hamcrest.core.IsInstanceOf;
 
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
@@ -1920,11 +1923,15 @@ public class Unit {
 	 */
 	private void defend(double attackerAgility, double attackerStrength,Unit attacker) {
 		this.isDefending = true;
-		double dodge = Math.random();
-		if(dodge < this.chanceForDodging(attackerAgility)){
-			this.dodge();
-			this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
-			return;
+		if (!world.getCube(this.position.getCubeCoordinates()[0], 
+				this.position.getCubeCoordinates()[1], 
+				this.position.getCubeCoordinates()[2]).hasSolidNeighboringCubes()) {
+			double dodge = Math.random();
+			if(dodge < this.chanceForDodging(attackerAgility)){
+				this.dodge();
+				this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
+				return;
+			}
 		}else{
 			double block = Math.random();
 			if(block< this.chanceForBlocking(attackerAgility,attackerStrength)){
@@ -1966,11 +1973,13 @@ public class Unit {
 	 *
 	 */
 	private void dodge() {
-		int[] randomNeighboringCube = calculateRandomNeighboringCube();
-		while (! this.isValidPosition(randomNeighboringCube)) {
-			randomNeighboringCube = calculateRandomNeighboringCube();
-		}
-		this.setPosition(new Position(randomNeighboringCube));
+	int[] randomNeighboringCube = calculateRandomNeighboringCube();
+	while (! this.isValidPosition(randomNeighboringCube) && !(world.getCube(randomNeighboringCube[0],
+																		  randomNeighboringCube[1],
+																		  randomNeighboringCube[2]).isSolid())){
+		randomNeighboringCube = calculateRandomNeighboringCube();
+	}
+	this.setPosition(new Position(randomNeighboringCube));	
 	}
 
 	/**
