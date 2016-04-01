@@ -1,7 +1,6 @@
 package hillbillies.model;
 
-import hillbillies.model.gameobject.Boulder;
-import hillbillies.model.gameobject.Log;
+import hillbillies.model.gameobject.*;
 import hillbillies.model.terrain.*;
 
 import java.util.HashSet;
@@ -32,6 +31,7 @@ public class Cube {
         this.setTerrain(type, true);
         this.setWorld(world);
 	}
+	Material logOrBoulder;
 
     /**
      * Variable registering the terrain type of this cube.
@@ -76,7 +76,7 @@ public class Cube {
      *
      * @return The position of this cube.
      */
-    private Position getPosition() {
+    public Position getPosition() {
         return position;
     }
 
@@ -198,17 +198,21 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-        }
+//        }
 	}
 
     private void spawnBoulderOrLog() {
-        if (ThreadLocalRandom.current().nextInt(2) == 0) {
-            this.getWorld().addLog(new Log(this.getPosition(), this.getWorld()));
-        } else {
-            this.getWorld().addBoulder(new Boulder(this.getPosition(), this.getWorld())); // TODO: I really hate this piece of code
-        }
+//        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+        	Log log = new Log(this.getPosition(), this.getWorld());
+            this.getWorld().addLog(log);
+            logOrBoulder = (Material) log;
+//        } else {
+//        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
+//            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
+//            logOrBoulder = (Material) boulder;
+//        }
     }
 
 	/**
@@ -300,8 +304,9 @@ public class Cube {
 	 * @return
 	 */
 	public boolean hasLog() {
-		// TODO Auto-generated method stub
-		return false;
+		if(logOrBoulder == null)
+			return false;
+		return logOrBoulder instanceof Log;
 	}
 
 	/**

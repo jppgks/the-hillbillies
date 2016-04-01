@@ -84,5 +84,9 @@ public abstract class Material extends GameObject {
             this.setFalling(true);
         }
 	}
+	
+	public void setPosition(Position position){
+		this.position = position;
+	}
 
 }

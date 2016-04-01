@@ -8,8 +8,10 @@ package hillbillies.model;
  */
 public enum workActivity {
 	DIGING,
-	PICKINGUP,
-	DROPING,
+	PICKINGUPLOG,
+	PICKINGUPBOULDER,
+	DROPINGLOG,
+	DROPINGBOULDER,
 	WORKING,
 	CHOPPING
 }
