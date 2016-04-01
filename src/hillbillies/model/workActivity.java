@@ -13,5 +13,6 @@ public enum workActivity {
 	DROPINGLOG,
 	DROPINGBOULDER,
 	WORKING,
-	CHOPPING
+	CHOPPING,
+	NONE
 }

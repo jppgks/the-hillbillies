@@ -874,7 +874,7 @@ public class Unit {
 			moveSpeed =1.2* getUnitBaseSpeed();
 		else
 			moveSpeed = getUnitBaseSpeed();
-		if(sprinting)
+		if(isSprinting())
 			moveSpeed = 2*moveSpeed;
 		return moveSpeed;
 	}
@@ -1104,7 +1104,7 @@ public class Unit {
 		this.setPosition(
                 new Position(
                         new double[]{
-                                this.getPosition().getDoubleCoordinates()[0] + this.getUnitVelocity()[0] * dt,
+                        		this.getPosition().getDoubleCoordinates()[0] + this.getUnitVelocity()[0] * dt,
                                 this.getPosition().getDoubleCoordinates()[1] + this.getUnitVelocity()[1] * dt,
                                 this.getPosition().getDoubleCoordinates()[2] + this.getUnitVelocity()[2] * dt
                         }
@@ -1336,11 +1336,13 @@ public class Unit {
 				this.getCubeToWorkOn()[0]+0.5 - this.getPosition().getDoubleCoordinates()[0]));
 		if (this.getWorkActivity() == workActivity.DROPINGBOULDER){
 			this.boulder.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder = boulder;
 			world.getBoulders().add(boulder);
 			this.boulder = null;
 			this.setState(State.NONE);
 		}if (this.getWorkActivity() == workActivity.DROPINGLOG){
 			this.log.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder = log;
 			world.getLogs().add(log);
 			this.log = null;
 			this.setState(State.NONE);
@@ -1367,6 +1369,7 @@ public class Unit {
 				this.AttributeValueIncrease(3);
 			}
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
+			this.setWorkActivity(workActivity.NONE);
 			this.resetCounter("WORK_COUNTER");
 		}
 	}
@@ -1650,7 +1653,6 @@ public class Unit {
 				this.getPosition().getCubeCoordinates()[2]+dz})) {
 			throw new IllegalArgumentException();
 		}
-		//when the unit need to move to the same cube as his cube something weird happens
 		if (dx == 0 && dy == 0 && dz == 0) {
 			return;
 		}
@@ -1738,37 +1740,45 @@ public class Unit {
 		if(this.isCarryingLog() && !world.getCube(x,y,z).isSolid()){
 			this.setWorkActivity(workActivity.DROPINGLOG);
 		}
-		if(this.isCarryingBoulder()&& !world.getCube(x,y,z).isSolid()){
+		else if(this.isCarryingBoulder()&& !world.getCube(x,y,z).isSolid()){
 			this.setWorkActivity(workActivity.DROPINGBOULDER);
 		}
-		if (world.getCube(x, y, z).hasLog()) {
+		else if(world.getCube(x, y, z).hasLog()) {
 			if(!isCarryingBoulder() && !isCarryingLog())
 				this.setWorkActivity(workActivity.PICKINGUPLOG);
 			else
 				return;
 		}
-		if (world.getCube(x, y, z).hasBoulder()){
+		else if(world.getCube(x, y, z).hasBoulder()){
 			if(!isCarryingBoulder() && !isCarryingLog())
 				this.setWorkActivity(workActivity.PICKINGUPBOULDER);
 			else
 				return;
 		}
 		// terrain type is wood
-		if (world.getCubeType(x, y, z)== 2){
-			setWorkActivity(workActivity.DIGING);
+		else if (world.getCubeType(x, y, z)== 2){
+			if(!isCarryingBoulder() && !isCarryingLog())
+				setWorkActivity(workActivity.DIGING);
+			else 
+				return;
 		}
 		// terrain type is rock
-		if (world.getCubeType(x, y, z) == 1){
-			this.setWorkActivity(workActivity.DIGING);
+		else if (world.getCubeType(x, y, z) == 1){
+			if(!isCarryingBoulder() && !isCarryingLog())
+				this.setWorkActivity(workActivity.DIGING);
+			else
+				return;
 		}
 		// terrain type is workshop
-		if (world.getCubeType(x, y, z) == 3) {
+		else if (world.getCubeType(x, y, z) == 3) {
 			if(world.getCube(x, y, z).hasBoulder() && world.getCube(x, y, z).hasLog())
 				this.setWorkActivity(workActivity.WORKING);
 			else
 				return;
 			
 		}
+		else
+			return;
 		this.setCubeToWorkOn(x, y, z);
 		this.setState(State.WORKING);
 	}
@@ -1808,7 +1818,7 @@ public class Unit {
      */
 	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
 		// when there is no unit 
-		if (defender == null) {
+		if (defender == null || defender.getFaction()== this.getFaction()) {
 			throw new IllegalArgumentException();
 		}
 		// Can't attack units that not on a neighboring cube of the attacker
@@ -1822,7 +1832,7 @@ public class Unit {
 			this.setState(State.ATTACKING);
 			this.setDefender(defender);
 									// the attackers agility and strength
-			this.getDefender().defend(this.getAgility(), this.getStrength());
+			this.getDefender().defend(this.getAgility(), this.getStrength(), this);
 		}
 	}
 
@@ -1908,17 +1918,20 @@ public class Unit {
      * TODO: 16/03/16 Increase experience points by 20 if successful.
      *
 	 */
-	private void defend(double attackerAgility, double attackerStrength) {
+	private void defend(double attackerAgility, double attackerStrength,Unit attacker) {
 		this.isDefending = true;
 		double dodge = Math.random();
 		if(dodge < this.chanceForDodging(attackerAgility)){
 			this.dodge();
+			this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
 			return;
 		}else{
 			double block = Math.random();
 			if(block< this.chanceForBlocking(attackerAgility,attackerStrength)){
+				this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
 				return;
 			}else{
+				attacker.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+20);
 				this.setCurrentHitPoints(this.getCurrentHitPoints() - this.damage(attackerStrength));
 			}
 		}
