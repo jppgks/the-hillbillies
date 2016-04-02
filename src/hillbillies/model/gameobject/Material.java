@@ -75,7 +75,9 @@ public abstract class Material extends GameObject {
      */
 	public boolean isAboveSolidCube() {
         int[] positionCoordinates = this.getPosition().getCubeCoordinates();
-		return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Solid);
+		if(positionCoordinates[2]-1<0)
+			return true;
+        return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Solid);
 	}
 
 	public void advanceTime(double dt) {

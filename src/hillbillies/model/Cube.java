@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.hamcrest.core.IsInstanceOf;
+
 public class Cube {
 
     /**
@@ -198,21 +200,22 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-//        }
+        }
+        this.getWorld().calculateConnectedToBorder();
 	}
 
     private void spawnBoulderOrLog() {
-//        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+        if (ThreadLocalRandom.current().nextInt(2) == 0) {
         	Log log = new Log(this.getPosition(), this.getWorld());
             this.getWorld().addLog(log);
             logOrBoulder = (Material) log;
-//        } else {
-//        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
-//            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
-//            logOrBoulder = (Material) boulder;
-//        }
+        } else {
+        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
+            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
+            logOrBoulder = (Material) boulder;
+        }
     }
 
 	/**
@@ -291,10 +294,10 @@ public class Cube {
      *            The time period, in seconds, by which to advance the cube's state.
      */
     public void advanceTime(double dt) {
-        if (! this.getWorld().isSolidConnectedToBorder(
+        if (!this.getWorld().isSolidConnectedToBorder(
                 this.getPosition().getCubeCoordinates()[0],
                 this.getPosition().getCubeCoordinates()[1],
-                this.getPosition().getCubeCoordinates()[2])
+                this.getPosition().getCubeCoordinates()[2])&& this.isSolid()
                 ) {
             this.caveIn();
         }
