@@ -6,6 +6,9 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
+import hillbillies.model.terrain.Rock;
+import hillbillies.model.terrain.Tree;
+import hillbillies.model.terrain.Workshop;
 import sun.security.jca.GetInstance.Instance;
 
 import java.util.Arrays;
@@ -1339,29 +1342,35 @@ public class Unit {
 				this.getCubeToWorkOn()[0]+0.5 - this.getPosition().getDoubleCoordinates()[0]));
 		if (this.getWorkActivity() == workActivity.DROPINGBOULDER){
 			this.boulder.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder = boulder;
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder = boulder;
+			this.setWeight(this.getWeight()- boulder.getWeight());
 			world.getBoulders().add(boulder);
 			this.boulder = null;
 			this.setState(State.NONE);
 		}if (this.getWorkActivity() == workActivity.DROPINGLOG){
 			this.log.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder = log;
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = log;
+			this.setWeight(this.getWeight()- log.getWeight());
 			world.getLogs().add(log);
 			this.log = null;
+			this.setState(State.NONE);
+		}
+		if(this.getWorkActivity()== workActivity.DIGING){
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
 			this.setState(State.NONE);
 		}
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
-			if(this.getWorkActivity()== workActivity.DIGING){
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
-			}if (this.getWorkActivity() == workActivity.PICKINGUPLOG) {
-				this.log=(Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder;
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder=null;
+			if (this.getWorkActivity() == workActivity.PICKINGUPLOG) {
+				this.log=(Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log;
+				this.setWeight(this.getWeight()+ log.getWeight());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log=null;
 				world.getLogs().remove(this.log);
 			}if (this.getWorkActivity() == workActivity.PICKINGUPBOULDER) {
-				this.boulder=(Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder;
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder=null;
+				this.boulder=(Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder;
+				this.setWeight(this.getWeight()+ boulder.getWeight());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;
 				world.getBoulders().remove(boulder);
 			}if (this.getWorkActivity()== workActivity.WORKING){
 				//Increase Toughens
@@ -1744,6 +1753,14 @@ public class Unit {
 		else if(this.isCarryingBoulder()&& !world.getCube(x,y,z).isSolid()){
 			this.setWorkActivity(workActivity.DROPINGBOULDER);
 		}
+		// terrain type is workshop
+		else if (world.getCube(x, y, z).getTerrain() instanceof Workshop) {
+			if(world.getCube(x, y, z).hasBoulder() && world.getCube(x, y, z).hasLog())
+				this.setWorkActivity(workActivity.WORKING);
+			else
+				return;
+			
+		}
 		else if(world.getCube(x, y, z).hasLog()) {
 			if(!isCarryingBoulder() && !isCarryingLog())
 				this.setWorkActivity(workActivity.PICKINGUPLOG);
@@ -1757,26 +1774,18 @@ public class Unit {
 				return;
 		}
 		// terrain type is wood
-		else if (world.getCubeType(x, y, z)== 2){
+		else if (world.getCube(x, y, z).getTerrain() instanceof Tree){
 			if(!isCarryingBoulder() && !isCarryingLog())
 				setWorkActivity(workActivity.DIGING);
 			else 
 				return;
 		}
 		// terrain type is rock
-		else if (world.getCubeType(x, y, z) == 1){
+		else if (world.getCube(x, y, z).getTerrain() instanceof Rock){
 			if(!isCarryingBoulder() && !isCarryingLog())
 				this.setWorkActivity(workActivity.DIGING);
 			else
 				return;
-		}
-		// terrain type is workshop
-		else if (world.getCubeType(x, y, z) == 3) {
-			if(world.getCube(x, y, z).hasBoulder() && world.getCube(x, y, z).hasLog())
-				this.setWorkActivity(workActivity.WORKING);
-			else
-				return;
-			
 		}
 		else
 			return;
