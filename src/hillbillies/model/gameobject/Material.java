@@ -22,11 +22,17 @@ public abstract class Material extends GameObject {
 	 * Variable registering whether or not this material is falling.
 	 */
 	boolean falling;
+	
+	double fallingSpeed = 3.0;
 
     /**
      * Variable registering the world this material is on.
      */
     World world;
+
+	private Position startPosition;
+
+	private double fallDistance = 0;
 
     /**
      * Returns the weight of this material.
@@ -67,7 +73,10 @@ public abstract class Material extends GameObject {
 	public void setFalling(boolean falling) {
 		this.falling = falling;
 	}
-
+	
+	private boolean getFalling(){
+		return this.falling;
+	}
     /**
      * Returns whether or not this material is currently above a solid cube.
      *
@@ -75,7 +84,7 @@ public abstract class Material extends GameObject {
      */
 	public boolean isAboveSolidCube() {
         int[] positionCoordinates = this.getPosition().getCubeCoordinates();
-		if(positionCoordinates[2]-1<0)
+		if(positionCoordinates[2]==0)
 			return true;
         return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Solid);
 	}
@@ -84,9 +93,44 @@ public abstract class Material extends GameObject {
 		// TODO - implement Material.advanceTime
         if (! this.isAboveSolidCube()) {
             this.setFalling(true);
+            startPosition = this.getPosition();
+            world.getCube(this.getPosition().getCubeCoordinates()[0],
+            		this.getPosition().getCubeCoordinates()[1], 
+            		this.getPosition().getCubeCoordinates()[2]).logOrBoulder = null;
+        }
+        if(this.getFalling()){
+        	fall(dt);
         }
 	}
 	
+	/**
+	 * @param dt 
+	 * 
+	 */
+	private void fall(double dt) {
+		if(Math.abs(this.getFalldistance()) >= 1){
+			position = new Position(new double[]{startPosition.getDoubleCoordinates()[0],
+					startPosition.getDoubleCoordinates()[1],
+					startPosition.getDoubleCoordinates()[2] -1});
+					setFalldistance(0);
+					this.setFalling(false);
+					world.getCube(startPosition.getCubeCoordinates()[0],
+							startPosition.getCubeCoordinates()[1],
+							startPosition.getCubeCoordinates()[2] -1).logOrBoulder = this;
+					
+		}else
+			this.setFalldistance(this.getFalldistance() + this.fallingSpeed*dt);
+	}
+
+	/**
+	 * @return
+	 */
+	private double getFalldistance() {
+		return fallDistance;
+	}
+	private void setFalldistance(double distance){
+		this.fallDistance = distance;
+	}
 	public void setPosition(Position position){
 		this.position = position;
 	}

@@ -1350,14 +1350,11 @@ public class Unit {
 			this.log = null;
 			this.setState(State.NONE);
 		}
-		if(this.getWorkActivity()== workActivity.DIGING){
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
-			this.setState(State.NONE);
-			}
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
-			
+			if(this.getWorkActivity()== workActivity.DIGING){
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
 			}if (this.getWorkActivity() == workActivity.PICKINGUPLOG) {
 				this.log=(Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder;
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).logOrBoulder=null;
@@ -1375,6 +1372,7 @@ public class Unit {
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.setWorkActivity(workActivity.NONE);
 			this.resetCounter("WORK_COUNTER");
+		}
 	}
 
 	/**

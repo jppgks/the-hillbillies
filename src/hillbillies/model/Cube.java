@@ -33,7 +33,7 @@ public class Cube {
         this.setTerrain(type, true);
         this.setWorld(world);
 	}
-	Material logOrBoulder;
+	public Material logOrBoulder;
 
     /**
      * Variable registering the terrain type of this cube.
@@ -200,22 +200,22 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-        }
+//        }
         this.getWorld().calculateConnectedToBorder();
 	}
 
     private void spawnBoulderOrLog() {
-        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+//        if (ThreadLocalRandom.current().nextInt(2) == 0) {
         	Log log = new Log(this.getPosition(), this.getWorld());
             this.getWorld().addLog(log);
-            logOrBoulder = (Material) log;
-        } else {
-        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
-            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
-            logOrBoulder = (Material) boulder;
-        }
+            this.logOrBoulder = (Material) log;
+//        } else {
+//        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
+//            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
+//            logOrBoulder = (Material) boulder;
+//        }
     }
 
 	/**
