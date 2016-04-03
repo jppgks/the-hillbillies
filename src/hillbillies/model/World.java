@@ -48,17 +48,15 @@ public class World {
         for (int x = 0; x < terrainTypes.length; x++) {
             for (int y = 0; y < terrainTypes[0].length; y++) {
                 for (int z = 0; z < terrainTypes[0][0].length; z++) {
-                	System.out.println(x);
-                	System.out.println(y);
-                	System.out.println(z);
                     Cube cube = new Cube(x, y, z, terrainTypes[x][y][z], this);
                     cubesInWorld[x][y][z]= cube;
-                    //cubes.add(cube);
+                    cubes.add(cube);
                 }
             }
         }
-        //this.calculateConnectedToBorder();
+        this.calculateConnectedToBorder();
         this.setTerrainChangeListener(modelListener);
+        //connectedToBorder.isSolidConnectedToBorder(0, 0, 0));
     }
 
     /**
@@ -260,7 +258,6 @@ public class World {
      */
     void calculateConnectedToBorder() {
         List<int[]> newlyDisconnectedCubes = new ArrayList<>();
-        connectedToBorder = new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ());
         for (int i = 0; i < this.getNbCubesX(); i++) {
             for (int j = 0; j < this.getNbCubesY(); j++) {
                 for (int k = 0; k < this.getNbCubesZ(); k++) {
