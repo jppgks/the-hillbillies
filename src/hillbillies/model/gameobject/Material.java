@@ -91,9 +91,9 @@ public abstract class Material extends GameObject {
      */
 	public boolean isAboveSolidCube() {
         int[] positionCoordinates = this.getPosition().getCubeCoordinates();
-		if(this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]).getTerrain() instanceof Workshop)
-			return true;
 		if(positionCoordinates[2]==0)
+			return true;
+		if(this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]).getTerrain() instanceof Workshop)
 			return true;
         return (this.world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-1).getTerrain() instanceof Solid);
 	}
@@ -119,7 +119,6 @@ public abstract class Material extends GameObject {
 			}
         }
         if(this.getFalling()){
-        	System.out.println("falling");
         	fall(dt);
         }
 	}

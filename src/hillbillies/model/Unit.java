@@ -1377,6 +1377,10 @@ public class Unit {
 				this.AttributeValueIncrease(2);
 				//Increase Weight
 				this.AttributeValueIncrease(3);
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log=null;
+				world.getLogs().remove(this.log);
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;
+				world.getBoulders().remove(boulder);
 			}
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.setWorkActivity(workActivity.NONE);
