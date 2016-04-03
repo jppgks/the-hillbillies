@@ -33,8 +33,9 @@ public class Cube {
         this.setTerrain(type, true);
         this.setWorld(world);
 	}
-	public Material logOrBoulder;
-
+	public Material log;
+	
+	public Material boulder;
     /**
      * Variable registering the terrain type of this cube.
      */
@@ -200,22 +201,22 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-//        }
+        }
         this.getWorld().calculateConnectedToBorder();
 	}
 
     private void spawnBoulderOrLog() {
-//        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+        if (ThreadLocalRandom.current().nextInt(2) == 0) {
         	Log log = new Log(this.getPosition(), this.getWorld());
             this.getWorld().addLog(log);
-            this.logOrBoulder = (Material) log;
-//        } else {
-//        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
-//            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
-//            logOrBoulder = (Material) boulder;
-//        }
+            this.log = (Material) log;
+        } else {
+        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
+            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
+            this.boulder = (Material) boulder;
+        }
     }
 
 	/**
@@ -307,16 +308,17 @@ public class Cube {
 	 * @return
 	 */
 	public boolean hasLog() {
-		if(logOrBoulder == null)
+		if(log == null)
 			return false;
-		return logOrBoulder instanceof Log;
+		return log instanceof Log;
 	}
 
 	/**
 	 * @return
 	 */
 	public boolean hasBoulder() {
-		// TODO Auto-generated method stub
-		return false;
+		if(boulder == null)
+			return false;
+		return boulder instanceof Boulder;
 	}
 }
