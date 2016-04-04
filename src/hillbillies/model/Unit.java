@@ -9,12 +9,9 @@ import hillbillies.model.gameobject.Log;
 import hillbillies.model.terrain.Rock;
 import hillbillies.model.terrain.Tree;
 import hillbillies.model.terrain.Workshop;
-import sun.security.jca.GetInstance.Instance;
 
 import java.util.Arrays;
 import java.util.Random;
-
-import org.hamcrest.core.IsInstanceOf;
 
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
@@ -1107,18 +1104,36 @@ public class Unit {
 	 * 		  Difference in time
 	 */
 	private void updatePosition(double dt) {
+        if (Arrays.equals(this.getNeighboringCubeToMoveTo(), new int[]{0,0,0})) {
+            this.setPosition(
+                    new Position(
+                            new int[]{
+                                    this.getPosition().getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
+                                    this.getPosition().getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
+                                    this.getPosition().getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
+                            }
+                    )
+            );
+            this.setState(State.NONE);
+            this.stopSprinting();
+            return;
+        }
 		this.setPosition(
                 new Position(
                         new double[]{
-                        		this.getPosition().getDoubleCoordinates()[0] + this.getUnitVelocity()[0] * dt,
-                                this.getPosition().getDoubleCoordinates()[1] + this.getUnitVelocity()[1] * dt,
-                                this.getPosition().getDoubleCoordinates()[2] + this.getUnitVelocity()[2] * dt
+                        		this.getPosition().getDoubleCoordinates()[0] + (this.getUnitVelocity()[0] * dt),
+                                this.getPosition().getDoubleCoordinates()[1] + (this.getUnitVelocity()[1] * dt),
+                                this.getPosition().getDoubleCoordinates()[2] + (this.getUnitVelocity()[2] * dt)
                         }
                 )
         );
-		this.getInitialPosition()[0] += this.getUnitVelocity()[0] * dt;
-		this.getInitialPosition()[1] += this.getUnitVelocity()[1] * dt;
-		this.getInitialPosition()[2] += this.getUnitVelocity()[2] * dt;
+		this.setInitialPosition(
+				new double[]{
+						this.getInitialPosition()[0] + (this.getUnitVelocity()[0] * dt),
+						this.getInitialPosition()[1] + (this.getUnitVelocity()[1] * dt),
+						this.getInitialPosition()[2] + (this.getUnitVelocity()[2] * dt)
+				}
+		);
 		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(getInitialPosition()[2]) <= 0) {
@@ -1935,9 +1950,9 @@ public class Unit {
 	 */
 	private void defend(double attackerAgility, double attackerStrength,Unit attacker) {
 		this.isDefending = true;
-		if (!world.getCube(this.position.getCubeCoordinates()[0], 
-				this.position.getCubeCoordinates()[1], 
-				this.position.getCubeCoordinates()[2]).hasSolidNeighboringCubes()) {
+		if (!world.getCube(this.getPosition().getCubeCoordinates()[0],
+				this.getPosition().getCubeCoordinates()[1],
+				this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes()) {
 			double dodge = Math.random();
 			if(dodge < this.chanceForDodging(attackerAgility)){
 				this.dodge();
