@@ -9,8 +9,8 @@ import org.junit.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static tests.util.PositionAsserts.assertDoublePositionEquals;
-import static tests.util.PositionAsserts.assertIntegerPositionEquals;
+import static hillbillies.model.tests.util.PositionAsserts.assertDoublePositionEquals;
+import static hillbillies.model.tests.util.PositionAsserts.assertIntegerPositionEquals;
 import static org.junit.Assert.*;
 
 /**

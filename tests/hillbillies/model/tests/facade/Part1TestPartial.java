@@ -1,7 +1,7 @@
-package tests.facade;
+package hillbillies.model.tests.facade;
 
-import static tests.util.PositionAsserts.assertDoublePositionEquals;
-import static tests.util.PositionAsserts.assertIntegerPositionEquals;
+import static hillbillies.model.tests.util.PositionAsserts.assertDoublePositionEquals;
+import static hillbillies.model.tests.util.PositionAsserts.assertIntegerPositionEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

@@ -1,4 +1,4 @@
-package tests.util;
+package hillbillies.model.tests.util;
 
 import org.junit.Assert;
 
