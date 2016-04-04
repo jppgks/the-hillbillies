@@ -9,6 +9,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.hamcrest.core.IsInstanceOf;
 
+import com.sun.swing.internal.plaf.basic.resources.basic;
+
 public class Cube {
 
     /**
@@ -204,7 +206,7 @@ public class Cube {
         if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
         }
-        this.getWorld().calculateConnectedToBorder();
+       this.getWorld().calculateConnectedToBorder();
 	}
 
     private void spawnBoulderOrLog() {
@@ -298,11 +300,17 @@ public class Cube {
         if (!this.getWorld().isSolidConnectedToBorder(
                 this.getPosition().getCubeCoordinates()[0],
                 this.getPosition().getCubeCoordinates()[1],
-                this.getPosition().getCubeCoordinates()[2])&& this.isSolid()
-                ) {
-            this.caveIn();
+                this.getPosition().getCubeCoordinates()[2])
+                && this.isSolid()) {
+        		this.caveIn();
         }
     }
+    
+    private static final double TIMETOCAVEIN = 0.5;
+    
+    private boolean hasToCaveIn = false;
+    
+    private double timeToCaveInCounter;
 
 	/**
 	 * @return
@@ -320,5 +328,24 @@ public class Cube {
 		if(boulder == null)
 			return false;
 		return boulder instanceof Boulder;
+	}
+
+	/**
+	 * Return the timeToCaveInCounter of this Cube.
+	 */
+	public double getTimeToCaveInCounter() {
+		return timeToCaveInCounter;
+	}
+
+	/**
+	 * Set the timeToCaveInCounter of this Cube to the given timeToCaveInCounter.
+	 *
+	 * @param  timeToCaveInCounter
+	 *         The timeToCaveInCounter to set.
+	 * @post   The timeToCaveInCounter of this of this Cube is equal to the given timeToCaveInCounter.
+	 *       | new.gettimeToCaveInCounter() == timeToCaveInCounter
+	 */
+	public void setTimeToCaveInCounter(double timeToCaveInCounter) {
+		this.timeToCaveInCounter = timeToCaveInCounter;
 	}
 }

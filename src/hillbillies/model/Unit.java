@@ -1371,16 +1371,17 @@ public class Unit {
 				this.boulder=(Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder;
 				this.setWeight(this.getWeight()+ boulder.getWeight());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;
-				world.getBoulders().remove(boulder);
+				world.getBoulders().remove(this.boulder);
 			}if (this.getWorkActivity()== workActivity.WORKING){
 				//Increase Toughens
 				this.AttributeValueIncrease(2);
 				//Increase Weight
 				this.AttributeValueIncrease(3);
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log=null;
-				world.getLogs().remove(this.log);
+				world.getLogs().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log);
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = null;
+				world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder);
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;
-				world.getBoulders().remove(boulder);
+				
 			}
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.setWorkActivity(workActivity.NONE);

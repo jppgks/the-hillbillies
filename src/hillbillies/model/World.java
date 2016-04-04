@@ -56,7 +56,6 @@ public class World {
         }
         this.calculateConnectedToBorder();
         this.setTerrainChangeListener(modelListener);
-        //connectedToBorder.isSolidConnectedToBorder(0, 0, 0));
     }
 
     /**
