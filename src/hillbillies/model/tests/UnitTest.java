@@ -1,4 +1,4 @@
-package hillbillies.tests;
+package hillbillies.model.tests;
 
 import hillbillies.model.Position;
 import hillbillies.model.State;

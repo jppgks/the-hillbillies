@@ -60,7 +60,7 @@ public class Facade implements IFacade {
 		if (world.getUnits().size() > 100) {
 			throw new ModelException("To Many Units in this world");
 		}
-    		return world.spawnUnit(enableDefaultBehavior);       
+    		return world.spawnUnit(enableDefaultBehavior);
     }
 
     @Override
@@ -147,12 +147,12 @@ public class Facade implements IFacade {
 
     @Override
     public double[] getPosition(Unit unit) throws ModelException {
-        return unit.position.getDoubleCoordinates();
+        return unit.getPosition().getDoubleCoordinates();
     }
 
     @Override
     public int[] getCubeCoordinate(Unit unit) throws ModelException {
-        return unit.position.getCubeCoordinates();
+        return unit.getPosition().getCubeCoordinates();
     }
 
     @Override

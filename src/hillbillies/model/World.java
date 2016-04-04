@@ -358,7 +358,7 @@ public class World {
 		}
 		Unit unit = new Unit("Hilly", new int[]{cubeX,cubeY,cubeZ},50, 50, 50, 50, false);
 		this.getCube(cubeX, cubeY, cubeZ).setUnit(unit);
-		unit.world = this;
+		unit.setWorld(this);
 		this.addUnit(unit);
 		addUnitToFaction(unit);
 		return unit;

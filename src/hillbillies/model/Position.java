@@ -82,7 +82,7 @@ public class Position {
     private void setCubeCoordinates(double[] initialPosition) {
         this.cubeX = (int) initialPosition[0];
         this.cubeY = (int) initialPosition[1];
-        this.cubeY = (int) initialPosition[2];
+        this.cubeZ = (int) initialPosition[2];
 
     }
 
