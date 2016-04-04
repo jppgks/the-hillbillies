@@ -51,7 +51,6 @@ public class Facade implements IFacade {
 
     @Override
     public boolean isSolidConnectedToBorder(World world, int x, int y, int z) throws ModelException {
-    	System.out.println("oke");
         return world.isSolidConnectedToBorder(x, y, z);
     }
 
@@ -95,6 +94,8 @@ public class Facade implements IFacade {
 
     @Override
     public void workAt(Unit unit, int x, int y, int z) throws ModelException {
+    	if(unit.getState()!= State.NONE)
+    		throw new ModelException("can't work right now");
     	try {
     		unit.work(x,y,z);
 		} catch (IllegalArgumentException exc) {
@@ -286,6 +287,8 @@ public class Facade implements IFacade {
 
     @Override
     public void fight(Unit attacker, Unit defender) throws ModelException {
+    	if(attacker.getState() != State.NONE)
+    		throw new ModelException("I can't do that now");
         try {
             attacker.attack(defender);
         } catch (IllegalStateException exc) {
@@ -302,7 +305,9 @@ public class Facade implements IFacade {
 
     @Override
     public void rest(Unit unit) throws ModelException {
-        try {
+    	if(unit.getCurrentHitPoints() == unit.getMaxHitPoints() && unit.getCurrentStaminaPoints() == unit.getMaxStaminaPoints())
+    		throw new ModelException("I'm already full recoverd");
+    	try {
             unit.rest();
         } catch (IllegalStateException exc) {
 

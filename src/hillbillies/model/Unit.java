@@ -1340,24 +1340,15 @@ public class Unit {
 		this.setOrientation((float) Math.atan2(
 				this.getCubeToWorkOn()[1]+0.5 - this.getPosition().getDoubleCoordinates()[1],
 				this.getCubeToWorkOn()[0]+0.5 - this.getPosition().getDoubleCoordinates()[0]));
-		if (this.getWorkActivity() == workActivity.DROPINGBOULDER){
-			this.boulder.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder = boulder;
-			this.setWeight(this.getWeight()- boulder.getWeight());
-			world.getBoulders().add(boulder);
-			this.boulder = null;
-			this.setState(State.NONE);
-		}if (this.getWorkActivity() == workActivity.DROPINGLOG){
-			this.log.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = log;
-			this.setWeight(this.getWeight()- log.getWeight());
-			world.getLogs().add(log);
-			this.log = null;
-			this.setState(State.NONE);
-		}
-		if(this.getWorkActivity()== workActivity.DIGING){
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
-			this.setState(State.NONE);
+		if (this.getWorkActivity()== workActivity.WORKING){
+			//Increase Toughens
+			this.AttributeValueIncrease(2);
+			//Increase Weight
+			this.AttributeValueIncrease(3);
+			world.getLogs().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log);
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = null;
+			world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder);
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;	
 		}
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
@@ -1372,16 +1363,25 @@ public class Unit {
 				this.setWeight(this.getWeight()+ boulder.getWeight());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;
 				world.getBoulders().remove(this.boulder);
-			}if (this.getWorkActivity()== workActivity.WORKING){
-				//Increase Toughens
-				this.AttributeValueIncrease(2);
-				//Increase Weight
-				this.AttributeValueIncrease(3);
-				world.getLogs().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log);
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = null;
-				world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder);
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;
-				
+			}
+			if (this.getWorkActivity() == workActivity.DROPINGBOULDER){
+				this.boulder.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder = boulder;
+				this.setWeight(this.getWeight()- boulder.getWeight());
+				world.getBoulders().add(boulder);
+				this.boulder = null;
+				this.setState(State.NONE);
+			}if (this.getWorkActivity() == workActivity.DROPINGLOG){
+				this.log.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = log;
+				this.setWeight(this.getWeight()- log.getWeight());
+				world.getLogs().add(log);
+				this.log = null;
+				this.setState(State.NONE);
+			}
+			if(this.getWorkActivity()== workActivity.DIGING){
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
+				this.setState(State.NONE);
 			}
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.setWorkActivity(workActivity.NONE);
@@ -1748,9 +1748,9 @@ public class Unit {
 	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
-//		if(!this.isNeighboringCube(new int[]{x,y,z})){
-//			throw new IllegalArgumentException();
-//		}
+		if(!this.isNeighboringCube(new int[]{x,y,z})){
+			throw new IllegalArgumentException();
+		}
 		this.setWorkCounter(this.getTimeForWork());
 		if(this.isCarryingLog() && !world.getCube(x,y,z).isSolid()){
 			this.setWorkActivity(workActivity.DROPINGLOG);
