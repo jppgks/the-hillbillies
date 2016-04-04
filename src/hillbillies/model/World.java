@@ -38,22 +38,25 @@ public class World {
      */
     public World(int[][][] terrainTypes, TerrainChangeListener modelListener) {
         this.setNbCubes(new int[]{terrainTypes.length, terrainTypes[0].length, terrainTypes[0][0].length});
+        cubesInWorld = new Cube[terrainTypes.length][terrainTypes[0].length][terrainTypes[0][0].length];
         this.factions.add(faction1);
         this.factions.add(faction2);
         this.factions.add(faction3);
         this.factions.add(faction4);
         this.factions.add(faction5);
-        connectedToBorder =new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ());
-        for (int z = 0; z < getNbCubesZ(); z++) {
-            for (int y = 0; y < getNbCubesY(); y++) {
-                for (int x = 0; x < getNbCubesX(); x++) {
+        connectedToBorder = new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ());
+        for (int x = 0; x < terrainTypes.length; x++) {
+            for (int y = 0; y < terrainTypes[0].length; y++) {
+                for (int z = 0; z < terrainTypes[0][0].length; z++) {
                     Cube cube = new Cube(x, y, z, terrainTypes[x][y][z], this);
+                    cubesInWorld[x][y][z]= cube;
                     cubes.add(cube);
                 }
             }
         }
-        //this.calculateConnectedToBorder();
+        this.calculateConnectedToBorder();
         this.setTerrainChangeListener(modelListener);
+        //connectedToBorder.isSolidConnectedToBorder(0, 0, 0));
     }
 
     /**
@@ -101,6 +104,8 @@ public class World {
     private Faction faction3 = new Faction("team 3");
     private Faction faction4 = new Faction("team 4");
     private Faction faction5 = new Faction("team 5");
+    
+    private Cube[][][] cubesInWorld;
 
     /**
      * Variable registering the ConnectedToBorder object for the cubes in this world.
@@ -178,7 +183,8 @@ public class World {
      * @return The cube at the given position.
      */
     public Cube getCube(int x, int y, int z) {
-        return cubes.get(cubeIndexInCubeList(x, y, z));
+    	return cubesInWorld[x][y][z];
+        //return cubes.get(cubeIndexInCubeList(x, y, z));
     }
 
     /**
@@ -252,7 +258,6 @@ public class World {
      */
     void calculateConnectedToBorder() {
         List<int[]> newlyDisconnectedCubes = new ArrayList<>();
-        connectedToBorder = new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ());
         for (int i = 0; i < this.getNbCubesX(); i++) {
             for (int j = 0; j < this.getNbCubesY(); j++) {
                 for (int k = 0; k < this.getNbCubesZ(); k++) {

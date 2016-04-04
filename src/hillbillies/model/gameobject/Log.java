@@ -16,6 +16,5 @@ public class Log extends Material {
     public Log(Position position, World world) {
         this.position = position;
         this.world = world;
-        world.getLogs().add(this);
     }
 }

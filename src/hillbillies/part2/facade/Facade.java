@@ -51,7 +51,7 @@ public class Facade implements IFacade {
 
     @Override
     public boolean isSolidConnectedToBorder(World world, int x, int y, int z) throws ModelException {
-    	System.out.println(x);
+    	System.out.println("oke");
         return world.isSolidConnectedToBorder(x, y, z);
     }
 
@@ -95,7 +95,13 @@ public class Facade implements IFacade {
 
     @Override
     public void workAt(Unit unit, int x, int y, int z) throws ModelException {
-        unit.work(x,y,z);
+    	try {
+    		unit.work(x,y,z);
+		} catch (IllegalArgumentException exc) {
+			
+		} catch (IllegalStateException exc) {
+			
+		}       
     }
 
     @Override
