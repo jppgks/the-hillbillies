@@ -359,6 +359,7 @@ public class World {
 		this.getCube(cubeX, cubeY, cubeZ).setUnit(unit);
 		unit.setWorld(this);
 		this.addUnit(unit);
+		unit.setAlive(true);
 		addUnitToFaction(unit);
 		return unit;
 	}

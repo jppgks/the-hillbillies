@@ -319,6 +319,25 @@ public class Unit {
 	private int[] startPosition;
 
 	/**
+	 * Return the startPosition of this Unit.
+	 */
+	public int[] getStartPosition() {
+		return startPosition;
+	}
+
+	/**
+	 * Set the startPosition of this Unit to the given startPosition.
+	 *
+	 * @param  startPosition
+	 *         The startPosition to set.
+	 * @post   The startPosition of this of this Unit is equal to the given startPosition.
+	 *       | new.getstartPosition() == startPosition
+	 */
+	public void setStartPosition(int[] startPosition) {
+		this.startPosition = startPosition;
+	}
+
+	/**
 	 * Return the workActivity of this Unit.
 	 */
 	public workActivity getWorkActivity() {
@@ -828,10 +847,7 @@ public class Unit {
 		}
 		if(!isDefending)
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
-		if(isMoving())
-			isMoving = true;
-			this.setNeighboringCubeToMoveTo(getMovementChange());
-			
+		this.setNeighboringCubeToMoveTo(getMovementChange());
 		this.updatePosition(dt);
 		
 	}
@@ -1118,20 +1134,6 @@ public class Unit {
 	 * 		  Difference in time
 	 */
 	private void updatePosition(double dt) {
-        if (Arrays.equals(this.getNeighboringCubeToMoveTo(), new int[]{0,0,0})) {
-            this.setPosition(
-                    new Position(
-                            new int[]{
-                                    this.getPosition().getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
-                                    this.getPosition().getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
-                                    this.getPosition().getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
-                            }
-                    )
-            );
-            this.setState(State.NONE);
-            this.stopSprinting();
-            return;
-        }
 		this.setPosition(
                 new Position(
                         new double[]{
@@ -1148,20 +1150,23 @@ public class Unit {
 						this.getInitialPosition()[2] + (this.getUnitVelocity()[2] * dt)
 				}
 		);
-		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
-				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
-				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(getInitialPosition()[2]) <= 0) {
+		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(this.getInitialPosition()[0]) <= 0 &&
+				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(this.getInitialPosition()[1]) <= 0 &&
+				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(this.getInitialPosition()[2]) <= 0) {
 			this.setPosition(
                     new Position(
                             new int[]{
-                            		startPosition[0] + this.getNeighboringCubeToMoveTo()[0],
-                            		startPosition[1] + this.getNeighboringCubeToMoveTo()[1],
-                            		startPosition[2] + this.getNeighboringCubeToMoveTo()[2]
+                            		this.getStartPosition()[0] + this.getNeighboringCubeToMoveTo()[0],
+                            		this.getStartPosition()[1] + this.getNeighboringCubeToMoveTo()[1],
+                            		this.getStartPosition()[2] + this.getNeighboringCubeToMoveTo()[2]
                             }
                     )
             );
             // TODO: 16/03/16 Increment experience points, except when interrupted.
-			if (Arrays.equals(new int[]{startPosition[0]+this.getNeighboringCubeToMoveTo()[0],startPosition[1]+this.getNeighboringCubeToMoveTo()[1],startPosition[2]+this.getNeighboringCubeToMoveTo()[2]}, this.getTargetPosition())) {
+			if (Arrays.equals(new int[]{this.getStartPosition()[0]+this.getNeighboringCubeToMoveTo()[0],
+										this.getStartPosition()[1]+this.getNeighboringCubeToMoveTo()[1],
+										this.getStartPosition()[2]+this.getNeighboringCubeToMoveTo()[2]},
+										this.getTargetPosition())) {
 				this.setState(State.NONE);
 				this.stopSprinting();
 			}
@@ -1177,12 +1182,11 @@ public class Unit {
 				} catch (IllegalStateException exc) {
 					
 				}
-			startPosition = new int[]{
+			setStartPosition(new int[]{
 					this.getPosition().getCubeCoordinates()[0],
 					this.getPosition().getCubeCoordinates()[1],
 					this.getPosition().getCubeCoordinates()[2]
-			};
-			isMoving = false;
+			});
 			this.setNewTargetPosition(null);
 			this.setInitialPosition(new double[]{0, 0, 0});
 		}
@@ -1715,11 +1719,11 @@ public class Unit {
 				this.getPosition().getCubeCoordinates()[1] + dy,
 				this.getPosition().getCubeCoordinates()[2] + dz
 		});
-		startPosition = new int[]{
+		this.setStartPosition(new int[]{
 				this.getPosition().getCubeCoordinates()[0],
 				this.getPosition().getCubeCoordinates()[1],
 				this.getPosition().getCubeCoordinates()[2]
-		};
+		});
 		this.setState(State.MOVING);
 	}
 
@@ -1764,11 +1768,11 @@ public class Unit {
 		if(this.getState()== State.MOVING){
 			this.setNewTargetPosition(targetPosition);
 		}else{
-			startPosition = new int[]{
+			this.setStartPosition(new int[]{
 					this.getPosition().getCubeCoordinates()[0],
 					this.getPosition().getCubeCoordinates()[1],
 					this.getPosition().getCubeCoordinates()[2]
-			};
+			});
 			this.setTargetPosition(targetPosition);
 			this.setState(State.MOVING);
 			this.setRestRequestedWhileMoving(false);
