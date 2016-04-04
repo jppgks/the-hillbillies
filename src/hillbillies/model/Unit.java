@@ -314,6 +314,10 @@ public class Unit {
     private int[] cubeWorkOn;
     workActivity workActivity;
 
+	private boolean isMoving = false;
+
+	private int[] startPosition;
+
 	/**
 	 * Return the workActivity of this Unit.
 	 */
@@ -824,9 +828,19 @@ public class Unit {
 		}
 		if(!isDefending)
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
-		this.setNeighboringCubeToMoveTo(getMovementChange());
+		if(isMoving())
+			isMoving = true;
+			this.setNeighboringCubeToMoveTo(getMovementChange());
+			
 		this.updatePosition(dt);
 		
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean isMoving() {
+		return isMoving ;
 	}
 
 	/**
@@ -1071,25 +1085,25 @@ public class Unit {
 		int dx;
 		int dy;
 		int dz;
-		if(getPosition().getCubeCoordinates()[0]== this.getTargetPosition()[0]){
+		if(startPosition[0]== this.getTargetPosition()[0]){
 			dx = 0;
-		}else if(getPosition().getCubeCoordinates()[0]< this.getTargetPosition()[0]){
+		}else if(startPosition[0]< this.getTargetPosition()[0]){
 			dx = 1;
 		}else{
 			dx = -1;
 		}
 
-		if(getPosition().getCubeCoordinates()[1]== this.getTargetPosition()[1]){
+		if(startPosition[1]== this.getTargetPosition()[1]){
 			dy = 0;
-		}else if(getPosition().getCubeCoordinates()[1]< this.getTargetPosition()[1]){
+		}else if(startPosition[1]< this.getTargetPosition()[1]){
 			dy = 1;
 		}else{
 			dy = -1;
 		}
 
-		if(getPosition().getCubeCoordinates()[2]== this.getTargetPosition()[2]){
+		if(startPosition[2]== this.getTargetPosition()[2]){
 			dz = 0;
-		}else if(getPosition().getCubeCoordinates()[2]< this.getTargetPosition()[2]){
+		}else if(startPosition[2]< this.getTargetPosition()[2]){
 			dz = 1;
 		}else{
 			dz = -1;
@@ -1140,14 +1154,14 @@ public class Unit {
 			this.setPosition(
                     new Position(
                             new int[]{
-                                    this.getPosition().getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
-                                    this.getPosition().getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
-                                    this.getPosition().getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
+                            		startPosition[0] + this.getNeighboringCubeToMoveTo()[0],
+                            		startPosition[1] + this.getNeighboringCubeToMoveTo()[1],
+                            		startPosition[2] + this.getNeighboringCubeToMoveTo()[2]
                             }
                     )
             );
             // TODO: 16/03/16 Increment experience points, except when interrupted.
-			if (Arrays.equals(this.getPosition().getCubeCoordinates(), this.getTargetPosition())) {
+			if (Arrays.equals(new int[]{startPosition[0]+this.getNeighboringCubeToMoveTo()[0],startPosition[1]+this.getNeighboringCubeToMoveTo()[1],startPosition[2]+this.getNeighboringCubeToMoveTo()[2]}, this.getTargetPosition())) {
 				this.setState(State.NONE);
 				this.stopSprinting();
 			}
@@ -1162,7 +1176,13 @@ public class Unit {
 					this.rest();
 				} catch (IllegalStateException exc) {
 					
-				}		
+				}
+			startPosition = new int[]{
+					this.getPosition().getCubeCoordinates()[0],
+					this.getPosition().getCubeCoordinates()[1],
+					this.getPosition().getCubeCoordinates()[2]
+			};
+			isMoving = false;
 			this.setNewTargetPosition(null);
 			this.setInitialPosition(new double[]{0, 0, 0});
 		}
@@ -1695,6 +1715,11 @@ public class Unit {
 				this.getPosition().getCubeCoordinates()[1] + dy,
 				this.getPosition().getCubeCoordinates()[2] + dz
 		});
+		startPosition = new int[]{
+				this.getPosition().getCubeCoordinates()[0],
+				this.getPosition().getCubeCoordinates()[1],
+				this.getPosition().getCubeCoordinates()[2]
+		};
 		this.setState(State.MOVING);
 	}
 
@@ -1739,6 +1764,11 @@ public class Unit {
 		if(this.getState()== State.MOVING){
 			this.setNewTargetPosition(targetPosition);
 		}else{
+			startPosition = new int[]{
+					this.getPosition().getCubeCoordinates()[0],
+					this.getPosition().getCubeCoordinates()[1],
+					this.getPosition().getCubeCoordinates()[2]
+			};
 			this.setTargetPosition(targetPosition);
 			this.setState(State.MOVING);
 			this.setRestRequestedWhileMoving(false);
