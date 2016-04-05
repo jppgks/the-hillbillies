@@ -6,6 +6,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
+import hillbillies.model.gameobject.Material;
 import hillbillies.model.terrain.Passable;
 import hillbillies.model.terrain.Rock;
 import hillbillies.model.terrain.Solid;
@@ -310,8 +311,7 @@ public class Unit {
 	private int currentExperiencePoints;
 	private int randomAttributePointCounter;
 	private boolean falling = false;
-	Log log = null;
-	Boulder boulder = null;
+    private Material material = null;
     boolean alive = true;
     private int[] cubeWorkOn;
     workActivity workActivity;
@@ -672,6 +672,9 @@ public class Unit {
 	 */
 	private void setCurrentHitPoints(double hitPoints) {
 		this.currentHitPoints = hitPoints;
+        if (this.currentHitPoints <= 0) {
+            this.die();
+        }
 	}
 
 	/**
@@ -885,7 +888,7 @@ public class Unit {
 	}
 
 	/**
-	 * @param i
+	 * @param
 	 */
 	private void setFalldistance(double falldistance) {
 		this.fallDistance  = falldistance;
@@ -1471,38 +1474,38 @@ public class Unit {
 			this.AttributeValueIncrease(2);
 			//Increase Weight
 			this.AttributeValueIncrease(3);
-			world.getLogs().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log);
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = null;
-			world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder);
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;	
+			world.getLogs().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
+			world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
 		}
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
 			if (this.getWorkActivity() == workActivity.PICKINGUPLOG) {
-				this.log=(Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log;
-				this.setWeight(this.getWeight()+ log.getWeight());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log=null;
-				world.getLogs().remove(this.log);
+				this.setMaterial((Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
+				this.setWeight(this.getWeight()+ this.getMaterial().getWeight());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
+				world.getLogs().remove(this.getMaterial());
 			}if (this.getWorkActivity() == workActivity.PICKINGUPBOULDER) {
-				this.boulder=(Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder;
-				this.setWeight(this.getWeight()+ boulder.getWeight());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder=null;
-				world.getBoulders().remove(this.boulder);
+				this.setMaterial((Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
+				this.setWeight(this.getWeight()+ this.getMaterial().getWeight());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
+				world.getBoulders().remove(this.getMaterial());
 			}
 			if (this.getWorkActivity() == workActivity.DROPINGBOULDER){
-				this.boulder.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).boulder = boulder;
-				this.setWeight(this.getWeight()- boulder.getWeight());
-				world.getBoulders().add(boulder);
-				this.boulder = null;
+				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(this.getMaterial());
+				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
+				world.getBoulders().add((Boulder) this.getMaterial()); // TODO Correct use of set methods
+				this.setMaterial(null);
 				this.setState(State.NONE);
 			}if (this.getWorkActivity() == workActivity.DROPINGLOG){
-				this.log.setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).log = log;
-				this.setWeight(this.getWeight()- log.getWeight());
-				world.getLogs().add(log);
-				this.log = null;
+				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(this.getMaterial());
+				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
+				world.getLogs().add((Log) this.getMaterial()); // TODO Correct use of set methods
+				this.setMaterial(null);
 				this.setState(State.NONE);
 			}
 			if(this.getWorkActivity()== workActivity.DIGING){
@@ -2384,17 +2387,35 @@ public class Unit {
 	}
 
 	public void die() {
-		// TODO - implement Unit.die
-		throw new UnsupportedOperationException();
+        this.setState(State.NONE);
+        if (this.getMaterial() != null) {
+            this.
+                    getWorld().
+                    getCube(
+                            this.getPosition().getCubeCoordinates()[0],
+                            this.getPosition().getCubeCoordinates()[1],
+                            this.getPosition().getCubeCoordinates()[2]
+                    ).
+                    setMaterial(this.getMaterial()); // TODO: Has to be something like 'setAsMaterial' => one cube can have multiple materials?
+        }
+		this.getWorld().removeAsUnit(this);
+        this.setAlive(false);
 	}
 
+    private Material getMaterial() {
+        return material;
+    }
+
+    private void setMaterial(Material material) {
+        this.material = material;
+    }
 
 	public boolean isCarryingLog() {
-		return (this.log != null);
+		return (this.material != null && this.material instanceof Log );
 	}
 
 	public boolean isCarryingBoulder() {
-		return (this.boulder != null);
+		return (this.material != null && this.material instanceof Boulder);
 	}
 
 

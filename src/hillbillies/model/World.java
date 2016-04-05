@@ -325,12 +325,30 @@ public class World {
 		return this.units;
 	}
 
-	/**
-	 * Returns whether or not the given unit can be added to the collection of units of this world.
-	 *
-	 * @param 	  unit
-	 * 			  The unit to be added.
-	 * @return true if the unit can be added; false otherwise.
+    private boolean hasAsUnit(Unit unit) {
+        return this.units.contains(unit);
+    }
+
+    /**
+     * Adds the given unit to the collection of units in this world.
+     *
+     * @param     unit
+     *            The unit to add to the collection of units in this world.
+     */
+    public void addAsUnit(Unit unit) {
+        this.units.add(unit);
+    }
+
+    public void removeAsUnit(Unit unit) {
+        this.units.remove(unit);
+    }
+
+    /**
+     * Returns whether or not the given unit can be added to the collection of units of this world.
+     *
+     * @param 	  unit
+     * 			  The unit to be added.
+     * @return true if the unit can be added; false otherwise.
      */
     private boolean canHaveAsUnit(Unit unit) {
         return this.getUnits().size() < 100;
@@ -358,8 +376,8 @@ public class World {
 		Unit unit = new Unit("Hilly", new int[]{cubeX,cubeY,cubeZ},50, 50, 50, 50, false);
 		this.getCube(cubeX, cubeY, cubeZ).setUnit(unit);
 		unit.setWorld(this);
-		this.addUnit(unit);
-		unit.setAlive(true);
+		this.addAsUnit(unit);
+        unit.setAlive(true);
 		addUnitToFaction(unit);
 		return unit;
 	}
@@ -407,17 +425,6 @@ public class World {
 		}
 		
 	}
-
-    /**
-     * Adds the given unit to the collection of units in this world.
-     *
-     * @param     unit
-     *            The unit to add to the collection of units in this world.
-     */
-    public void addUnit(Unit unit) {
-		this.units.add(unit);
-	}
-
 
     /**
      * Return all boulders that are part of the world.
