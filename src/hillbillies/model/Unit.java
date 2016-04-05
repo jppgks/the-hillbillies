@@ -6,7 +6,9 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
+import hillbillies.model.terrain.Passable;
 import hillbillies.model.terrain.Rock;
+import hillbillies.model.terrain.Solid;
 import hillbillies.model.terrain.Tree;
 import hillbillies.model.terrain.Workshop;
 
@@ -307,7 +309,7 @@ public class Unit {
     public Position position;
 	private int currentExperiencePoints;
 	private int randomAttributePointCounter;
-	private boolean falling;
+	private boolean falling = false;
 	Log log = null;
 	Boulder boulder = null;
     boolean alive = true;
@@ -317,6 +319,12 @@ public class Unit {
 	private boolean isMoving = false;
 
 	private int[] startPosition;
+
+	private int floorsToFall = 0;
+
+	private double fallDistance = 0;
+
+	private double fallingSpeed= 3.0;
 
 	/**
 	 * Return the startPosition of this Unit.
@@ -770,6 +778,24 @@ public class Unit {
 		if(this.hasEnoughExperiencePoints()){
 			this.incrementRandomAtrributeValue();
 		}
+		if(! world.getCube(this.getPosition().getCubeCoordinates()[0], 
+						 this.getPosition().getCubeCoordinates()[1], 
+						 this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes() && this.isFalling() == false
+						 && this.getState() != State.MOVING){
+			this.setStartPosition(new int[]{
+					this.getPosition().getCubeCoordinates()[0],
+					this.getPosition().getCubeCoordinates()[1],
+					this.getPosition().getCubeCoordinates()[2]
+			});
+			this.setFalling(true);
+			this.calculateFloorsTofall();
+            System.out.println(floorsToFall);
+		}
+		if(isFalling()){
+			System.out.println("falling");
+			fall(dt);
+			return;
+		}
 		//When the unit State is MOVING then to this
 		if (this.getState() == State.MOVING)
 			advanceWhileMoving(dt);
@@ -812,6 +838,60 @@ public class Unit {
 
 			}
 		}
+	}
+
+	/**
+	 * 
+	 */
+	private void calculateFloorsTofall() {
+		int[] positionCoordinates = this.getPosition().getCubeCoordinates();
+		while(true){
+			if(positionCoordinates[2]==0)
+				break;
+			if(world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-2).getTerrain() instanceof Solid)
+				break;
+			if((!world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]--).hasSolidNeighboringCubes()))
+				floorsToFall   += 1;
+			else
+				break;
+		}
+		
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void fall(double dt) {
+		if(Math.abs(this.getFalldistance()) >= floorsToFall){
+			this.setPosition(new Position(new int[]{getStartPosition()[0],
+													   getStartPosition()[1],
+													   getStartPosition()[2] - floorsToFall}));
+					setFalldistance(0);
+					setFalling(false);
+					this.setCurrentHitPoints(this.getCurrentHitPoints()-10*floorsToFall);
+						
+		}else{
+			this.setFalldistance(this.getFalldistance() + this.fallingSpeed*dt);
+			this.setPosition(new Position(new double[]{this.getPosition().getDoubleCoordinates()[0],
+												   this.getPosition().getDoubleCoordinates()[1],
+												   this.getPosition().getDoubleCoordinates()[2] - this.fallingSpeed*dt}));
+		}
+	}
+
+	/**
+	 * @param i
+	 */
+	private void setFalldistance(double falldistance) {
+		this.fallDistance  = falldistance;
+		
+	}
+
+	/**
+	 * @return
+	 */
+	private double getFalldistance() {
+		return fallDistance;
 	}
 
 	/**
