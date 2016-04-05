@@ -7,7 +7,9 @@ import hillbillies.model.gameobject.Boulder;
 import hillbillies.model.gameobject.Faction;
 import hillbillies.model.gameobject.Log;
 import hillbillies.model.gameobject.Material;
+import hillbillies.model.terrain.Passable;
 import hillbillies.model.terrain.Rock;
+import hillbillies.model.terrain.Solid;
 import hillbillies.model.terrain.Tree;
 import hillbillies.model.terrain.Workshop;
 
@@ -308,11 +310,40 @@ public class Unit {
     public Position position;
 	private int currentExperiencePoints;
 	private int randomAttributePointCounter;
-	private boolean falling;
+	private boolean falling = false;
     private Material material = null;
     boolean alive = true;
     private int[] cubeWorkOn;
     workActivity workActivity;
+
+	private boolean isMoving = false;
+
+	private int[] startPosition;
+
+	private int floorsToFall = 0;
+
+	private double fallDistance = 0;
+
+	private double fallingSpeed= 3.0;
+
+	/**
+	 * Return the startPosition of this Unit.
+	 */
+	public int[] getStartPosition() {
+		return startPosition;
+	}
+
+	/**
+	 * Set the startPosition of this Unit to the given startPosition.
+	 *
+	 * @param  startPosition
+	 *         The startPosition to set.
+	 * @post   The startPosition of this of this Unit is equal to the given startPosition.
+	 *       | new.getstartPosition() == startPosition
+	 */
+	public void setStartPosition(int[] startPosition) {
+		this.startPosition = startPosition;
+	}
 
 	/**
 	 * Return the workActivity of this Unit.
@@ -750,6 +781,10 @@ public class Unit {
 		if(this.hasEnoughExperiencePoints()){
 			this.incrementRandomAtrributeValue();
 		}
+		if(isFalling()){
+			fall(dt);
+			return;
+		}
 		//When the unit State is MOVING then to this
 		if (this.getState() == State.MOVING)
 			advanceWhileMoving(dt);
@@ -795,6 +830,79 @@ public class Unit {
 	}
 
 	/**
+	 * 
+	 */
+	private void hasToFall() {
+		if(! world.getCube(this.getPosition().getCubeCoordinates()[0], 
+						 this.getPosition().getCubeCoordinates()[1], 
+						 this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes() && this.isFalling() == false
+						 ){
+			this.setStartPosition(new int[]{
+					this.getPosition().getCubeCoordinates()[0],
+					this.getPosition().getCubeCoordinates()[1],
+					this.getPosition().getCubeCoordinates()[2]
+			});
+			this.setState(State.NONE);
+			this.setFalling(true);
+			this.calculateFloorsTofall();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void calculateFloorsTofall() {
+		int[] positionCoordinates = this.getPosition().getCubeCoordinates();
+		floorsToFall =0;
+		while(true){
+			if(positionCoordinates[2]<=0)
+				break;
+			if((!world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]--).hasSolidNeighboringCubes())
+					&& world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]).getTerrain() instanceof Passable)
+				floorsToFall   += 1;
+			else
+				break;
+		}
+		
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void fall(double dt) {
+		if(Math.abs(this.getFalldistance()) >= floorsToFall){
+			this.setPosition(new Position(new int[]{getStartPosition()[0],
+													   getStartPosition()[1],
+													   getStartPosition()[2] - floorsToFall}));
+					setFalldistance(0);
+					setFalling(false);
+					this.setCurrentHitPoints(this.getCurrentHitPoints()-10*floorsToFall);
+						
+		}else{
+			this.setFalldistance(this.getFalldistance() + this.fallingSpeed*dt);
+			this.setPosition(new Position(new double[]{this.getPosition().getDoubleCoordinates()[0],
+												   this.getPosition().getDoubleCoordinates()[1],
+												   this.getPosition().getDoubleCoordinates()[2] - this.fallingSpeed*dt}));
+		}
+	}
+
+	/**
+	 * @param
+	 */
+	private void setFalldistance(double falldistance) {
+		this.fallDistance  = falldistance;
+		
+	}
+
+	/**
+	 * @return
+	 */
+	private double getFalldistance() {
+		return fallDistance;
+	}
+
+	/**
 	 * Returns the current state of this unit.
 	 *
 	 * @return 	  The current state of this unit.
@@ -810,6 +918,7 @@ public class Unit {
 	 * 			  Time interval
 	 */
 	private void advanceWhileMoving(double dt) {
+		
 		if (this.isSprinting()) {
 			this.setCurrentSpeed(this.getUnitWalkSpeed());
 			this.setSprintCounter(this.getSprintCounter()-dt);
@@ -830,6 +939,13 @@ public class Unit {
 		this.setNeighboringCubeToMoveTo(getMovementChange());
 		this.updatePosition(dt);
 		
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean isMoving() {
+		return isMoving ;
 	}
 
 	/**
@@ -1074,25 +1190,25 @@ public class Unit {
 		int dx;
 		int dy;
 		int dz;
-		if(getPosition().getCubeCoordinates()[0]== this.getTargetPosition()[0]){
+		if(startPosition[0]== this.getTargetPosition()[0]){
 			dx = 0;
-		}else if(getPosition().getCubeCoordinates()[0]< this.getTargetPosition()[0]){
+		}else if(startPosition[0]< this.getTargetPosition()[0]){
 			dx = 1;
 		}else{
 			dx = -1;
 		}
 
-		if(getPosition().getCubeCoordinates()[1]== this.getTargetPosition()[1]){
+		if(startPosition[1]== this.getTargetPosition()[1]){
 			dy = 0;
-		}else if(getPosition().getCubeCoordinates()[1]< this.getTargetPosition()[1]){
+		}else if(startPosition[1]< this.getTargetPosition()[1]){
 			dy = 1;
 		}else{
 			dy = -1;
 		}
 
-		if(getPosition().getCubeCoordinates()[2]== this.getTargetPosition()[2]){
+		if(startPosition[2]== this.getTargetPosition()[2]){
 			dz = 0;
-		}else if(getPosition().getCubeCoordinates()[2]< this.getTargetPosition()[2]){
+		}else if(startPosition[2]< this.getTargetPosition()[2]){
 			dz = 1;
 		}else{
 			dz = -1;
@@ -1107,20 +1223,6 @@ public class Unit {
 	 * 		  Difference in time
 	 */
 	private void updatePosition(double dt) {
-        if (Arrays.equals(this.getNeighboringCubeToMoveTo(), new int[]{0,0,0})) {
-            this.setPosition(
-                    new Position(
-                            new int[]{
-                                    this.getPosition().getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
-                                    this.getPosition().getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
-                                    this.getPosition().getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
-                            }
-                    )
-            );
-            this.setState(State.NONE);
-            this.stopSprinting();
-            return;
-        }
 		this.setPosition(
                 new Position(
                         new double[]{
@@ -1137,20 +1239,24 @@ public class Unit {
 						this.getInitialPosition()[2] + (this.getUnitVelocity()[2] * dt)
 				}
 		);
-		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(getInitialPosition()[0]) <= 0 &&
-				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(getInitialPosition()[1]) <= 0 &&
-				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(getInitialPosition()[2]) <= 0) {
+		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(this.getInitialPosition()[0]) <= 0 &&
+				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(this.getInitialPosition()[1]) <= 0 &&
+				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(this.getInitialPosition()[2]) <= 0) {
 			this.setPosition(
                     new Position(
                             new int[]{
-                                    this.getPosition().getCubeCoordinates()[0] + this.getNeighboringCubeToMoveTo()[0],
-                                    this.getPosition().getCubeCoordinates()[1] + this.getNeighboringCubeToMoveTo()[1],
-                                    this.getPosition().getCubeCoordinates()[2] + this.getNeighboringCubeToMoveTo()[2]
+                            		this.getStartPosition()[0] + this.getNeighboringCubeToMoveTo()[0],
+                            		this.getStartPosition()[1] + this.getNeighboringCubeToMoveTo()[1],
+                            		this.getStartPosition()[2] + this.getNeighboringCubeToMoveTo()[2]
                             }
                     )
             );
+			this.hasToFall();
             // TODO: 16/03/16 Increment experience points, except when interrupted.
-			if (Arrays.equals(this.getPosition().getCubeCoordinates(), this.getTargetPosition())) {
+			if (Arrays.equals(new int[]{this.getStartPosition()[0]+this.getNeighboringCubeToMoveTo()[0],
+										this.getStartPosition()[1]+this.getNeighboringCubeToMoveTo()[1],
+										this.getStartPosition()[2]+this.getNeighboringCubeToMoveTo()[2]},
+										this.getTargetPosition())) {
 				this.setState(State.NONE);
 				this.stopSprinting();
 			}
@@ -1165,7 +1271,12 @@ public class Unit {
 					this.rest();
 				} catch (IllegalStateException exc) {
 					
-				}		
+				}
+			setStartPosition(new int[]{
+					this.getPosition().getCubeCoordinates()[0],
+					this.getPosition().getCubeCoordinates()[1],
+					this.getPosition().getCubeCoordinates()[2]
+			});
 			this.setNewTargetPosition(null);
 			this.setInitialPosition(new double[]{0, 0, 0});
 		}
@@ -1404,6 +1515,7 @@ public class Unit {
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.setWorkActivity(workActivity.NONE);
 			this.resetCounter("WORK_COUNTER");
+			this.hasToFall();
 		}
 	}
 
@@ -1698,6 +1810,11 @@ public class Unit {
 				this.getPosition().getCubeCoordinates()[1] + dy,
 				this.getPosition().getCubeCoordinates()[2] + dz
 		});
+		this.setStartPosition(new int[]{
+				this.getPosition().getCubeCoordinates()[0],
+				this.getPosition().getCubeCoordinates()[1],
+				this.getPosition().getCubeCoordinates()[2]
+		});
 		this.setState(State.MOVING);
 	}
 
@@ -1742,6 +1859,11 @@ public class Unit {
 		if(this.getState()== State.MOVING){
 			this.setNewTargetPosition(targetPosition);
 		}else{
+			this.setStartPosition(new int[]{
+					this.getPosition().getCubeCoordinates()[0],
+					this.getPosition().getCubeCoordinates()[1],
+					this.getPosition().getCubeCoordinates()[2]
+			});
 			this.setTargetPosition(targetPosition);
 			this.setState(State.MOVING);
 			this.setRestRequestedWhileMoving(false);
