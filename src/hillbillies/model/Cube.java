@@ -1,15 +1,13 @@
 package hillbillies.model;
 
-import hillbillies.model.gameobject.*;
+import hillbillies.model.gameobject.Boulder;
+import hillbillies.model.gameobject.Log;
+import hillbillies.model.gameobject.Material;
 import hillbillies.model.terrain.*;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-
-import org.hamcrest.core.IsInstanceOf;
-
-import com.sun.swing.internal.plaf.basic.resources.basic;
 
 public class Cube {
 
@@ -35,9 +33,16 @@ public class Cube {
         this.setTerrain(type, true);
         this.setWorld(world);
 	}
-	public Material log;
-	
-	public Material boulder;
+
+	public Material getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(Material material) {
+		this.material = material;
+	}
+
+	public Material material;
     /**
      * Variable registering the terrain type of this cube.
      */
@@ -213,11 +218,11 @@ public class Cube {
         if (ThreadLocalRandom.current().nextInt(2) == 0) {
         	Log log = new Log(this.getPosition(), this.getWorld());
             this.getWorld().addLog(log);
-            this.log = (Material) log;
+            this.setMaterial(log);
         } else {
         	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
             this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
-            this.boulder = (Material) boulder;
+            this.setMaterial(boulder);
         }
     }
 
@@ -316,18 +321,18 @@ public class Cube {
 	 * @return
 	 */
 	public boolean hasLog() {
-		if(log == null)
+		if(this.material == null)
 			return false;
-		return log instanceof Log;
+		return this.material instanceof Log;
 	}
 
 	/**
 	 * @return
 	 */
 	public boolean hasBoulder() {
-		if(boulder == null)
+		if(this.material == null)
 			return false;
-		return boulder instanceof Boulder;
+		return this.material instanceof Boulder;
 	}
 
 	/**
