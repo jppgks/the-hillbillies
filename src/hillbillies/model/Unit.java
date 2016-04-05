@@ -778,21 +778,7 @@ public class Unit {
 		if(this.hasEnoughExperiencePoints()){
 			this.incrementRandomAtrributeValue();
 		}
-		if(! world.getCube(this.getPosition().getCubeCoordinates()[0], 
-						 this.getPosition().getCubeCoordinates()[1], 
-						 this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes() && this.isFalling() == false
-						 && this.getState() != State.MOVING){
-			this.setStartPosition(new int[]{
-					this.getPosition().getCubeCoordinates()[0],
-					this.getPosition().getCubeCoordinates()[1],
-					this.getPosition().getCubeCoordinates()[2]
-			});
-			this.setFalling(true);
-			this.calculateFloorsTofall();
-            System.out.println(floorsToFall);
-		}
 		if(isFalling()){
-			System.out.println("falling");
 			fall(dt);
 			return;
 		}
@@ -843,11 +829,29 @@ public class Unit {
 	/**
 	 * 
 	 */
+	private void hasToFall() {
+		if(! world.getCube(this.getPosition().getCubeCoordinates()[0], 
+						 this.getPosition().getCubeCoordinates()[1], 
+						 this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes() && this.isFalling() == false
+						 ){
+			this.setStartPosition(new int[]{
+					this.getPosition().getCubeCoordinates()[0],
+					this.getPosition().getCubeCoordinates()[1],
+					this.getPosition().getCubeCoordinates()[2]
+			});
+			this.setState(State.NONE);
+			this.setFalling(true);
+			this.calculateFloorsTofall();
+		}
+	}
+
+	/**
+	 * 
+	 */
 	private void calculateFloorsTofall() {
 		int[] positionCoordinates = this.getPosition().getCubeCoordinates();
 		floorsToFall =0;
 		while(true){
-			System.out.println(Arrays.toString(positionCoordinates));
 			if(positionCoordinates[2]<=0)
 				break;
 			if((!world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]--).hasSolidNeighboringCubes())
@@ -911,6 +915,7 @@ public class Unit {
 	 * 			  Time interval
 	 */
 	private void advanceWhileMoving(double dt) {
+		
 		if (this.isSprinting()) {
 			this.setCurrentSpeed(this.getUnitWalkSpeed());
 			this.setSprintCounter(this.getSprintCounter()-dt);
@@ -1243,6 +1248,7 @@ public class Unit {
                             }
                     )
             );
+			this.hasToFall();
             // TODO: 16/03/16 Increment experience points, except when interrupted.
 			if (Arrays.equals(new int[]{this.getStartPosition()[0]+this.getNeighboringCubeToMoveTo()[0],
 										this.getStartPosition()[1]+this.getNeighboringCubeToMoveTo()[1],
@@ -1506,6 +1512,7 @@ public class Unit {
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.setWorkActivity(workActivity.NONE);
 			this.resetCounter("WORK_COUNTER");
+			this.hasToFall();
 		}
 	}
 
