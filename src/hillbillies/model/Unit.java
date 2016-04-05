@@ -641,6 +641,9 @@ public class Unit {
 	 */
 	private void setCurrentHitPoints(double hitPoints) {
 		this.currentHitPoints = hitPoints;
+        if (this.currentHitPoints <= 0) {
+            this.die();
+        }
 	}
 
 	/**
@@ -2271,9 +2274,10 @@ public class Unit {
                             this.getPosition().getCubeCoordinates()[1],
                             this.getPosition().getCubeCoordinates()[2]
                     ).
-                    setMaterial(this.getMaterial()); // TODO: Has to be something like 'setAsMaterial' => one cube can have several materials?
+                    setMaterial(this.getMaterial()); // TODO: Has to be something like 'setAsMaterial' => one cube can have multiple materials?
         }
 		this.getWorld().removeAsUnit(this);
+        this.setAlive(false);
 	}
 
     private Material getMaterial() {
