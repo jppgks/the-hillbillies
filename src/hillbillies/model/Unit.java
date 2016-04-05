@@ -845,12 +845,13 @@ public class Unit {
 	 */
 	private void calculateFloorsTofall() {
 		int[] positionCoordinates = this.getPosition().getCubeCoordinates();
+		floorsToFall =0;
 		while(true){
-			if(positionCoordinates[2]==0)
+			System.out.println(Arrays.toString(positionCoordinates));
+			if(positionCoordinates[2]<=0)
 				break;
-			if(world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]-2).getTerrain() instanceof Solid)
-				break;
-			if((!world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]--).hasSolidNeighboringCubes()))
+			if((!world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]--).hasSolidNeighboringCubes())
+					&& world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]).getTerrain() instanceof Passable)
 				floorsToFall   += 1;
 			else
 				break;
