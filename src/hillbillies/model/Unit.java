@@ -2322,18 +2322,44 @@ public class Unit {
         return workActivity;
     }
 
+    /**
+     * Sets the faction of this unit to the given faction.
+     *
+     * @param faction
+     *            The faction to assign this unit to.
+     * @post      The unit's faction is set to the given faction.
+     *          | new.getFaction() == faction
+     */
     public void setFaction(Faction faction) {
         this.faction = faction;
     }
 
+    /**
+     * Returns the current faction of this unit.
+     *
+     * @return The current faction of this unit.
+     */
 	public Faction getFaction() {
 		return this.faction;
 	}
 
+    /**
+     * Sets the current experience points of this unit to the given experience points.
+     *
+     * @param currentExperiencePoints
+     *            The experience points to set the current experience points to.
+     * @post      The currentExperiencePoints are set to the given experience points.
+     *          | new.getCurrentExperiencePoints() == currentExperiencePoints
+     */
     private void setCurrentExperiencePoints(int currentExperiencePoints) {
         this.currentExperiencePoints = currentExperiencePoints;
     }
 
+    /**
+     * Returns the current experience points of this unit.
+     *
+     * @return The current experience points of this unit.
+     */
 	public int getCurrentExperiencePoints() {
 		return this.currentExperiencePoints;
 	}
