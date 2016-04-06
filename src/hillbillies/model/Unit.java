@@ -2482,6 +2482,7 @@ public class Unit {
                     ).
                     setMaterial(this.getMaterial()); // TODO: Has to be something like 'setAsMaterial' => one cube can have multiple materials?
         }
+        this.getFaction().getMembers().remove(this);
 		this.getWorld().removeAsUnit(this);
         this.setAlive(false);
 	}

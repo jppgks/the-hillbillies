@@ -233,7 +233,7 @@ public class Cube {
      *          false otherwise.
 	 */
 	public boolean hasSolidNeighboringCubes() {
-		for (int i = -1; i < 1; i++) {
+		for (int i = -1; i < 2; i++) {
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
 				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
