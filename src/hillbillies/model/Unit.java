@@ -11,8 +11,14 @@ import hillbillies.model.terrain.Passable;
 import hillbillies.model.terrain.Rock;
 import hillbillies.model.terrain.Tree;
 import hillbillies.model.terrain.Workshop;
+import javafx.util.Pair;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
@@ -966,7 +972,8 @@ public class Unit {
 		}
 		if(!isDefending)
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
-		this.setNeighboringCubeToMoveTo(getMovementChange());
+		
+		this.Walking(new Position(this.getTargetPosition()));
 		this.updatePosition(dt);
 		
 	}
@@ -1756,7 +1763,71 @@ public class Unit {
 				this.startDefaultBehavior();
 			}
 	}
+	private void search(Pair<Position,Integer> tuplePositonToSearch){
+		//List<Cube> validNeighbouringCubes = new ArrayList<>();
+		Position coordinates = tuplePositonToSearch.getKey();
+		ArrayList<Cube> allNeighbouringCubes = this.getWorld().getCube(coordinates.getCubeCoordinates()[0],
+																		   coordinates.getCubeCoordinates()[1], 
+																		   coordinates.getCubeCoordinates()[2]).getNeightbouringCubes();
+		for(Cube cube : allNeighbouringCubes){
+			if(!cube.isSolid() && cube.hasSolidNeighboringCubes() && !this.inQueue(cube.getPosition()) )
+				walkPath.add(new Pair<Position, Integer>(cube.getPosition(),tuplePositonToSearch.getValue()+1));
+		}
+	}
+	private void Walking(Position destination) {
+		Integer n = 0;
+		Position positionToLook = destination;
+		while (this.getPosition() != destination) {
+			walkPath.add(new Pair<Position, Integer>(destination, n));
+			while (inQueue(this.getPosition()) && hasNext(positionToLook)) {
+				Pair<Position, Integer> nextToLook = getNext();
+				search(nextToLook);
+			}
+			if(inQueue(this.getPosition())){
+				Pair<Position, Integer> next = walkPath.peek();
+				if(this.getWorld().getCube(this.getPosition().getCubeCoordinates()[0],
+						this.getPosition().getCubeCoordinates()[1], 
+						this.getPosition().getCubeCoordinates()[2]).isNeighboringCube(next.getKey()))
+					next= walkPath.poll();
+				while(this.getWorld().getCube(this.getPosition().getCubeCoordinates()[0],
+						this.getPosition().getCubeCoordinates()[1], 
+						this.getPosition().getCubeCoordinates()[2]).isNeighboringCube(walkPath.peek().getKey())&&
+						walkPath.peek().getValue() <= next.getValue())
+							next = walkPath.poll();
+				this.setNeighboringCubeToMoveTo(new int[]{next.getKey().getCubeCoordinates()[0]-this.getPosition().getCubeCoordinates()[0], 
+							   next.getKey().getCubeCoordinates()[1]- this.getPosition().getCubeCoordinates()[1], 
+							   next.getKey().getCubeCoordinates()[2]- this.getPosition().getCubeCoordinates()[2]});
+			}else
+				break;
+				
+		}
+	}
+	
+	/**
+	 * @return
+	 */
+	private Pair<Position, Integer> getNext() {
+		
+		return null;
+	}
 
+	/**
+	 * @param positionToLook 
+	 * @return
+	 */
+	private boolean hasNext(Position positionToLook) {
+		return(!walkPath.isEmpty());
+	}
+
+	private PriorityQueue<Pair<Position,Integer>> walkPath = new PriorityQueue(15*15*15);
+	
+	private boolean inQueue(Position position) {
+		for(Pair<Position, Integer> position1 : walkPath){
+			if (position1.getKey() == position)
+				return true;
+		}
+		return true;
+	}
 	// ======================
 	// ==== Facade calls ====
 	// ======================

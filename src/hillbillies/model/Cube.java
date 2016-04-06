@@ -5,6 +5,8 @@ import hillbillies.model.gameobject.Log;
 import hillbillies.model.gameobject.Material;
 import hillbillies.model.terrain.*;
 
+import java.awt.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -255,6 +257,61 @@ public class Cube {
 		}
 		return false;
 	}
+	public boolean hasPassebleNeighboringCubes() {
+		for (int i = -1; i < 2; i++) {
+			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
+					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+				if(!this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]).isSolid())
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
+					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+				if(!this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1]-i,
+						 position.getCubeCoordinates()[2]).isSolid())
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
+					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+				if(!this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]-i).isSolid())
+					return true;
+		}
+		return false;
+	}
+	public boolean isNeighboringCube(Position positionToLook){
+		for (int i = -1; i < 2; i++) {
+			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
+					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2])==
+						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
+						 positionToLook.getCubeCoordinates()[1],
+						 positionToLook.getCubeCoordinates()[2]))
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
+					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1]-i,
+						 position.getCubeCoordinates()[2])==
+						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
+						 positionToLook.getCubeCoordinates()[1],
+						 positionToLook.getCubeCoordinates()[2]))
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
+					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]-i)==
+						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
+						 positionToLook.getCubeCoordinates()[1],
+						 positionToLook.getCubeCoordinates()[2]))
+					return true;
+		}
+		return false;
+	}
 
     /**
      * Places a given unit at this cube.
@@ -310,7 +367,27 @@ public class Cube {
         		this.caveIn();
         }
     }
-    
+    public ArrayList<Cube> getNeightbouringCubes(){
+    	ArrayList<Cube> neightbouringCues = new ArrayList<>();
+		for (int i = -1; i < 2; i++) {
+			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
+					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+					neightbouringCues.add(world.getCube(position.getCubeCoordinates()[0]-i,
+														position.getCubeCoordinates()[1],
+														position.getCubeCoordinates()[2]));
+			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
+					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+					neightbouringCues.add(world.getCube(position.getCubeCoordinates()[0],
+														position.getCubeCoordinates()[1]-1,
+														position.getCubeCoordinates()[2]));
+			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
+					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+					neightbouringCues.add(world.getCube(position.getCubeCoordinates()[0],
+														position.getCubeCoordinates()[1]-1,
+														position.getCubeCoordinates()[2]));
+		}
+		return neightbouringCues;
+    }
     private static final double TIMETOCAVEIN = 0.5;
     
     private boolean hasToCaveIn = false;
