@@ -6,12 +6,12 @@ package hillbillies.model;
  * @author  ...
  * @version 1.0
  */
-public enum workActivity {
-	DIGING,
-	PICKINGUPLOG,
-	PICKINGUPBOULDER,
-	DROPINGLOG,
-	DROPINGBOULDER,
+public enum WorkActivity {
+	DIGGING,
+	PICKING_UP_LOG,
+	PICKING_UP_BOULDER,
+	DROPPING_LOG,
+	DROPPING_BOULDER,
 	WORKING,
 	CHOPPING,
 	NONE
