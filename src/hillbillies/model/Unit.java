@@ -11,21 +11,9 @@ import hillbillies.model.terrain.Passable;
 import hillbillies.model.terrain.Rock;
 import hillbillies.model.terrain.Tree;
 import hillbillies.model.terrain.Workshop;
-import javafx.util.Pair;
 
-import java.util.AbstractMap;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Random;
 
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
@@ -1769,21 +1757,22 @@ public class Unit {
 				this.startDefaultBehavior();
 			}
 	}
-
-	private void search(Position destination,int n) {
-		ArrayList<Cube> allNeighbouringCubes = this.getWorld().getCube(destination.getCubeCoordinates()[0],
-																		destination.getCubeCoordinates()[1], 
-																		destination.getCubeCoordinates()[2]).getNeightbouringCubes();
+	private void search(Position destination,int n){
+		Position coordinates = destination;
+		List<Cube> allNeighbouringCubes = this.getWorld().getCube(coordinates.getCubeCoordinates()[0],
+																		   coordinates.getCubeCoordinates()[1], 
+																		   coordinates.getCubeCoordinates()[2]).getNeighboringCubes();
 		for(Cube cube : allNeighbouringCubes){
 			if(!cube.isSolid() && cube.hasSolidNeighboringCubes() && !this.inQueue(cube.getPosition()) )
 				walkPath.add(new AbstractMap.SimpleEntry<>(cube.getPosition(),n+1));
 		}
-		Position nextToLook = destination;
-			while (inQueue(world.getCube(this.getPosition().getCubeCoordinates()[0], this.getPosition().getCubeCoordinates()[1], this.getPosition().getCubeCoordinates()[02]).getPosition()) && hassNext(nextToLook)) {
+		Map.Entry<Position, Integer> nextToLook = new AbstractMap.SimpleEntry<>(destination,0);
+			walkPath.add(nextToLook);
+			while (inQueue(world.getCube(this.getPosition().getCubeCoordinates()[0], this.getPosition().getCubeCoordinates()[1], this.getPosition().getCubeCoordinates()[02]).getPosition()) && hasNext(nextToLook.getKey())) {
 				nextToLook = getNext();
-				search(nextToLook, n);
+				search(nextToLook.getKey(), nextToLook.getValue());
 			}
-			if(inQueue(world.getCube(this.getPosition().getCubeCoordinates()[0], this.getPosition().getCubeCoordinates()[1], this.getPosition().getCubeCoordinates()[02]).getPosition())){
+			if(inQueue(world.getCube(this.getPosition().getCubeCoordinates()[0], this.getPosition().getCubeCoordinates()[1], this.getPosition().getCubeCoordinates()[2]).getPosition())){
 				System.out.println("oke");
 				Map.Entry<Position, Integer> next = walkPath.peek();
 				if(this.getWorld().getCube(this.getPosition().getCubeCoordinates()[0],
@@ -1799,14 +1788,15 @@ public class Unit {
 							   next.getKey().getCubeCoordinates()[1]- this.getPosition().getCubeCoordinates()[1], 
 							   next.getKey().getCubeCoordinates()[2]- this.getPosition().getCubeCoordinates()[2]});
 				walkPath.clear();
-			}				
+			}else
+				return;
 	}
 	
 	/**
 	 * @return
 	 */
-	private Position getNext() {
-		return walkPath.poll().getKey();
+	private Entry<Position, Integer> getNext() {
+		return walkPath.poll();
 	}
 
 	/**

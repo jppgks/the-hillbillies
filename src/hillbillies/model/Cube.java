@@ -5,9 +5,9 @@ import hillbillies.model.gameobject.Log;
 import hillbillies.model.gameobject.Material;
 import hillbillies.model.terrain.*;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -367,28 +367,66 @@ public class Cube {
         		this.caveIn();
         }
     }
-    public ArrayList<Cube> getNeightbouringCubes(){
-    	ArrayList<Cube> neightbouringCues = new ArrayList<>();
-		for (int i = -1; i < 2; i= i+2) {
-			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
-					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
-					neightbouringCues.add(world.getCube(position.getCubeCoordinates()[0]-i,
-														position.getCubeCoordinates()[1],
-														position.getCubeCoordinates()[2]));
-			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
-					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
-					neightbouringCues.add(world.getCube(position.getCubeCoordinates()[0],
-														position.getCubeCoordinates()[1]-1,
-														position.getCubeCoordinates()[2]));
-			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
-					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
-					neightbouringCues.add(world.getCube(position.getCubeCoordinates()[0],
-														position.getCubeCoordinates()[1]-1,
-														position.getCubeCoordinates()[2]));
+//    public ArrayList<Cube> getNeighboringCubes(){
+//    	ArrayList<Cube> neighboringCubes = new ArrayList<>();
+//		for (int i = -1; i < 2; i= i+2) {
+//			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
+//					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0]-i,
+//														position.getCubeCoordinates()[1],
+//														position.getCubeCoordinates()[2]));
+//			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
+//					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0],
+//														position.getCubeCoordinates()[1]-1,
+//														position.getCubeCoordinates()[2]));
+//			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
+//					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0],
+//														position.getCubeCoordinates()[1]-1,
+//														position.getCubeCoordinates()[2]));
+//		}
+//		//System.out.println(neighboringCubes.size());
+//		return neighboringCubes;
+//    }
+
+	public List<Cube> getNeighboringCubes() {
+        int posX = this.getPosition().getCubeCoordinates()[0];
+        int posY = this.getPosition().getCubeCoordinates()[1];
+        int posZ = this.getPosition().getCubeCoordinates()[2];
+        int[][] allNeighboringCubePositions =  new int[][]{
+                {posX-1, posY, posZ},
+                {posX+1, posY, posZ},
+                {posX, posY-1, posZ},
+                {posX, posY+1, posZ},
+                {posX, posY, posZ-1},
+                {posX, posY, posZ+1}
+        };
+		List<Cube> validNeighboringCubes = new ArrayList<>();
+		for (int[] cubePosition :
+				allNeighboringCubePositions) {
+			if (isValidPosition(cubePosition)) {
+				validNeighboringCubes.add(this.getWorld().getCube(cubePosition[0], cubePosition[1], cubePosition[2]));
+			}
 		}
-		//System.out.println(neightbouringCues.size());
-		return neightbouringCues;
-    }
+		return validNeighboringCubes;
+	}
+
+	/**
+	 * Check whether the given coordinates are valid coordinates for
+	 * any position.
+	 * @param cubeCoordinates The coordinates to check.
+	 * @return True if all coordinates are within range, false otherwise. | result ==
+	 * |	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
+	 * |	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
+	 * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
+	 */
+	private boolean isValidPosition(int[] cubeCoordinates) {
+		return	(cubeCoordinates[0] >= 0) && (cubeCoordinates[0] < this.getWorld().getNbCubesX()) &&
+				(cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
+				(cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
+	}
+
     private static final double TIMETOCAVEIN = 0.5;
     
     private boolean hasToCaveIn = false;

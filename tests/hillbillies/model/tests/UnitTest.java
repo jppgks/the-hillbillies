@@ -35,10 +35,10 @@ public class UnitTest {
 	public void CreateUnit_LegalCase() {
 		assertEquals("TestUnit", this.unit.getName());
 
-		double halfCubeSideLength = this.unit.position.cubeSideLength / 2;
+		double halfCubeSideLength = this.unit.getPosition().cubeSideLength / 2;
 		assertDoublePositionEquals(
 				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3 +halfCubeSideLength,
-				this.unit.position.getDoubleCoordinates()
+				this.unit.getPosition().getDoubleCoordinates()
 		);
 
 		assertEquals(50, this.unit.getWeight(), .01);
@@ -64,7 +64,7 @@ public class UnitTest {
 
 	@Test
 	public void testGetCubeCoordinates() {
-		assertIntegerPositionEquals(1, 2, 3, this.unit.position.getCubeCoordinates());
+		assertIntegerPositionEquals(1, 2, 3, this.unit.getPosition().getCubeCoordinates());
 	}
 
 	// This method is private now.
@@ -76,9 +76,9 @@ public class UnitTest {
 
 	@Test
 	public void testMoveToAdjacent() {
-		double initialX = this.unit.position.getDoubleCoordinates()[0];
-		double initialY = this.unit.position.getDoubleCoordinates()[1];
-		double initialZ = this.unit.position.getDoubleCoordinates()[2];
+		double initialX = this.unit.getPosition().getDoubleCoordinates()[0];
+		double initialY = this.unit.getPosition().getDoubleCoordinates()[1];
+		double initialZ = this.unit.getPosition().getDoubleCoordinates()[2];
 
 		this.unit.moveToAdjacent(0, -1, 0);
 		this.unit.advanceTime(1.34);
@@ -87,7 +87,7 @@ public class UnitTest {
 				initialX,
 				initialY - 1,
 				initialZ,
-				this.unit.position.getDoubleCoordinates());
+				this.unit.getPosition().getDoubleCoordinates());
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class UnitTest {
 			this.unit.advanceTime(1);
 		assertDoublePositionEquals(
 				7.5, 2.5, 3.5,
-				this.unit.position.getDoubleCoordinates()
+				this.unit.getPosition().getDoubleCoordinates()
 		);
 
 		this.unit.advanceTime(1);
@@ -107,7 +107,7 @@ public class UnitTest {
 			this.unit.advanceTime(.1);
 		assertDoublePositionEquals(
 				7.5, 4.5, 3.5,
-				this.unit.position.getDoubleCoordinates()
+				this.unit.getPosition().getDoubleCoordinates()
 		);
 	}
 
