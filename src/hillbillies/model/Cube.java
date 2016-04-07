@@ -369,7 +369,7 @@ public class Cube {
     }
     public ArrayList<Cube> getNeightbouringCubes(){
     	ArrayList<Cube> neightbouringCues = new ArrayList<>();
-		for (int i = -1; i < 2; i++) {
+		for (int i = -1; i < 2; i= i+2) {
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
 					neightbouringCues.add(world.getCube(position.getCubeCoordinates()[0]-i,
@@ -386,6 +386,7 @@ public class Cube {
 														position.getCubeCoordinates()[1]-1,
 														position.getCubeCoordinates()[2]));
 		}
+		//System.out.println(neightbouringCues.size());
 		return neightbouringCues;
     }
     private static final double TIMETOCAVEIN = 0.5;
