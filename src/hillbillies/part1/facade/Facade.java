@@ -14,12 +14,12 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getPosition(Unit unit) throws ModelException {
-		return unit.position.getDoubleCoordinates();
+		return unit.getPosition().getDoubleCoordinates();
 	}
 
 	@Override
 	public int[] getCubeCoordinate(Unit unit) throws ModelException {
-		return unit.position.getCubeCoordinates();
+		return unit.getPosition().getCubeCoordinates();
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class Facade implements IFacade {
 	@Override
 	public void work(Unit unit) throws ModelException {
 		try {
-			unit.work();
+			//unit.work();
 		} catch (IllegalStateException exc){
 			
 		}
