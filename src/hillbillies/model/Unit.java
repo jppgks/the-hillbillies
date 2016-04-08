@@ -34,7 +34,7 @@ import java.util.Random;
  *          | isValidName(this.getName())
  */
 public class Unit {
-	/**
+    /**
 	 * Initialize this new unit with a name, initial position,
 	 * weight, agility, strength, toughness and whether default behavior
 	 * is enabled or not.
@@ -305,6 +305,12 @@ public class Unit {
      * Variable registering ...
      */
     private double fallDistance = 0;
+
+    /**
+     * Variable registering the unit to attack
+     * when default behaviour action is attacking.
+     */
+    private Unit toAttack;
 
 	/**
 	 * Constant reflecting the lowest possible initial value for
@@ -825,6 +831,11 @@ public class Unit {
 		if (this.getState() == State.ATTACKING) {
 			advanceWhileAttacking(dt);
 		}
+        // Complete default attack behaviour.
+        if (this.getToAttack() != null && this.isNeighboringCube(this.getToAttack().getPosition().getCubeCoordinates())) {
+            this.attack(this.getToAttack());
+            this.setToAttack(null);
+        }
 
 		//When NeedToRestCounter is smaller then 0 the unit needs to rest
 		this.setNeedToRestCounter(this.getNeedToRestCounter()-dt);
@@ -968,7 +979,7 @@ public class Unit {
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
 		this.setNeighboringCubeToMoveTo(getMovementChange());
 		this.updatePosition(dt);
-		
+
 	}
 
 	/**
@@ -1722,42 +1733,66 @@ public class Unit {
 		return this.defaultBehaviorEnabled;
 	}
 
-	/**
-	 * @post 	  choose a random state move, conduct a work task, rest until it has full recovered currentHitPoints and currentStaminaPoints
-	 *
-	 * @post  	  if is moving sprinting till it's exhausted
-	 * 			| if(randomBehaviorNumber== 0)
-	 * 			|	then this.startSprinting()
-	 * @throws IllegalStateException
-	 * 			  if the unit is doing a state
-	 *			| if this.getState() != NONE
-	 */
-	private void startDefaultBehavior() throws IllegalStateException{
-		if(this.getState()!= State.NONE)
-			throw new IllegalStateException();
-		int randomBehaviorNumber =new Random().nextInt(5);
-		if(randomBehaviorNumber== 0) {
-			moveTo(new int[]{new Random().nextInt(world.getNbCubesX()), new Random().nextInt(world.getNbCubesY()), new Random().nextInt(world.getNbCubesZ())});
-			this.startSprinting();
-		}
-		else if(randomBehaviorNumber == 1) {
-			int[] cubeToWorkOn = calculateRandomNeighboringCube();
-			try {
-				work(cubeToWorkOn[0],cubeToWorkOn[1],cubeToWorkOn[2]);
-			} catch (IllegalArgumentException exc) {
-				this.startDefaultBehavior();
-			}
-			
-		}
-		else
-			try {
-				rest();
-			} catch (IllegalStateException exc) {
-				this.startDefaultBehavior();
-			}
-	}
+    /**
+     * @throws IllegalStateException if the unit is doing a state
+     *                               | if this.getState() != NONE
+     * @post choose a random state move, conduct a work task, rest until it has full recovered currentHitPoints and currentStaminaPoints
+     * @post if is moving sprinting till it's exhausted
+     * | if(randomBehaviorNumber== 0)
+     * |	then this.startSprinting()
+     */
+    private void startDefaultBehavior() throws IllegalStateException {
+        if (this.getState() != State.NONE)
+            throw new IllegalStateException();
+        int randomBehaviorNumber = new Random().nextInt(6);
+        if (randomBehaviorNumber == 0) {
+            moveTo(new int[]{new Random().nextInt(world.getNbCubesX()), new Random().nextInt(world.getNbCubesY()), new Random().nextInt(world.getNbCubesZ())});
+            this.startSprinting();
+        } else if (randomBehaviorNumber == 1) {
+            int[] cubeToWorkOn = calculateRandomNeighboringCube();
+            try {
+                work(cubeToWorkOn[0], cubeToWorkOn[1], cubeToWorkOn[2]);
+            } catch (IllegalArgumentException exc) {
+                this.startDefaultBehavior();
+            }
 
-	// ======================
+        } else if (randomBehaviorNumber == 2) {
+            Unit randomHostileUnit = this.calculateRandomHostileUnit();
+            try {
+                this.moveTo(randomHostileUnit.getPosition().getCubeCoordinates());
+                this.setToAttack(randomHostileUnit);
+            } catch (IllegalStateException exc) {
+                this.startDefaultBehavior();
+            }
+        } else
+            try {
+                rest();
+            } catch (IllegalStateException exc) {
+                this.startDefaultBehavior();
+            }
+    }
+
+    private Unit calculateRandomHostileUnit() {
+        Unit randomHostileUnit = null;
+        for (Unit unit :
+                this.getWorld().getUnits()) {
+            if (unit.getFaction() != this.getFaction()) {
+                randomHostileUnit = unit;
+                break;
+            }
+        }
+        return randomHostileUnit;
+    }
+
+    private void setToAttack(Unit toAttack) {
+        this.toAttack = toAttack;
+    }
+
+    private Unit getToAttack() {
+        return toAttack;
+    }
+
+    // ======================
 	// ==== Facade calls ====
 	// ======================
 
@@ -2512,5 +2547,4 @@ public class Unit {
 		this.getWorld().removeAsUnit(this);
         this.setAlive(false);
 	}
-
 }
