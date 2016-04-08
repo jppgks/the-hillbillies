@@ -2357,66 +2357,168 @@ public class Unit {
         return workActivity;
     }
 
+    /**
+     * Sets the faction of this unit to the given faction.
+     *
+     * @param faction
+     *            The faction to assign this unit to.
+     * @post      The unit's faction is set to the given faction.
+     *          | new.getFaction() == faction
+     */
     public void setFaction(Faction faction) {
         this.faction = faction;
     }
 
+    /**
+     * Returns the current faction of this unit.
+     *
+     * @return The current faction of this unit.
+     */
 	public Faction getFaction() {
 		return this.faction;
 	}
 
+    /**
+     * Sets the current experience points of this unit to the given experience points.
+     *
+     * @param currentExperiencePoints
+     *            The experience points to set the current experience points to.
+     * @post      The currentExperiencePoints are set to the given experience points.
+     *          | new.getCurrentExperiencePoints() == currentExperiencePoints
+     */
     private void setCurrentExperiencePoints(int currentExperiencePoints) {
         this.currentExperiencePoints = currentExperiencePoints;
     }
 
+    /**
+     * Returns the current experience points of this unit.
+     *
+     * @return The current experience points of this unit.
+     */
 	public int getCurrentExperiencePoints() {
 		return this.currentExperiencePoints;
 	}
 
+    /**
+     * Sets the random attribute counter value to the given value.
+     *
+     * @param randomAttributePointCounter
+     *            The value to set this counter to.
+     * @post      The value of this unit's random attribute point counter is
+     *            equal to the given value.
+     *          | new.getRandomAttributePointCounter() == randomAttributePointCounter
+     */
     private void setRandomAttributePointCounter(int randomAttributePointCounter) {
         this.randomAttributePointCounter = randomAttributePointCounter;
     }
 
+    /**
+     * Returns the value of this unit's random attribute point counter.
+     *
+     * @return    The value of this unit's random attribute point counter.
+     */
     private int getRandomAttributePointCounter() {
 		return this.randomAttributePointCounter;
 	}
 
+    /**
+     * Sets whether or not this unit is currently falling.
+     *
+     * @param falling
+     *            Whether or not this unit is currently falling.
+     * @post      This unit's falling value is set to the given value.
+     *          | new.isFalling() == falling
+     */
     private void setFalling(boolean falling) {
         this.falling = falling;
     }
 
+    /**
+     * Returns whether or not this unit is currently falling.
+     *
+     * @return    Whether or not this unit is currently falling.
+     */
     private boolean isFalling() {
         return this.falling;
     }
 
+    /**
+     * Sets the world of this unit to the given world.
+     *
+     * @param world
+     *            The world to assign to this unit.
+     * @post      This unit's world is equal to the given world.
+     *          | new.getWorld() == world
+     */
     public void setWorld(World world) {
         this.world = world;
     }
 
+    /**
+     * Returns the world of this unit.
+     *
+     * @return    The world of this unit.
+     */
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Set the material this unit is carrying to the given material.
+     *
+     * @param material
+     *            The material this unit will be carrying.
+     * @post      The material this unit is carrying is equal to the given material.
+     *          | new.getMaterial() == material
+     */
     private void setMaterial(Material material) {
         this.material = material;
     }
 
+    /**
+     * Returns the material this unit is carrying.
+     *
+     * @return    The material this unit is carrying.
+     */
     private Material getMaterial() {
         return material;
     }
 
+    /**
+     * Returns whether or not this unit is carrying a log.
+     *
+     * @return    Whether or not this unit is carrying a log.
+     */
     public boolean isCarryingLog() {
         return (this.material != null && this.material instanceof Log );
     }
 
+    /**
+     * Returns whether or not this unit is carrying a boulder.
+     *
+     * @return Whether or not this unit is carrying a boulder.
+     */
     public boolean isCarryingBoulder() {
         return (this.material != null && this.material instanceof Boulder);
     }
 
+    /**
+     * Set whether or not this unit is alive.
+     *
+     * @param alive
+     *            Whether or not this unit is alive.
+     * @post      The value of alive of this unit is equal to the given value.
+     *          | new.isAlive() == alive
+     */
     void setAlive(boolean alive) {
         this.alive = alive;
     }
 
+    /**
+     * Returns whether or not this unit is alive.
+     *
+     * @return    Whether or not this unit is alive.
+     */
     public boolean isAlive() {
         return alive;
     }
@@ -2484,27 +2586,25 @@ public class Unit {
 		return this.getCurrentExperiencePoints() >= 10;
 	}
 
-//	/**
-//	 * @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
-//	 */
-//	public boolean hasSolidNeighboringCube() {
-//		return Arrays.stream(this.getNeighboringCubes()).anyMatch(Cube::isSolid);
-//	}
-//
-//    private Cube[] getNeighboringCubes() {
-//        int posX = this.getPosition().getCubeCoordinates()[0];
-//        int posY = this.getPosition().getCubeCoordinates()[1];
-//        int posZ = this.getPosition().getCubeCoordinates()[2];
-//        return new Cube[]{
-//                this.getWorld().getCube(posX-1, posY, posZ),
-//                this.getWorld().getCube(posX+1, posY, posZ),
-//                this.getWorld().getCube(posX, posY-1, posZ),
-//                this.getWorld().getCube(posX, posY+1, posZ),
-//                this.getWorld().getCube(posX, posY, posZ-1),
-//                this.getWorld().getCube(posX, posY, posZ+1),
-//        };
-//    }
-
+    /**
+     * Lets this unit die.
+     *
+     * @post      This unit's state is set to none.
+     *          | new.getState() == State.NONE
+     * @post      The material this unit is possibly carrying is dropped.
+     *          | if this.getMaterial() != null
+     *          |   then new
+     *          |           .getWorld()
+     *          |           .getCube(this.getPosition().getCubeCoordinates()[0],
+     *          |                    this.getPosition().getCubeCoordinates()[1],
+     *          |                    this.getPosition().getCubeCoordinates()[2])
+     *          |           .getMaterial() == this.getMaterial()
+     * @post      This unit is removed from it's faction and from it's world.
+     *          | ! this.getFaction().getMembers().contains(new)
+     *          |   && ! this.getWorld().getUnits().contains(new)
+     * @post      This unit is dead.
+     *          | new.getAlive() == false
+     */
 	private void die() {
         this.setState(State.NONE);
         if (this.getMaterial() != null) {
