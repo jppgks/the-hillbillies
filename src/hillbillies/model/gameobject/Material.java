@@ -104,19 +104,9 @@ public abstract class Material extends GameObject {
             this.setFalling(true);
             this.calculateFloorsTofall();
             startPosition = this.getPosition();
-            if (world.getCube(this.getPosition().getCubeCoordinates()[0],
+        	world.getCube(this.getPosition().getCubeCoordinates()[0],
             		this.getPosition().getCubeCoordinates()[1], 
-            		this.getPosition().getCubeCoordinates()[2]).hasBoulder()) {
-            	world.getCube(this.getPosition().getCubeCoordinates()[0],
-                		this.getPosition().getCubeCoordinates()[1], 
-                		this.getPosition().getCubeCoordinates()[2]).setMaterial(null);
-			}else if(world.getCube(this.getPosition().getCubeCoordinates()[0],
-            		this.getPosition().getCubeCoordinates()[1], 
-            		this.getPosition().getCubeCoordinates()[2]).hasLog()){
-            	world.getCube(this.getPosition().getCubeCoordinates()[0],
-                		this.getPosition().getCubeCoordinates()[1], 
-                		this.getPosition().getCubeCoordinates()[2]).setMaterial(null);
-			}
+            		this.getPosition().getCubeCoordinates()[2]).setMaterial(null);
         }
         if(this.getFalling()){
         	fall(dt);
@@ -153,11 +143,7 @@ public abstract class Material extends GameObject {
 					if(this instanceof Log)
 					world.getCube(startPosition.getCubeCoordinates()[0],
 							startPosition.getCubeCoordinates()[1],
-							startPosition.getCubeCoordinates()[2] -floorsToFall).getMaterial();
-					else if(this instanceof Boulder)
-					world.getCube(startPosition.getCubeCoordinates()[0],
-							startPosition.getCubeCoordinates()[1],
-							startPosition.getCubeCoordinates()[2] -floorsToFall).getMaterial();
+							startPosition.getCubeCoordinates()[2] -floorsToFall).setMaterial(this);
 					floorsToFall=0;
 					
 		}else

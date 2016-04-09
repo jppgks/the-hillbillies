@@ -210,22 +210,22 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-        }
+//        }
        this.getWorld().calculateConnectedToBorder();
 	}
 
     private void spawnBoulderOrLog() {
-        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+//        if (ThreadLocalRandom.current().nextInt(2) == 0) {
         	Log log = new Log(this.getPosition(), this.getWorld());
             this.getWorld().addLog(log);
             this.setMaterial(log);
-        } else {
-        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
-            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
-            this.setMaterial(boulder);
-        }
+//        } else {
+//        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
+//            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
+//            this.setMaterial(boulder);
+//        }
     }
 
 	/**
@@ -282,7 +282,6 @@ public class Cube {
 	}
 	public boolean isNeighboringCube(Position positionToLook){
 		for (int i = -1; i < 2; i= i+2) {
-			System.out.println(i);
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
 				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,

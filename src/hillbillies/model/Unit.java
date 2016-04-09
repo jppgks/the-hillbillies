@@ -1768,28 +1768,34 @@ public class Unit {
 			if(!cube.isSolid() && cube.hasSolidNeighboringCubes() && !this.inQueue(cube.getPosition()) )
 				walkPath.push(new AbstractMap.SimpleEntry<>(cube.getPosition(),n+1));
 		}
-			while (inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition()) && hasNext(nextToLook.getKey())) {
-				nextToLook = getNext();
-				search(nextToLook.getKey(), nextToLook.getValue());
-			}
-			if(inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition())){
-				while(true){
-					if(this.getWorld().getCube(startPosition[0],
-							   startPosition[1], 
-							   startPosition[2]).isNeighboringCube(walkPath.peek().getKey())){
-						System.out.println("oke");
-						Map.Entry<Position, Integer> cubeToMove = walkPath.pop();
+		//System.out.println(walkPath);
+		while (!inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition()) && hasNext(nextToLook.getKey())) {
+			System.out.println("ja");
+			nextToLook = getNext();
+			search(nextToLook.getKey(), nextToLook.getValue());
+			System.out.println(Arrays.toString(new int[]{nextToLook.getKey().getCubeCoordinates()[0], 
+					nextToLook.getKey().getCubeCoordinates()[1], 
+					nextToLook.getKey().getCubeCoordinates()[2]}));
+		}
+		if(inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition())){
+			while(true){
+				if(this.getWorld().getCube(startPosition[0],
+						   startPosition[1], 
+						   startPosition[2]).isNeighboringCube(walkPath.peek().getKey())){
+					System.out.println("oke");
+					Map.Entry<Position, Integer> cubeToMove = walkPath.pop();
 //						System.out.println(Arrays.toString(new int[]{cubeToMove.getKey().getCubeCoordinates()[0], 
 //								cubeToMove.getKey().getCubeCoordinates()[1], 
 //								cubeToMove.getKey().getCubeCoordinates()[2]}));
-						this.setNeighboringCubeToMoveTo(new int[]{cubeToMove.getKey().getCubeCoordinates()[0]-startPosition[0], 
-								cubeToMove.getKey().getCubeCoordinates()[1]- startPosition[1], 
-								cubeToMove.getKey().getCubeCoordinates()[2]- startPosition[2]});
-						break;
-					}else{
-						walkPath.pop();
-					}
+					this.setNeighboringCubeToMoveTo(new int[]{cubeToMove.getKey().getCubeCoordinates()[0]-startPosition[0], 
+							cubeToMove.getKey().getCubeCoordinates()[1]- startPosition[1], 
+							cubeToMove.getKey().getCubeCoordinates()[2]- startPosition[2]});
+					walkPath.clear();
+					break;
+				}else{
+					walkPath.pop();
 				}
+			}
 //				if(this.getWorld().getCube(startPosition[0],
 //										   startPosition[1], 
 //										   startPosition[2]).isNeighboringCube(next.getKey())
@@ -1801,15 +1807,15 @@ public class Unit {
 //							next = walkPath.pop();
 
 //				
-			}else
-				return;
+		}else
+			return;
 	}
 	
 	/**
 	 * @return
 	 */
 	private Entry<Position, Integer> getNext() {
-		return walkPath.peek();
+		return walkPath.pop();
 	}
 
 	/**
@@ -1990,9 +1996,11 @@ public class Unit {
 		this.setWorkCounter(this.getTimeForWork());
 		if(this.isCarryingLog() && !world.getCube(x,y,z).isSolid()){
 			this.setWorkActivity(WorkActivity.DROPPING_LOG);
+			this.setWorkCounter(0.3);
 		}
 		else if(this.isCarryingBoulder()&& !world.getCube(x,y,z).isSolid()){
 			this.setWorkActivity(WorkActivity.DROPPING_BOULDER);
+			this.setWorkCounter(0.3);
 		}
 		// terrain type is workshop
 		else if (world.getCube(x, y, z).getTerrain() instanceof Workshop) {
@@ -2003,15 +2011,17 @@ public class Unit {
 			
 		}
 		else if(world.getCube(x, y, z).hasLog()) {
-			if(!isCarryingBoulder() && !isCarryingLog())
+			if(!isCarryingBoulder() && !isCarryingLog()){
 				this.setWorkActivity(WorkActivity.PICKING_UP_LOG);
-			else
+				this.setWorkCounter(0.3);
+			}else
 				return;
 		}
 		else if(world.getCube(x, y, z).hasBoulder()){
-			if(!isCarryingBoulder() && !isCarryingLog())
+			if(!isCarryingBoulder() && !isCarryingLog()){
 				this.setWorkActivity(WorkActivity.PICKING_UP_BOULDER);
-			else
+				this.setWorkCounter(0.3);
+			}else
 				return;
 		}
 		// terrain type is wood
