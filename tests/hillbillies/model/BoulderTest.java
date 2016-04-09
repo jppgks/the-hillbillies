@@ -1,4 +1,4 @@
-package hillbillies.model.tests;
+package hillbillies.model;
 
 import org.junit.Before;
 import org.junit.Test;

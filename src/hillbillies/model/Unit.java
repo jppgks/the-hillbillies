@@ -168,11 +168,11 @@ public class Unit {
 	 */
 	private Unit theDefender;
 
-    public boolean isDefending() {
+    private boolean isDefending() {
         return defending;
     }
 
-    public void setDefending(boolean defending) {
+    private void setDefending(boolean defending) {
         this.defending = defending;
     }
 
@@ -253,7 +253,7 @@ public class Unit {
      * Variable registering the current experience points of
      * this unit.
      */
-    private int currentExperiencePoints;
+    private int currentExperiencePoints = 0;
 
     /**
      * Variable registering the amount of attribute points
@@ -2024,9 +2024,12 @@ public class Unit {
      */
 	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
 		// when there is no unit 
-		if (defender == null || defender.getFaction()== this.getFaction()) {
+		if (defender == null) {
 			throw new IllegalArgumentException();
 		}
+        if (defender.getFaction() == this.getFaction()) {
+            throw new IllegalStateException();
+        }
 		// Can't attack units that not on a neighboring cube of the attacker
 		if(!(this.isNeighboringCube(defender.getPosition().getCubeCoordinates())))
 			throw new IllegalStateException();
@@ -2465,7 +2468,7 @@ public class Unit {
      * @post      The material this unit is carrying is equal to the given material.
      *          | new.getMaterial() == material
      */
-    private void setMaterial(Material material) {
+    void setMaterial(Material material) {
         this.material = material;
     }
 
@@ -2534,11 +2537,11 @@ public class Unit {
         return cubeWorkOn;
     }
 
-    public int getFloorsToFall() {
+    private int getFloorsToFall() {
         return floorsToFall;
     }
 
-    public void setFloorsToFall(int floorsToFall) {
+    private void setFloorsToFall(int floorsToFall) {
         this.floorsToFall = floorsToFall;
     }
 
