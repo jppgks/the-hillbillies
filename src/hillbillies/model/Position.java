@@ -1,6 +1,7 @@
 package hillbillies.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import be.kuleuven.cs.som.annotate.Value;
 
@@ -57,10 +58,11 @@ public class Position {
 	 * Variables registering the cube coordinates of this unit position.
 	 */
 	private int cubeZ;
+
 	/**
 	 * Variable registering the length of a cube side in meters.
 	 */
-	public final double cubeSideLength = 1;
+	private static final double CUBE_SIDE_LENGTH = 1;
 
 	/**
 	 * Sets the double coordinates of this position from the given integer coordinates.
@@ -68,9 +70,9 @@ public class Position {
 	 * @param 	  initialPosition
 	 */
 	private void setDoubleCoordinates(int[] initialPosition) {
-		this.doubleX = initialPosition[0] +  cubeSideLength/2;
-		this.doubleY = initialPosition[1] +  cubeSideLength/2;
-		this.doubleZ = initialPosition[2] +  cubeSideLength/2;
+		this.doubleX = initialPosition[0] +  CUBE_SIDE_LENGTH /2;
+		this.doubleY = initialPosition[1] +  CUBE_SIDE_LENGTH /2;
+		this.doubleZ = initialPosition[2] +  CUBE_SIDE_LENGTH /2;
 
 	}
 
@@ -94,6 +96,7 @@ public class Position {
 	 */
 	@Basic
 	@Raw
+    @Immutable
 	public double[] getDoubleCoordinates() {
 		return new double[] {this.doubleX,this.doubleY,this.doubleZ};
 	}
@@ -106,7 +109,19 @@ public class Position {
 	 */
 	@Basic
 	@Raw
+    @Immutable
 	public int[] getCubeCoordinates() {
 		return new int[] {this.cubeX,this.cubeY,this.cubeZ};
+	}
+
+	/**
+	 * Returns this position's cube side length.
+	 *
+	 * @return 	  The position's cube side length.
+	 * 			| result == this.CUBE_SIDE_LENGTH
+     */
+    @Immutable
+    double getCubeSideLength() {
+		return CUBE_SIDE_LENGTH;
 	}
 }
