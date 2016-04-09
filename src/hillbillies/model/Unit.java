@@ -1758,39 +1758,49 @@ public class Unit {
 			}
 	}
 	private void search(Position destination,int n){
+		Map.Entry<Position, Integer> nextToLook = new AbstractMap.SimpleEntry<>(destination,0);
+		walkPath.push(nextToLook);
 		Position coordinates = destination;
 		List<Cube> allNeighbouringCubes = this.getWorld().getCube(coordinates.getCubeCoordinates()[0],
 																		   coordinates.getCubeCoordinates()[1], 
 																		   coordinates.getCubeCoordinates()[2]).getNeighboringCubes();
 		for(Cube cube : allNeighbouringCubes){
 			if(!cube.isSolid() && cube.hasSolidNeighboringCubes() && !this.inQueue(cube.getPosition()) )
-				walkPath.add(new AbstractMap.SimpleEntry<>(cube.getPosition(),n+1));
+				walkPath.push(new AbstractMap.SimpleEntry<>(cube.getPosition(),n+1));
 		}
-		Map.Entry<Position, Integer> nextToLook = new AbstractMap.SimpleEntry<>(destination,0);
-			walkPath.add(nextToLook);
 			while (inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition()) && hasNext(nextToLook.getKey())) {
 				nextToLook = getNext();
 				search(nextToLook.getKey(), nextToLook.getValue());
 			}
 			if(inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition())){
-				System.out.println("oke");
-				Map.Entry<Position, Integer> next = walkPath.peek();
-				if(this.getWorld().getCube(startPosition[0],
-										   startPosition[1], 
-										   startPosition[2]).isNeighboringCube(next.getKey()))
-					next= walkPath.poll();
-				while(this.getWorld().getCube(startPosition[0],
-						startPosition[1], 
-						startPosition[2]).isNeighboringCube(walkPath.peek().getKey())&&
-						walkPath.peek().getValue() <= next.getValue())
-							next = walkPath.poll();
-				System.out.println(Arrays.toString(new int[]{next.getKey().getCubeCoordinates()[0]-startPosition[0], 
-						   next.getKey().getCubeCoordinates()[1]- startPosition[1], 
-						   next.getKey().getCubeCoordinates()[2]- startPosition[2]}));
-				this.setNeighboringCubeToMoveTo(new int[]{next.getKey().getCubeCoordinates()[0]-startPosition[0], 
-							   next.getKey().getCubeCoordinates()[1]- startPosition[1], 
-							   next.getKey().getCubeCoordinates()[2]- startPosition[2]});
-				walkPath.clear();
+				while(true){
+					if(this.getWorld().getCube(startPosition[0],
+							   startPosition[1], 
+							   startPosition[2]).isNeighboringCube(walkPath.peek().getKey())){
+						System.out.println("oke");
+						Map.Entry<Position, Integer> cubeToMove = walkPath.pop();
+//						System.out.println(Arrays.toString(new int[]{cubeToMove.getKey().getCubeCoordinates()[0], 
+//								cubeToMove.getKey().getCubeCoordinates()[1], 
+//								cubeToMove.getKey().getCubeCoordinates()[2]}));
+						this.setNeighboringCubeToMoveTo(new int[]{cubeToMove.getKey().getCubeCoordinates()[0]-startPosition[0], 
+								cubeToMove.getKey().getCubeCoordinates()[1]- startPosition[1], 
+								cubeToMove.getKey().getCubeCoordinates()[2]- startPosition[2]});
+						break;
+					}else{
+						walkPath.pop();
+					}
+				}
+//				if(this.getWorld().getCube(startPosition[0],
+//										   startPosition[1], 
+//										   startPosition[2]).isNeighboringCube(next.getKey())
+//					next= walkPath.pop();
+//				while(this.getWorld().getCube(startPosition[0],
+//						startPosition[1], 
+//						startPosition[2]).isNeighboringCube(walkPath.peek().getKey())&&
+//						walkPath.peek().getValue() <= next.getValue())
+//							next = walkPath.pop();
+
+//				
 			}else
 				return;
 	}
@@ -1812,7 +1822,7 @@ public class Unit {
 				positionToLook.getCubeCoordinates()[2]).hasPassebleNeighboringCubes()&& !inQueue(positionToLook));
 	}
 
-	private Queue<Map.Entry<Position, Integer>> walkPath = new LinkedList();
+	private Stack<Map.Entry<Position, Integer>> walkPath = new Stack<>();
 	
 	private boolean inQueue(Position position) {
 		for(Map.Entry<Position, Integer> position1 : walkPath){

@@ -235,7 +235,7 @@ public class Cube {
      *          false otherwise.
 	 */
 	public boolean hasSolidNeighboringCubes() {
-		for (int i = -1; i < 2; i++) {
+		for (int i = -1; i < 2; i= i+2) {
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
 				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
@@ -258,7 +258,7 @@ public class Cube {
 		return false;
 	}
 	public boolean hasPassebleNeighboringCubes() {
-		for (int i = -1; i < 2; i++) {
+		for (int i = -1; i < 2; i= i+2) {
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
 				if(!this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
@@ -281,7 +281,8 @@ public class Cube {
 		return false;
 	}
 	public boolean isNeighboringCube(Position positionToLook){
-		for (int i = -1; i < 2; i++) {
+		for (int i = -1; i < 2; i= i+2) {
+			System.out.println(i);
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
 				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
