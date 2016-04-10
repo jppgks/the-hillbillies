@@ -428,6 +428,19 @@ public class Unit {
 		return name.matches("[A-Z][a-zA-Z\'\"\\s]+");
 	}
 
+    /**
+     * Set the position of this unit to the given position.
+     *
+     * @param position
+     *            The new position of this unit.
+     * @post      The new position of this unit is equal
+     *            to the given position.
+     *          | new.getPosition() == position
+     */
+    private void setPosition(Position position) {
+        this.position = position;
+    }
+
 	/**
 	 * Initalize the given attribute with the given value if its in range.
 	 *
@@ -883,6 +896,48 @@ public class Unit {
 	}
 
     /**
+     * Returns the world of this unit.
+     *
+     * @return    The world of this unit.
+     */
+    public World getWorld() {
+        return world;
+    }
+
+    /**
+     * Returns the current position of this unit.
+     *
+     * @return    The current position of this unit.
+     */
+    public Position getPosition() {
+        return position;
+    }
+
+    /**
+     * Set the startPosition of this Unit to the given startPosition.
+     *
+     * @param  startPosition
+     *         The startPosition to set.
+     * @post   The startPosition of this of this Unit is equal to the given startPosition.
+     *       | new.getstartPosition() == startPosition
+     */
+    private void setStartPosition(int[] startPosition) {
+        this.startPosition = startPosition;
+    }
+
+    /**
+     * Sets whether or not this unit is currently falling.
+     *
+     * @param falling
+     *            Whether or not this unit is currently falling.
+     * @post      This unit's falling value is set to the given value.
+     *          | new.isFalling() == falling
+     */
+    private void setFalling(boolean falling) {
+        this.falling = falling;
+    }
+
+    /**
 	 * TODO Document: Iwein
 	 */
 	private void calculateFloorsToFall() {
@@ -947,6 +1002,15 @@ public class Unit {
 		return fallDistance;
 	}
 
+    /**
+     * Return the startPosition of this Unit.
+     *
+     * @return     The current startPosition of this unit.
+     */
+    private int[] getStartPosition() {
+        return startPosition;
+    }
+
 	/**
 	 * Returns the current state of this unit.
 	 *
@@ -957,6 +1021,15 @@ public class Unit {
 	public State getState(){
 		return this.state;
 	}
+
+    /**
+     * Returns whether or not this unit is currently falling.
+     *
+     * @return    Whether or not this unit is currently falling.
+     */
+    private boolean isFalling() {
+        return this.falling;
+    }
 
 	/**
 	 * @param dt
@@ -1555,6 +1628,36 @@ public class Unit {
 		}
 	}
 
+    /**
+     * Return the workActivity of this Unit.
+     *
+     * @return    The workActivity of this unit.
+     */
+    private WorkActivity getWorkActivity() {
+        return workActivity;
+    }
+
+    /**
+     * Set the material this unit is carrying to the given material.
+     *
+     * @param material
+     *            The material this unit will be carrying.
+     * @post      The material this unit is carrying is equal to the given material.
+     *          | new.getMaterial() == material
+     */
+    void setMaterial(Material material) {
+        this.material = material;
+    }
+
+    /**
+     * Returns the material this unit is carrying.
+     *
+     * @return    The material this unit is carrying.
+     */
+    private Material getMaterial() {
+        return material;
+    }
+
 	/**
 	 * @param time
 	 *            The time to set this counter to.
@@ -1573,6 +1676,39 @@ public class Unit {
 	private double getWorkCounter() {
 		return this.workCounter;
 	}
+
+    /**
+     * Sets the current experience points of this unit to the given experience points.
+     *
+     * @param currentExperiencePoints
+     *            The experience points to set the current experience points to.
+     * @post      The currentExperiencePoints are set to the given experience points.
+     *          | new.getCurrentExperiencePoints() == currentExperiencePoints
+     */
+    private void setCurrentExperiencePoints(int currentExperiencePoints) {
+        this.currentExperiencePoints = currentExperiencePoints;
+    }
+
+    /**
+     * Returns the current experience points of this unit.
+     *
+     * @return The current experience points of this unit.
+     */
+    public int getCurrentExperiencePoints() {
+        return this.currentExperiencePoints;
+    }
+
+    /**
+     * Set the WorkActivity of this Unit to the given WorkActivity.
+     *
+     * @param  workActivity
+     *         The WorkActivity to set.
+     * @post   The WorkActivity of this of this Unit is equal to the given WorkActivity.
+     *       | new.getWorkActivity() == workActivity
+     */
+    private void setWorkActivity(WorkActivity workActivity) {
+        this.workActivity = workActivity;
+    }
 
 	/**
 	 * @param dt
@@ -1751,7 +1887,10 @@ public class Unit {
             }
 
         } else if (randomBehaviorNumber == 2) {
-            Unit randomHostileUnit = this.calculateRandomHostileUnit();
+            Unit randomHostileUnit = this.calculateHostileUnit();
+            if (randomHostileUnit == null) {
+                this.startDefaultBehavior();
+            }
             try {
                 this.moveTo(randomHostileUnit.getPosition().getCubeCoordinates());
                 this.setToAttack(randomHostileUnit);
@@ -1766,7 +1905,12 @@ public class Unit {
             }
     }
 
-    private Unit calculateRandomHostileUnit() {
+    /**
+     * Returns the first unit not in the same faction as this one.
+     *
+     * @return    The first unit not in the same faction as this one.
+     */
+    private Unit calculateHostileUnit() {
         Unit randomHostileUnit = null;
         for (Unit unit :
                 this.getWorld().getUnits()) {
@@ -1778,10 +1922,31 @@ public class Unit {
         return randomHostileUnit;
     }
 
+    /**
+     * Returns the current faction of this unit.
+     *
+     * @return The current faction of this unit.
+     */
+    public Faction getFaction() {
+        return this.faction;
+    }
+
+    /**
+     * Set the unit to be attacked by this unit to the given unit.
+     *
+     * @param toAttack
+     *            The unit to be attacked.
+     * @post    | new.getToAttack() == toAttack
+     */
     private void setToAttack(Unit toAttack) {
         this.toAttack = toAttack;
     }
 
+    /**
+     * Returns the unit that has to be attacked, null if none is assigned.
+     *
+     * @return    The unit that has to be attacked.
+     */
     private Unit getToAttack() {
         return toAttack;
     }
@@ -1869,6 +2034,21 @@ public class Unit {
 		});
 		this.setState(State.MOVING);
 	}
+
+    /**
+     * Check whether the given coordinates are valid coordinates for
+     * any position.
+     * @param cubeCoordinates The coordinates to check.
+     * @return True if all coordinates are within range, false otherwise. | result ==
+     * |	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
+     * |	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
+     * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
+     */
+    private boolean isValidPosition(int[] cubeCoordinates) {
+        return	(cubeCoordinates[0] >= 0) && (cubeCoordinates[0] < this.getWorld().getNbCubesX()) &&
+                (cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
+                (cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
+    }
 
 	/**
 	 * @post 	  if the unit is not moving do nothing
@@ -1998,6 +2178,15 @@ public class Unit {
 	private float getTimeForWork(){
 		return (float) (500/this.getStrength());
 	}
+
+    /**
+     * Returns whether or not this unit is carrying a log.
+     *
+     * @return    Whether or not this unit is carrying a log.
+     */
+    public boolean isCarryingLog() {
+        return (this.getMaterial() != null && this.getMaterial() instanceof Log );
+    }
 
 	/**
 	 * Attack other unit that occupies the same or a neighbouring cube
@@ -2275,221 +2464,6 @@ public class Unit {
        ==========
      */
 
-	/**
-	 * Check whether the given coordinates are valid coordinates for
-	 * any position.
-	 * @param cubeCoordinates The coordinates to check.
-	 * @return True if all coordinates are within range, false otherwise. | result ==
-	 * |	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
-	 * |	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
-	 * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
-	 */
-	private boolean isValidPosition(int[] cubeCoordinates) {
-		 return	(cubeCoordinates[0] >= 0) && (cubeCoordinates[0] < this.getWorld().getNbCubesX()) &&
-		 	(cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
-		 	(cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
-	}
-
-    /**
-     * Set the position of this unit to the given position.
-     *
-     * @param position
-     *            The new position of this unit.
-     * @post      The new position of this unit is equal
-     *            to the given position.
-     *          | new.getPosition() == position
-     */
-    private void setPosition(Position position) {
-        this.position = position;
-    }
-
-    /**
-     * Returns the current position of this unit.
-     *
-     * @return    The current position of this unit.
-     */
-    public Position getPosition() {
-        return position;
-    }
-
-    /**
-     * Set the startPosition of this Unit to the given startPosition.
-     *
-     * @param  startPosition
-     *         The startPosition to set.
-     * @post   The startPosition of this of this Unit is equal to the given startPosition.
-     *       | new.getstartPosition() == startPosition
-     */
-    private void setStartPosition(int[] startPosition) {
-        this.startPosition = startPosition;
-    }
-
-    /**
-     * Return the startPosition of this Unit.
-     *
-     * @return     The current startPosition of this unit.
-     */
-    private int[] getStartPosition() {
-        return startPosition;
-    }
-
-    /**
-     * Set the WorkActivity of this Unit to the given WorkActivity.
-     *
-     * @param  workActivity
-     *         The WorkActivity to set.
-     * @post   The WorkActivity of this of this Unit is equal to the given WorkActivity.
-     *       | new.getWorkActivity() == workActivity
-     */
-    private void setWorkActivity(WorkActivity workActivity) {
-        this.workActivity = workActivity;
-    }
-
-    /**
-     * Return the workActivity of this Unit.
-     *
-     * @return    The workActivity of this unit.
-     */
-    private WorkActivity getWorkActivity() {
-        return workActivity;
-    }
-
-    /**
-     * Sets the faction of this unit to the given faction.
-     *
-     * @param faction
-     *            The faction to assign this unit to.
-     * @post      The unit's faction is set to the given faction.
-     *          | new.getFaction() == faction
-     */
-    public void setFaction(Faction faction) {
-        this.faction = faction;
-    }
-
-    /**
-     * Returns the current faction of this unit.
-     *
-     * @return The current faction of this unit.
-     */
-	public Faction getFaction() {
-		return this.faction;
-	}
-
-    /**
-     * Sets the current experience points of this unit to the given experience points.
-     *
-     * @param currentExperiencePoints
-     *            The experience points to set the current experience points to.
-     * @post      The currentExperiencePoints are set to the given experience points.
-     *          | new.getCurrentExperiencePoints() == currentExperiencePoints
-     */
-    private void setCurrentExperiencePoints(int currentExperiencePoints) {
-        this.currentExperiencePoints = currentExperiencePoints;
-    }
-
-    /**
-     * Returns the current experience points of this unit.
-     *
-     * @return The current experience points of this unit.
-     */
-	public int getCurrentExperiencePoints() {
-		return this.currentExperiencePoints;
-	}
-
-    /**
-     * Sets the random attribute counter value to the given value.
-     *
-     * @param randomAttributePointCounter
-     *            The value to set this counter to.
-     * @post      The value of this unit's random attribute point counter is
-     *            equal to the given value.
-     *          | new.getRandomAttributePointCounter() == randomAttributePointCounter
-     */
-    private void setRandomAttributePointCounter(int randomAttributePointCounter) {
-        this.randomAttributePointCounter = randomAttributePointCounter;
-    }
-
-    /**
-     * Returns the value of this unit's random attribute point counter.
-     *
-     * @return    The value of this unit's random attribute point counter.
-     */
-    private int getRandomAttributePointCounter() {
-		return this.randomAttributePointCounter;
-	}
-
-    /**
-     * Sets whether or not this unit is currently falling.
-     *
-     * @param falling
-     *            Whether or not this unit is currently falling.
-     * @post      This unit's falling value is set to the given value.
-     *          | new.isFalling() == falling
-     */
-    private void setFalling(boolean falling) {
-        this.falling = falling;
-    }
-
-    /**
-     * Returns whether or not this unit is currently falling.
-     *
-     * @return    Whether or not this unit is currently falling.
-     */
-    private boolean isFalling() {
-        return this.falling;
-    }
-
-    /**
-     * Sets the world of this unit to the given world.
-     *
-     * @param world
-     *            The world to assign to this unit.
-     * @post      This unit's world is equal to the given world.
-     *          | new.getWorld() == world
-     */
-    public void setWorld(World world) {
-        this.world = world;
-    }
-
-    /**
-     * Returns the world of this unit.
-     *
-     * @return    The world of this unit.
-     */
-    public World getWorld() {
-        return world;
-    }
-
-    /**
-     * Set the material this unit is carrying to the given material.
-     *
-     * @param material
-     *            The material this unit will be carrying.
-     * @post      The material this unit is carrying is equal to the given material.
-     *          | new.getMaterial() == material
-     */
-    void setMaterial(Material material) {
-        this.material = material;
-    }
-
-    /**
-     * Returns the material this unit is carrying.
-     *
-     * @return    The material this unit is carrying.
-     */
-    private Material getMaterial() {
-        return material;
-    }
-
-    /**
-     * Returns whether or not this unit is carrying a log.
-     *
-     * @return    Whether or not this unit is carrying a log.
-     */
-    public boolean isCarryingLog() {
-        return (this.getMaterial() != null && this.getMaterial() instanceof Log );
-    }
-
     /**
      * Returns whether or not this unit is carrying a boulder.
      *
@@ -2546,7 +2520,7 @@ public class Unit {
     }
 
 	/**
-	 * increase 
+	 * increase TODO
 	 */
 	private void incrementRandomAtrributeValue() {
 		this.setRandomAttributePointCounter(this.getCurrentExperiencePoints()/10);
@@ -2559,8 +2533,32 @@ public class Unit {
 		}
 		
 	}
+
+    /**
+     * Sets the random attribute counter value to the given value.
+     *
+     * @param randomAttributePointCounter
+     *            The value to set this counter to.
+     * @post      The value of this unit's random attribute point counter is
+     *            equal to the given value.
+     *          | new.getRandomAttributePointCounter() == randomAttributePointCounter
+     */
+    private void setRandomAttributePointCounter(int randomAttributePointCounter) {
+        this.randomAttributePointCounter = randomAttributePointCounter;
+    }
+
+
+    /**
+     * Returns the value of this unit's random attribute point counter.
+     *
+     * @return    The value of this unit's random attribute point counter.
+     */
+    private int getRandomAttributePointCounter() {
+        return this.randomAttributePointCounter;
+    }
 	
 	/**
+     * TODO
 	 * @param atribute
 	 */
 	private void AttributeValueIncrease(int atribute) {
@@ -2584,7 +2582,7 @@ public class Unit {
 	}
 
 	/**
-	 * 
+	 *
 	 *@return if the unit has more or equals to 10 xp. then return true
 	 */
 	private boolean hasEnoughExperiencePoints() {
@@ -2626,4 +2624,28 @@ public class Unit {
 		this.getWorld().removeAsUnit(this);
         this.setAlive(false);
 	}
+
+    /**
+     * Sets the faction of this unit to the given faction.
+     *
+     * @param faction
+     *            The faction to assign this unit to.
+     * @post      The unit's faction is set to the given faction.
+     *          | new.getFaction() == faction
+     */
+    public void setFaction(Faction faction) {
+        this.faction = faction;
+    }
+
+    /**
+     * Sets the world of this unit to the given world.
+     *
+     * @param world
+     *            The world to assign to this unit.
+     * @post      This unit's world is equal to the given world.
+     *          | new.getWorld() == world
+     */
+    public void setWorld(World world) {
+        this.world = world;
+    }
 }
