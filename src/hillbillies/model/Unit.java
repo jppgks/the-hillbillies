@@ -34,7 +34,7 @@ import java.util.Map.Entry;
  *          | isValidName(this.getName())
  */
 public class Unit {
-	/**
+    /**
 	 * Initialize this new unit with a name, initial position,
 	 * weight, agility, strength, toughness and whether default behavior
 	 * is enabled or not.
@@ -168,10 +168,18 @@ public class Unit {
 	 */
 	private Unit theDefender;
 
-	/**
+    private boolean isDefending() {
+        return defending;
+    }
+
+    private void setDefending(boolean defending) {
+        this.defending = defending;
+    }
+
+    /**
 	 * Variable registering whether or not a unit is currently defending.
 	 */
-	private boolean isDefending = false;
+	private boolean defending = false;
 
 	/**
 	 * Variable registering the state of a unit,
@@ -245,7 +253,7 @@ public class Unit {
      * Variable registering the current experience points of
      * this unit.
      */
-    private int currentExperiencePoints;
+    private int currentExperiencePoints = 0;
 
     /**
      * Variable registering the amount of attribute points
@@ -285,12 +293,6 @@ public class Unit {
     private WorkActivity workActivity;
 
     /**
-     * Variable registering whether this unit
-     * is currently moving.
-     */
-    private boolean moving = false;
-
-    /**
      * Variable registering the position of the cube
      * this unit was on before starting to move.
      */
@@ -306,7 +308,11 @@ public class Unit {
      */
     private double fallDistance = 0;
 
-	private boolean somthingAdded = false;
+    /**
+     * Variable registering the unit to attack
+     * when default behaviour action is attacking.
+     */
+    private Unit toAttack;
 
 	/**
 	 * Constant reflecting the lowest possible initial value for
@@ -421,6 +427,19 @@ public class Unit {
 	private static boolean isValidName(String name) {
 		return name.matches("[A-Z][a-zA-Z\'\"\\s]+");
 	}
+
+    /**
+     * Set the position of this unit to the given position.
+     *
+     * @param position
+     *            The new position of this unit.
+     * @post      The new position of this unit is equal
+     *            to the given position.
+     *          | new.getPosition() == position
+     */
+    private void setPosition(Position position) {
+        this.position = position;
+    }
 
 	/**
 	 * Initalize the given attribute with the given value if its in range.
@@ -804,7 +823,7 @@ public class Unit {
 		if(this.hasEnoughExperiencePoints()){
 			this.incrementRandomAtrributeValue();
 		}
-		if(isFalling()){
+		if(this.isFalling()){
 			fall(dt);
 			return;
 		}
@@ -827,6 +846,11 @@ public class Unit {
 		if (this.getState() == State.ATTACKING) {
 			advanceWhileAttacking(dt);
 		}
+        // Complete default attack behaviour.
+        if (this.getToAttack() != null && this.isNeighboringCube(this.getToAttack().getPosition().getCubeCoordinates())) {
+            this.attack(this.getToAttack());
+            this.setToAttack(null);
+        }
 
 		//When NeedToRestCounter is smaller then 0 the unit needs to rest
 		this.setNeedToRestCounter(this.getNeedToRestCounter()-dt);
@@ -856,7 +880,7 @@ public class Unit {
 	 * TODO Document: Iwein
 	 */
 	private void hasToFall() {
-		if(! world.getCube(this.getPosition().getCubeCoordinates()[0], 
+		if(! this.getWorld().getCube(this.getPosition().getCubeCoordinates()[0],
 						 this.getPosition().getCubeCoordinates()[1], 
 						 this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes() && !this.isFalling()
 						 ){
@@ -867,22 +891,64 @@ public class Unit {
 			});
 			this.setState(State.NONE);
 			this.setFalling(true);
-			this.calculateFloorsTofall();
+			this.calculateFloorsToFall();
 		}
 	}
 
-	/**
+    /**
+     * Returns the world of this unit.
+     *
+     * @return    The world of this unit.
+     */
+    public World getWorld() {
+        return world;
+    }
+
+    /**
+     * Returns the current position of this unit.
+     *
+     * @return    The current position of this unit.
+     */
+    public Position getPosition() {
+        return position;
+    }
+
+    /**
+     * Set the startPosition of this Unit to the given startPosition.
+     *
+     * @param  startPosition
+     *         The startPosition to set.
+     * @post   The startPosition of this of this Unit is equal to the given startPosition.
+     *       | new.getstartPosition() == startPosition
+     */
+    private void setStartPosition(int[] startPosition) {
+        this.startPosition = startPosition;
+    }
+
+    /**
+     * Sets whether or not this unit is currently falling.
+     *
+     * @param falling
+     *            Whether or not this unit is currently falling.
+     * @post      This unit's falling value is set to the given value.
+     *          | new.isFalling() == falling
+     */
+    private void setFalling(boolean falling) {
+        this.falling = falling;
+    }
+
+    /**
 	 * TODO Document: Iwein
 	 */
-	private void calculateFloorsTofall() {
+	private void calculateFloorsToFall() {
 		int[] positionCoordinates = this.getPosition().getCubeCoordinates();
-		floorsToFall =0;
+		this.setFloorsToFall(0);
 		while(true){
 			if(positionCoordinates[2]<=0)
 				break;
-			if((!world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]--).hasSolidNeighboringCubes())
-					&& world.getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]).getTerrain() instanceof Passable)
-				floorsToFall   += 1;
+			if((!this.getWorld().getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]--).hasSolidNeighboringCubes())
+					&& this.getWorld().getCube(positionCoordinates[0], positionCoordinates[1], positionCoordinates[2]).getTerrain() instanceof Passable)
+				this.setFloorsToFall(this.getFloorsToFall()+1);
 			else
 				break;
 		}
@@ -894,16 +960,18 @@ public class Unit {
 	 * Performs the fall action.
 	 */
 	private void fall(double dt) {
-		if(Math.abs(this.getFalldistance()) >= floorsToFall){
-			this.setPosition(new Position(new int[]{getStartPosition()[0],
-													   getStartPosition()[1],
-													   getStartPosition()[2] - floorsToFall}));
-					setFalldistance(0);
-					setFalling(false);
-					this.setCurrentHitPoints(this.getCurrentHitPoints()-10*floorsToFall);
+		if(Math.abs(this.getFallDistance()) >= this.getFloorsToFall()){
+			this.setPosition(new Position(new int[]{
+                    this.getStartPosition()[0],
+                    this.getStartPosition()[1],
+                    this.getStartPosition()[2] - this.getFloorsToFall()})
+            );
+					this.setFallDistance(0);
+					this.setFalling(false);
+					this.setCurrentHitPoints(this.getCurrentHitPoints()-10*this.getFloorsToFall());
 						
 		}else{
-			this.setFalldistance(this.getFalldistance() + FALLING_SPEED *dt);
+			this.setFallDistance(this.getFallDistance() + FALLING_SPEED *dt);
 			this.setPosition(new Position(new double[]{this.getPosition().getDoubleCoordinates()[0],
 												   this.getPosition().getDoubleCoordinates()[1],
 												   this.getPosition().getDoubleCoordinates()[2] - FALLING_SPEED *dt}));
@@ -919,7 +987,7 @@ public class Unit {
      * @post	  The current fall distance is equal to the given fall distance.
      * 			| new.fallDistance == falldistance
      */
-	private void setFalldistance(double falldistance) {
+	private void setFallDistance(double falldistance) {
 		this.fallDistance  = falldistance;
 		
 	}
@@ -930,9 +998,18 @@ public class Unit {
 	 * @return    The fall distance for this unit.
      *          | result == this.fallDistance
 	 */
-	private double getFalldistance() {
+	private double getFallDistance() {
 		return fallDistance;
 	}
+
+    /**
+     * Return the startPosition of this Unit.
+     *
+     * @return     The current startPosition of this unit.
+     */
+    private int[] getStartPosition() {
+        return startPosition;
+    }
 
 	/**
 	 * Returns the current state of this unit.
@@ -944,6 +1021,15 @@ public class Unit {
 	public State getState(){
 		return this.state;
 	}
+
+    /**
+     * Returns whether or not this unit is currently falling.
+     *
+     * @return    Whether or not this unit is currently falling.
+     */
+    private boolean isFalling() {
+        return this.falling;
+    }
 
 	/**
 	 * @param dt
@@ -966,7 +1052,7 @@ public class Unit {
 		}else{
 			this.setCurrentSpeed(this.getUnitWalkSpeed());
 		}
-		if(!isDefending)
+		if(!this.isDefending())
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
 		
 		this.walking(this.getWorld().getCube(this.getTargetPosition()[0],
@@ -975,16 +1061,6 @@ public class Unit {
 		if (this.getState()!=State.NONE) {
 			this.updatePosition(dt);
 		}		
-	}
-
-	/**
-	 * Returns whether or not this unit is currently moving.
-     *
-     * @return	  true if the unit is moving, false otherwise.
-     * 			| result == this.moving
-	 */
-	private boolean isMoving() {
-		return moving;
 	}
 
 	/**
@@ -1230,6 +1306,7 @@ public class Unit {
 		int dx;
 		int dy;
 		int dz;
+
 		if(startPosition[0]== postitionToMoveTo.getCubeCoordinates()[0]){
 			dx = 0;
 		}else if(startPosition[0]< postitionToMoveTo.getCubeCoordinates()[0]){
@@ -1237,15 +1314,14 @@ public class Unit {
 		}else{
 			dx = -1;
 		}
-
 		if(startPosition[1]== postitionToMoveTo.getCubeCoordinates()[1]){
 			dy = 0;
 		}else if(startPosition[1]< postitionToMoveTo.getCubeCoordinates()[1]){
+
 			dy = 1;
 		}else{
 			dy = -1;
 		}
-
 		if(startPosition[2]== postitionToMoveTo.getCubeCoordinates()[2]){
 			dz = 0;
 		}else if(startPosition[2]< postitionToMoveTo.getCubeCoordinates()[2]){
@@ -1535,19 +1611,19 @@ public class Unit {
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder((Boulder) this.getMaterial());
 				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
-				world.getBoulders().add((Boulder) this.getMaterial()); // TODO Correct use of set methods
+                this.getWorld().getBoulders().add((Boulder) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
 				this.setState(State.NONE);
 			}if (this.getWorkActivity() == WorkActivity.DROPPING_LOG){
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog((Log) this.getMaterial());
 				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
-				world.getLogs().add((Log) this.getMaterial()); // TODO Correct use of set methods
+                this.getWorld().getLogs().add((Log) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
 				this.setState(State.NONE);
 			}
 			if(this.getWorkActivity()== WorkActivity.DIGGING){
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
+                this.getWorld().getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
 				this.setState(State.NONE);
 			}
 			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
@@ -1556,6 +1632,36 @@ public class Unit {
 			this.hasToFall();
 		}
 	}
+
+    /**
+     * Return the workActivity of this Unit.
+     *
+     * @return    The workActivity of this unit.
+     */
+    private WorkActivity getWorkActivity() {
+        return workActivity;
+    }
+
+    /**
+     * Set the material this unit is carrying to the given material.
+     *
+     * @param material
+     *            The material this unit will be carrying.
+     * @post      The material this unit is carrying is equal to the given material.
+     *          | new.getMaterial() == material
+     */
+    void setMaterial(Material material) {
+        this.material = material;
+    }
+
+    /**
+     * Returns the material this unit is carrying.
+     *
+     * @return    The material this unit is carrying.
+     */
+    private Material getMaterial() {
+        return material;
+    }
 
 	/**
 	 * @param time
@@ -1576,6 +1682,39 @@ public class Unit {
 		return this.workCounter;
 	}
 
+    /**
+     * Sets the current experience points of this unit to the given experience points.
+     *
+     * @param currentExperiencePoints
+     *            The experience points to set the current experience points to.
+     * @post      The currentExperiencePoints are set to the given experience points.
+     *          | new.getCurrentExperiencePoints() == currentExperiencePoints
+     */
+    private void setCurrentExperiencePoints(int currentExperiencePoints) {
+        this.currentExperiencePoints = currentExperiencePoints;
+    }
+
+    /**
+     * Returns the current experience points of this unit.
+     *
+     * @return The current experience points of this unit.
+     */
+    public int getCurrentExperiencePoints() {
+        return this.currentExperiencePoints;
+    }
+
+    /**
+     * Set the WorkActivity of this Unit to the given WorkActivity.
+     *
+     * @param  workActivity
+     *         The WorkActivity to set.
+     * @post   The WorkActivity of this of this Unit is equal to the given WorkActivity.
+     *       | new.getWorkActivity() == workActivity
+     */
+    private void setWorkActivity(WorkActivity workActivity) {
+        this.workActivity = workActivity;
+    }
+
 	/**
 	 * @param dt
 	 * 		  Time interval
@@ -1592,7 +1731,7 @@ public class Unit {
 		if (this.getFightCounter() <= 0) {
 			this.setState(State.NONE);
 			this.getDefender().updateUnitState();
-			this.getDefender().isDefending= false;
+			this.getDefender().setDefending(false);
 			//reset the FIGHT_COUNTER
 			this.resetCounter("FIGHT_COUNTER");
 		}
@@ -1728,41 +1867,6 @@ public class Unit {
 	public Boolean getDefaultBehaviorEnabled(){
 		return this.defaultBehaviorEnabled;
 	}
-
-	/**
-	 * @post 	  choose a random state move, conduct a work task, rest until it has full recovered currentHitPoints and currentStaminaPoints
-	 *
-	 * @post  	  if is moving sprinting till it's exhausted
-	 * 			| if(randomBehaviorNumber== 0)
-	 * 			|	then this.startSprinting()
-	 * @throws IllegalStateException
-	 * 			  if the unit is doing a state
-	 *			| if this.getState() != NONE
-	 */
-	private void startDefaultBehavior() throws IllegalStateException{
-		if(this.getState()!= State.NONE)
-			throw new IllegalStateException();
-		int randomBehaviorNumber =new Random().nextInt(5);
-		if(randomBehaviorNumber== 0) {
-			moveTo(new int[]{new Random().nextInt(world.getNbCubesX()), new Random().nextInt(world.getNbCubesY()), new Random().nextInt(world.getNbCubesZ())});
-			this.startSprinting();
-		}
-		else if(randomBehaviorNumber == 1) {
-			int[] cubeToWorkOn = calculateRandomNeighboringCube();
-			try {
-				work(cubeToWorkOn[0],cubeToWorkOn[1],cubeToWorkOn[2]);
-			} catch (IllegalArgumentException exc) {
-				this.startDefaultBehavior();
-			}
-			
-		}
-		else
-			try {
-				rest();
-			} catch (IllegalStateException exc) {
-				this.startDefaultBehavior();
-			}
-	}
 	private void search(Cube cubeToHandle ,int n){
 		for (Cube cube : this.getWorld().getCube(cubeToHandle.getPosition().getCubeCoordinates()[0],
 													cubeToHandle.getPosition().getCubeCoordinates()[1], 
@@ -1833,7 +1937,95 @@ public class Unit {
 		}
 		return false;
 	}
-	// ======================
+    /**
+     * @throws IllegalStateException if the unit is doing a state
+     *                               | if this.getState() != NONE
+     * @post choose a random state move, conduct a work task, rest until it has full recovered currentHitPoints and currentStaminaPoints
+     * @post if is moving sprinting till it's exhausted
+     * | if(randomBehaviorNumber== 0)
+     * |	then this.startSprinting()
+     */
+    private void startDefaultBehavior() throws IllegalStateException {
+        if (this.getState() != State.NONE)
+            throw new IllegalStateException();
+        int randomBehaviorNumber = new Random().nextInt(6);
+        if (randomBehaviorNumber == 0) {
+            moveTo(new int[]{new Random().nextInt(this.getWorld().getNbCubesX()), new Random().nextInt(this.getWorld().getNbCubesY()), new Random().nextInt(this.getWorld().getNbCubesZ())});
+            this.startSprinting();
+        } else if (randomBehaviorNumber == 1) {
+            int[] cubeToWorkOn = calculateRandomNeighboringCube();
+            try {
+                work(cubeToWorkOn[0], cubeToWorkOn[1], cubeToWorkOn[2]);
+            } catch (IllegalArgumentException exc) {
+                this.startDefaultBehavior();
+            }
+
+        } else if (randomBehaviorNumber == 2) {
+            Unit randomHostileUnit = this.calculateHostileUnit();
+            if (randomHostileUnit == null) {
+                this.startDefaultBehavior();
+            }
+            try {
+                this.moveTo(randomHostileUnit.getPosition().getCubeCoordinates());
+                this.setToAttack(randomHostileUnit);
+            } catch (IllegalStateException exc) {
+                this.startDefaultBehavior();
+            }
+        } else
+            try {
+                rest();
+            } catch (IllegalStateException exc) {
+                this.startDefaultBehavior();
+            }
+    }
+
+    /**
+     * Returns the first unit not in the same faction as this one.
+     *
+     * @return    The first unit not in the same faction as this one.
+     */
+    private Unit calculateHostileUnit() {
+        Unit randomHostileUnit = null;
+        for (Unit unit :
+                this.getWorld().getUnits()) {
+            if (unit.getFaction() != this.getFaction()) {
+                randomHostileUnit = unit;
+                break;
+            }
+        }
+        return randomHostileUnit;
+    }
+
+    /**
+     * Returns the current faction of this unit.
+     *
+     * @return The current faction of this unit.
+     */
+    public Faction getFaction() {
+        return this.faction;
+    }
+
+    /**
+     * Set the unit to be attacked by this unit to the given unit.
+     *
+     * @param toAttack
+     *            The unit to be attacked.
+     * @post    | new.getToAttack() == toAttack
+     */
+    private void setToAttack(Unit toAttack) {
+        this.toAttack = toAttack;
+    }
+
+    /**
+     * Returns the unit that has to be attacked, null if none is assigned.
+     *
+     * @return    The unit that has to be attacked.
+     */
+    private Unit getToAttack() {
+        return toAttack;
+    }
+
+    // ======================
 	// ==== Facade calls ====
 	// ======================
 
@@ -1920,6 +2112,21 @@ public class Unit {
 		this.setState(State.MOVING);
 	}
 
+    /**
+     * Check whether the given coordinates are valid coordinates for
+     * any position.
+     * @param cubeCoordinates The coordinates to check.
+     * @return True if all coordinates are within range, false otherwise. | result ==
+     * |	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
+     * |	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
+     * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
+     */
+    private boolean isValidPosition(int[] cubeCoordinates) {
+        return	(cubeCoordinates[0] >= 0) && (cubeCoordinates[0] < this.getWorld().getNbCubesX()) &&
+                (cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
+                (cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
+    }
+
 	/**
 	 * @post 	  if the unit is not moving do nothing
 	 *
@@ -1996,30 +2203,30 @@ public class Unit {
 			throw new IllegalArgumentException();
 		}
 		this.setWorkCounter(this.getTimeForWork());
-		if(this.isCarryingLog() && !world.getCube(x,y,z).isSolid()){
+		if(this.isCarryingLog() && !this.getWorld().getCube(x,y,z).isSolid()){
 			this.setWorkActivity(WorkActivity.DROPPING_LOG);
 			this.setWorkCounter(0.3);
 		}
-		else if(this.isCarryingBoulder()&& !world.getCube(x,y,z).isSolid()){
+		else if(this.isCarryingBoulder()&& !this.getWorld().getCube(x,y,z).isSolid()){
 			this.setWorkActivity(WorkActivity.DROPPING_BOULDER);
 			this.setWorkCounter(0.3);
 		}
 		// terrain type is workshop
-		else if (world.getCube(x, y, z).getTerrain() instanceof Workshop) {
-			if(world.getCube(x, y, z).hasBoulder() && world.getCube(x, y, z).hasLog())
+		else if (this.getWorld().getCube(x, y, z).getTerrain() instanceof Workshop) {
+			if(this.getWorld().getCube(x, y, z).hasBoulder() && this.getWorld().getCube(x, y, z).hasLog())
 				this.setWorkActivity(WorkActivity.WORKING);
 			else
 				return;
 			
 		}
-		else if(world.getCube(x, y, z).hasLog()) {
+		else if(this.getWorld().getCube(x, y, z).hasLog()) {
 			if(!isCarryingBoulder() && !isCarryingLog()){
 				this.setWorkActivity(WorkActivity.PICKING_UP_LOG);
 				this.setWorkCounter(0.3);
 			}else
 				return;
 		}
-		else if(world.getCube(x, y, z).hasBoulder()){
+		else if(this.getWorld().getCube(x, y, z).hasBoulder()){
 			if(!isCarryingBoulder() && !isCarryingLog()){
 				this.setWorkActivity(WorkActivity.PICKING_UP_BOULDER);
 				this.setWorkCounter(0.3);
@@ -2027,14 +2234,14 @@ public class Unit {
 				return;
 		}
 		// terrain type is wood
-		else if (world.getCube(x, y, z).getTerrain() instanceof Tree){
+		else if (this.getWorld().getCube(x, y, z).getTerrain() instanceof Tree){
 			if(!isCarryingBoulder() && !isCarryingLog())
 				setWorkActivity(WorkActivity.DIGGING);
 			else 
 				return;
 		}
 		// terrain type is rock
-		else if (world.getCube(x, y, z).getTerrain() instanceof Rock){
+		else if (this.getWorld().getCube(x, y, z).getTerrain() instanceof Rock){
 			if(!isCarryingBoulder() && !isCarryingLog())
 				this.setWorkActivity(WorkActivity.DIGGING);
 			else
@@ -2055,6 +2262,15 @@ public class Unit {
 	private float getTimeForWork(){
 		return (float) (500/this.getStrength());
 	}
+
+    /**
+     * Returns whether or not this unit is carrying a log.
+     *
+     * @return    Whether or not this unit is carrying a log.
+     */
+    public boolean isCarryingLog() {
+        return (this.getMaterial() != null && this.getMaterial() instanceof Log );
+    }
 
 	/**
 	 * Attack other unit that occupies the same or a neighbouring cube
@@ -2081,9 +2297,12 @@ public class Unit {
      */
 	public void attack(Unit defender) throws IllegalStateException, IllegalArgumentException {
 		// when there is no unit 
-		if (defender == null || defender.getFaction()== this.getFaction()) {
+		if (defender == null) {
 			throw new IllegalArgumentException();
 		}
+        if (defender.getFaction() == this.getFaction()) {
+            throw new IllegalStateException();
+        }
 		// Can't attack units that not on a neighboring cube of the attacker
 		if(!(this.isNeighboringCube(defender.getPosition().getCubeCoordinates())))
 			throw new IllegalStateException();
@@ -2176,8 +2395,8 @@ public class Unit {
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - this.damge(attackerStrength)
 	 */
 	private void defend(double attackerAgility, double attackerStrength,Unit attacker) {
-		this.isDefending = true;
-		if (!world.getCube(this.getPosition().getCubeCoordinates()[0],
+		this.setDefending(true);
+		if (!this.getWorld().getCube(this.getPosition().getCubeCoordinates()[0],
 				this.getPosition().getCubeCoordinates()[1],
 				this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes()) {
 			double dodge = Math.random();
@@ -2225,7 +2444,7 @@ public class Unit {
 	 */
 	private void dodge() {
         int[] randomNeighboringCube = calculateRandomNeighboringCube();
-        while (! this.isValidPosition(randomNeighboringCube) && !(world.getCube(randomNeighboringCube[0],
+        while (! this.isValidPosition(randomNeighboringCube) && !(this.getWorld().getCube(randomNeighboringCube[0],
 																		  randomNeighboringCube[1],
 																		  randomNeighboringCube[2]).isSolid())){
             randomNeighboringCube = calculateRandomNeighboringCube();
@@ -2329,145 +2548,32 @@ public class Unit {
        ==========
      */
 
-	/**
-	 * Check whether the given coordinates are valid coordinates for
-	 * any position.
-	 * @param cubeCoordinates The coordinates to check.
-	 * @return True if all coordinates are within range, false otherwise. | result ==
-	 * |	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
-	 * |	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
-	 * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
-	 */
-	private boolean isValidPosition(int[] cubeCoordinates) {
-		 return	(cubeCoordinates[0] >= 0) && (cubeCoordinates[0] < this.getWorld().getNbCubesX()) &&
-		 	(cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
-		 	(cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
-	}
-
     /**
-     * Set the position of this unit to the given position.
+     * Returns whether or not this unit is carrying a boulder.
      *
-     * @param position
-     *            The new position of this unit.
-     * @post      The new position of this unit is equal
-     *            to the given position.
-     *          | new.getPosition() == position
+     * @return Whether or not this unit is carrying a boulder.
      */
-    private void setPosition(Position position) {
-        this.position = position;
-    }
-
-    /**
-     * Returns the current position of this unit.
-     *
-     * @return    The current position of this unit.
-     */
-    public Position getPosition() {
-        return position;
-    }
-
-    /**
-     * Set the startPosition of this Unit to the given startPosition.
-     *
-     * @param  startPosition
-     *         The startPosition to set.
-     * @post   The startPosition of this of this Unit is equal to the given startPosition.
-     *       | new.getstartPosition() == startPosition
-     */
-    private void setStartPosition(int[] startPosition) {
-        this.startPosition = startPosition;
-    }
-
-    /**
-     * Return the startPosition of this Unit.
-     *
-     * @return     The current startPosition of this unit.
-     */
-    private int[] getStartPosition() {
-        return startPosition;
-    }
-
-    /**
-     * Set the WorkActivity of this Unit to the given WorkActivity.
-     *
-     * @param  workActivity
-     *         The WorkActivity to set.
-     * @post   The WorkActivity of this of this Unit is equal to the given WorkActivity.
-     *       | new.getWorkActivity() == workActivity
-     */
-    private void setWorkActivity(WorkActivity workActivity) {
-        this.workActivity = workActivity;
-    }
-
-    /**
-     * Return the workActivity of this Unit.
-     *
-     * @return    The workActivity of this unit.
-     */
-    private WorkActivity getWorkActivity() {
-        return workActivity;
-    }
-
-    public void setFaction(Faction faction) {
-        this.faction = faction;
-    }
-
-	public Faction getFaction() {
-		return this.faction;
-	}
-
-    private void setCurrentExperiencePoints(int currentExperiencePoints) {
-        this.currentExperiencePoints = currentExperiencePoints;
-    }
-
-	public int getCurrentExperiencePoints() {
-		return this.currentExperiencePoints;
-	}
-
-    private void setRandomAttributePointCounter(int randomAttributePointCounter) {
-        this.randomAttributePointCounter = randomAttributePointCounter;
-    }
-
-    private int getRandomAttributePointCounter() {
-		return this.randomAttributePointCounter;
-	}
-
-    private void setFalling(boolean falling) {
-        this.falling = falling;
-    }
-
-    private boolean isFalling() {
-        return this.falling;
-    }
-
-    public void setWorld(World world) {
-        this.world = world;
-    }
-
-    public World getWorld() {
-        return world;
-    }
-
-    private void setMaterial(Material material) {
-        this.material = material;
-    }
-
-    private Material getMaterial() {
-        return material;
-    }
-
-    public boolean isCarryingLog() {
-        return (this.material != null && this.material instanceof Log );
-    }
-
     public boolean isCarryingBoulder() {
-        return (this.material != null && this.material instanceof Boulder);
+        return (this.getMaterial() != null && this.getMaterial() instanceof Boulder);
     }
 
+    /**
+     * Set whether or not this unit is alive.
+     *
+     * @param alive
+     *            Whether or not this unit is alive.
+     * @post      The value of alive of this unit is equal to the given value.
+     *          | new.isAlive() == alive
+     */
     void setAlive(boolean alive) {
         this.alive = alive;
     }
 
+    /**
+     * Returns whether or not this unit is alive.
+     *
+     * @return    Whether or not this unit is alive.
+     */
     public boolean isAlive() {
         return alive;
     }
@@ -2489,8 +2595,16 @@ public class Unit {
         return cubeWorkOn;
     }
 
+    private int getFloorsToFall() {
+        return floorsToFall;
+    }
+
+    private void setFloorsToFall(int floorsToFall) {
+        this.floorsToFall = floorsToFall;
+    }
+
 	/**
-	 * increase 
+	 * increase TODO
 	 */
 	private void incrementRandomAtrributeValue() {
 		this.setRandomAttributePointCounter(this.getCurrentExperiencePoints()/10);
@@ -2503,8 +2617,32 @@ public class Unit {
 		}
 		
 	}
+
+    /**
+     * Sets the random attribute counter value to the given value.
+     *
+     * @param randomAttributePointCounter
+     *            The value to set this counter to.
+     * @post      The value of this unit's random attribute point counter is
+     *            equal to the given value.
+     *          | new.getRandomAttributePointCounter() == randomAttributePointCounter
+     */
+    private void setRandomAttributePointCounter(int randomAttributePointCounter) {
+        this.randomAttributePointCounter = randomAttributePointCounter;
+    }
+
+
+    /**
+     * Returns the value of this unit's random attribute point counter.
+     *
+     * @return    The value of this unit's random attribute point counter.
+     */
+    private int getRandomAttributePointCounter() {
+        return this.randomAttributePointCounter;
+    }
 	
 	/**
+     * TODO
 	 * @param atribute
 	 */
 	private void AttributeValueIncrease(int atribute) {
@@ -2528,13 +2666,32 @@ public class Unit {
 	}
 
 	/**
-	 * 
+	 *
 	 *@return if the unit has more or equals to 10 xp. then return true
 	 */
 	private boolean hasEnoughExperiencePoints() {
 		return this.getCurrentExperiencePoints() >= 10;
 	}
 
+    /**
+     * Lets this unit die.
+     *
+     * @post      This unit's state is set to none.
+     *          | new.getState() == State.NONE
+     * @post      The material this unit is possibly carrying is dropped.
+     *          | if this.getMaterial() != null
+     *          |   then new
+     *          |           .getWorld()
+     *          |           .getCube(this.getPosition().getCubeCoordinates()[0],
+     *          |                    this.getPosition().getCubeCoordinates()[1],
+     *          |                    this.getPosition().getCubeCoordinates()[2])
+     *          |           .getMaterial() == this.getMaterial()
+     * @post      This unit is removed from it's faction and from it's world.
+     *          | ! this.getFaction().getMembers().contains(new)
+     *          |   && ! this.getWorld().getUnits().contains(new)
+     * @post      This unit is dead.
+     *          | new.getAlive() == false
+     */
 	private void die() {
         this.setState(State.NONE);
         if (this.getMaterial() != null) {
@@ -2563,4 +2720,27 @@ public class Unit {
         this.setAlive(false);
 	}
 
+    /**
+     * Sets the faction of this unit to the given faction.
+     *
+     * @param faction
+     *            The faction to assign this unit to.
+     * @post      The unit's faction is set to the given faction.
+     *          | new.getFaction() == faction
+     */
+    public void setFaction(Faction faction) {
+        this.faction = faction;
+    }
+
+    /**
+     * Sets the world of this unit to the given world.
+     *
+     * @param world
+     *            The world to assign to this unit.
+     * @post      This unit's world is equal to the given world.
+     *          | new.getWorld() == world
+     */
+    public void setWorld(World world) {
+        this.world = world;
+    }
 }

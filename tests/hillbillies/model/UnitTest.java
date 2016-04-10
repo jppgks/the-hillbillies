@@ -1,8 +1,9 @@
-package hillbillies.model.tests;
+package hillbillies.model;
 
-import hillbillies.model.Position;
-import hillbillies.model.State;
-import hillbillies.model.Unit;
+import hillbillies.model.gameobject.Boulder;
+import hillbillies.model.gameobject.Faction;
+import hillbillies.model.gameobject.Log;
+import hillbillies.part2.listener.DefaultTerrainChangeListener;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,18 +25,24 @@ public class UnitTest {
 	private Unit unit;
 	private Class unitClass;
 	private Method method;
+    private World world;
 
 	@Before
 	public void setUp() {
 		this.unit = new Unit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
-		unitClass = Unit.class;
+		this.unitClass = Unit.class;
+        int[][][] types = new int[4][4][4];
+        types[1][1][0] = 1;
+        types[1][1][1] = 2;
+        types[1][2][3] = 3;
+        this.world = new World(types, new DefaultTerrainChangeListener());
+        this.unit.setWorld(world);
 	}
 
 	@Test
 	public void CreateUnit_LegalCase() {
 		assertEquals("TestUnit", this.unit.getName());
-
-		double halfCubeSideLength = this.unit.getPosition().cubeSideLength / 2;
+		double halfCubeSideLength = this.unit.getPosition().getCubeSideLength() / 2;
 		assertDoublePositionEquals(
 				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3 +halfCubeSideLength,
 				this.unit.getPosition().getDoubleCoordinates()
@@ -50,29 +57,11 @@ public class UnitTest {
 		assertEquals(this.unit.getMaxHitPoints(),this.unit.getCurrentHitPoints(), .01);
 		assertEquals(this.unit.getMaxStaminaPoints(), this.unit.getCurrentStaminaPoints(), .01);
 	}
-	
-	@Test
-	public void CreatePosition_LegalCase() {
-		Position testPosition = new Position(new int[] {1, 2, 3});
-		assertDoublePositionEquals(1.5, 2.5, 3.5, testPosition.getDoubleCoordinates());
-	}
-
-	@Test
-	public void CreatePosition_IllegalCase() {
-		Position testPosition = new Position(new int[] {1, 2, 50});
-	}
 
 	@Test
 	public void testGetCubeCoordinates() {
 		assertIntegerPositionEquals(1, 2, 3, this.unit.getPosition().getCubeCoordinates());
 	}
-
-	// This method is private now.
-//	@Test
-//	public void SetCubeCoordinates_LegalCase() {
-//		unit.position.setOccupyingCubeCoordinates(new int[]{6, 7, 8});
-//		assertIntegerPositionEquals(6, 7, 8, unit.position.getCubeCoordinates());
-//	}
 
 	@Test
 	public void testMoveToAdjacent() {
@@ -149,20 +138,23 @@ public class UnitTest {
 			method = unitClass.getDeclaredMethod("setState", State.class);
 			method.setAccessible(true);
 			method.invoke(this.unit, State.NONE);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		try {
-			//unit.work();
-			fail();
-		} catch (Exception exc) {
+        try {
+			unit.work(this.unit.getPosition().getCubeCoordinates()[0], this.unit.getPosition().getCubeCoordinates()[1], this.unit.getPosition().getCubeCoordinates()[2]);
+		} catch (Exception ignored) {
 
 		}
-		assertEquals(State.WORKING, unit.getState());
+        if (this.unit.getWorld()
+                .getCube(
+                        this.unit.getPosition().getCubeCoordinates()[0],
+                        this.unit.getPosition().getCubeCoordinates()[1],
+                        this.unit.getPosition().getCubeCoordinates()[2])
+                .isSolid()) {
+            assertEquals(State.WORKING, unit.getState());
+        }
+		assertEquals(State.NONE, unit.getState());
 	}
 
 	@Test
@@ -179,47 +171,16 @@ public class UnitTest {
 			e.printStackTrace();
 		}
 		try {
-			//unit.work();
-            fail();
+            unit.work(
+                    this.unit.getPosition().getCubeCoordinates()[0],
+                    this.unit.getPosition().getCubeCoordinates()[1],
+                    this.unit.getPosition().getCubeCoordinates()[2]
+            );
 		} catch (Exception exc) {
 
 		}
 		assertEquals(State.RESTING, unit.getState());
 	}
-	
-	// this is private now
-//	/**
-//	 * Test method for {@link hillbillies.model.Unit#getTimeForWork()}.
-//	 */
-//	@Test
-//	public void testGetTimeForWork() {
-//		assertEquals(500/unit.getStrength(), (double)unit.getTimeForWork(),1);
-//	}
-//	/**
-//	 * Test method for {@link hillbillies.model.Unit#rest()}.
-//	 */
-//	@Test
-//	public void testWork_Doing_Nothing() {
-//		unit.setState(State.NONE);
-//		try {
-//			unit.work();
-//		} catch (Exception exc) {
-//
-//		}
-//		assertEquals(State.WORKING, unit.getState());
-//		assertEquals(500/unit.getStrength(),unit.getTimeForWork(),1);
-//	}
-
-//	@Test
-//	public void testWork_Doing_Activity() {
-//		unit.setState(State.RESTING);
-//		try {
-//			unit.work();
-//		} catch (Exception exc) {
-//
-//		}
-//		assertEquals(State.RESTING, unit.getState());
-//	}
 
 	@Test
 	public void testRest_Full_Hit_Stamina_Points() {
@@ -230,74 +191,7 @@ public class UnitTest {
 		}
 		assertEquals(State.NONE, unit.getState());
 	}
-//	/**
-//	 * Test method for {@link hillbillies.model.Unit#rest()}.
-//	 */
-//	@Test
-//	public void testRest_NotFull_Hit_Stamina_Points() {
-//		unit.setCurrentHitPoints(10);
-//		unit.rest();
-//		assertEquals(State.RESTING, unit.getState());
-//	}
-//	/**
-//	 * Test method for {@link hillbillies.model.Unit#rest()}.
-//	 */
-//	@Test
-//	public void testRest_Doing_Other_Activity() {
-//		unit.setCurrentHitPoints(10);
-//		unit.setState(State.MOVING);
-//		try {
-//			unit.rest();
-//		} catch (IllegalStateException exc) {
-//			
-//		}
-//		assertEquals(State.MOVING, unit.getState());
-//	}
-//	/**
-//	 * Test method for {@link hillbillies.model.Unit#getRegenHitPoints()}.
-//	 */
-//	@Test
-//	public void testGetRegenHitPoints() {
-//		assertEquals(this.unit.getToughness()/200, this.unit.getRegenHitPoints());
-//	}
-//
-//	/**
-//	 * Test method for {@link hillbillies.model.Unit#getRegenStamina()}.
-//	 */
-//	@Test
-//	public void testGetRegenStamina() {
-//		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
-//	}
-	
-	// These methods are private now.
-//	@Test
-//	public void testGetRegenHitPoints() {
-//		assertEquals(this.unit.getToughness()/200, this.unit.getRegenHitPoints());
-//	}
-//
-//	@Test
-//	public void testGetRegenStamina() {
-//		assertEquals(this.unit.getToughness()/100, this.unit.getRegenStamina());
-//	}
 
-//	@Test
-//	public void testRest_NotFull_Hit_Stamina_Points() {
-//		unit.setCurrentHitPoints(10);
-//		unit.rest();
-//		assertEquals(State.RESTING, unit.getState());
-//	}
-//
-//	@Test
-//	public void testRest_Doing_Other_Activity() {
-//		unit.setCurrentHitPoints(10);
-//		unit.setState(State.MOVING);
-//		try {
-//			unit.rest();
-//		} catch (IllegalStateException exc) {
-//			// TODO: handle exception
-//		}
-//		assertEquals(State.MOVING, unit.getState());
-//	}
 	@Test
 	public void testGetOrientation() {
 		assertEquals(Math.PI / 2, this.unit.getOrientation(), .01);
@@ -366,12 +260,6 @@ public class UnitTest {
 		assertEquals((unit.getAgility()+unit.getStrength())/2, this.unit.getWeight(), .01);
 	}
 
-	// This method is private now.
-//	@Test
-//	public void testMinWeight() {
-//		assertEquals((unit.getStrength()+ unit.getAgility())/2, unit.getMinWeight());
-//	}
-
 	@Test
 	public void testGetToughness() {
 		this.unit.setToughness(55);
@@ -401,24 +289,6 @@ public class UnitTest {
 		assertEquals(50, this.unit.getCurrentHitPoints(), .01);
 	}
 
-	// These methods are private now.
-//	@Test
-//	public void testSetHitPoints() {
-//		this.unit.setCurrentHitPoints(50);
-//		assertEquals(50, this.unit.getCurrentHitPoints());
-//	}
-//
-//	@Test
-//	public void IsValidHitPoints_LegalCase() {
-//		assertEquals(true,this.unit.isValidHitPoints(50));
-//		assertEquals(true,this.unit.isValidHitPoints(17));
-//	}
-//	@Test
-//	public void IsValidHitPoints_IllegalCase() {
-//		assertEquals(false,this.unit.isValidHitPoints(this.unit.getMaxHitPoints()+1));
-//		assertEquals(false,this.unit.isValidHitPoints(-17));
-//	}
-
 	@Test
 	public void testGetMaxHitPoints() {
 		assertEquals(200*this.unit.getWeight()/100*this.unit.getToughness()/100, this.unit.getMaxHitPoints(), .01);
@@ -428,26 +298,6 @@ public class UnitTest {
 	public void testGetStamina() {
 		assertEquals(50,this.unit.getCurrentStaminaPoints(), .01);
 	}
-
-	// These methods are private now.
-//	@Test
-//	public void isValidStamina_LegalCase() {
-//		assertEquals(true, this.unit.isValidStamina(50));
-//		assertEquals(true, this.unit.isValidStamina(36));
-//	}
-//
-//	@Test
-//	public void isValidStamina_IllegalCase() {
-//		assertEquals(false, this.unit.isValidStamina(100));
-//		assertEquals(false, this.unit.isValidStamina(-23));
-//	}
-//
-//	@Test
-//	public void testSetStamina() {
-//		this.unit.setCurrentStaminaPoints(15);
-//		assertEquals(15, this.unit.getCurrentStaminaPoints());
-//
-//	}
 
 	@Test
 	public void testGetMaxStaminaPoints() {
@@ -506,6 +356,8 @@ public class UnitTest {
 	@Test
 	public void AttackNeighboringUnit_LegalCase() {
 		Unit defender = new Unit("TestUnit", new int[] { 2, 2, 3 }, 50, 50, 50, 50, false);
+        defender.setWorld(world);
+        defender.setFaction(new Faction(""));
 		this.unit.attack(defender);
 
 		assertEquals(State.ATTACKING, this.unit.getState());
@@ -514,6 +366,7 @@ public class UnitTest {
 	@Test(expected = IllegalStateException.class)
 	public void AttackNotNeighboringUnit_IllegalCase() throws IllegalStateException {
 		Unit defender = new Unit("TestUnit", new int[] { 1, 2, 3 }, 50, 50, 50, 50, false);
+        defender.setFaction(new Faction(""));
 		this.unit.attack(defender);
 	}
 
@@ -539,4 +392,54 @@ public class UnitTest {
 	public void testGetDefaultBehaviorEnabled() {
 		assertFalse(this.unit.getDefaultBehaviorEnabled());
 	}
+
+    @Test
+    public void getPosition() throws Exception {
+        assertArrayEquals(new int[]{1,2,3}, this.unit.getPosition().getCubeCoordinates());
+    }
+
+    @Test
+    public void setAndGetFaction() throws Exception {
+        Faction faction = new Faction("");
+        this.unit.setFaction(faction);
+        assertEquals(faction, this.unit.getFaction());
+    }
+
+    @Test
+    public void getCurrentExperiencePoints() throws Exception {
+        assertEquals(0, this.unit.getCurrentExperiencePoints());
+    }
+
+    @Test
+    public void setAndGetWorld() {
+        this.unit.setWorld(world);
+        assertEquals(world, this.unit.getWorld());
+    }
+
+    @Test
+    public void notCarryingLog() {
+        assertFalse(this.unit.isCarryingLog());
+    }
+
+    @Test
+    public void carryingLog() {
+        this.unit.setMaterial(new Log(new Position(new int[]{1,2,3}), world));
+        assertTrue(this.unit.isCarryingLog());
+    }
+
+    @Test
+    public void notCarryingBoulder() {
+        assertFalse(this.unit.isCarryingBoulder());
+    }
+
+    @Test
+    public void carryingBoulder() {
+        this.unit.setMaterial(new Boulder(new Position(new int[]{1,2,3}), world));
+        assertTrue(this.unit.isCarryingBoulder());
+    }
+
+    @Test
+    public void isAlive() throws Exception {
+        assertTrue(this.unit.isAlive());
+    }
 }
