@@ -5,7 +5,9 @@ import hillbillies.model.gameobject.Log;
 import hillbillies.model.gameobject.Material;
 import hillbillies.model.terrain.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -34,15 +36,25 @@ public class Cube {
         this.setWorld(world);
 	}
 
-	public Material getMaterial() {
-		return material;
+	public Log getLog() {
+		return log;
 	}
 
-	public void setMaterial(Material material) {
-		this.material = material;
+	public void setLog(Log log) {
+		this.log = log;
 	}
 
-	public Material material;
+	public Log log;
+	
+	public Boulder getBoulder() {
+		return boulder;
+	}
+
+	public void setBoulder(Boulder boulder) {
+		this.boulder = boulder;
+	}
+
+	public Boulder boulder;
     /**
      * Variable registering the terrain type of this cube.
      */
@@ -215,15 +227,15 @@ public class Cube {
 	}
 
     private void spawnBoulderOrLog() {
-        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+    	if (this.getTerrain() instanceof Tree) {
         	Log log = new Log(this.getPosition(), this.getWorld());
             this.getWorld().addLog(log);
-            this.setMaterial(log);
-        } else {
-        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
-            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
-            this.setMaterial(boulder);
-        }
+            this.setLog(log);
+    	} else {
+    		Boulder boulder = new Boulder(this.getPosition(), this.getWorld());
+        	this.getWorld().addBoulder(boulder);
+        	this.setBoulder(boulder);
+    	}
     }
 
 	/**
@@ -233,7 +245,7 @@ public class Cube {
      *          false otherwise.
 	 */
 	public boolean hasSolidNeighboringCubes() {
-		for (int i = -1; i < 2; i++) {
+		for (int i = -1; i < 2; i= i+2) {
 			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
 					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
 				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
@@ -251,6 +263,61 @@ public class Cube {
 				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
 						 position.getCubeCoordinates()[1],
 						 position.getCubeCoordinates()[2]-i).isSolid())
+					return true;
+		}
+		return false;
+	}
+	public boolean hasPassebleNeighboringCubes() {
+		for (int i = -1; i < 2; i= i+2) {
+			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
+					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+				if(!this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]).isSolid())
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
+					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+				if(!this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1]-i,
+						 position.getCubeCoordinates()[2]).isSolid())
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
+					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+				if(!this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]-i).isSolid())
+					return true;
+		}
+		return false;
+	}
+	public boolean isNeighboringCube(Position positionToLook){
+		for (int i = -1; i < 2; i= i+2) {
+			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
+					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2])==
+						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
+						 positionToLook.getCubeCoordinates()[1],
+						 positionToLook.getCubeCoordinates()[2]))
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
+					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1]-i,
+						 position.getCubeCoordinates()[2])==
+						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
+						 positionToLook.getCubeCoordinates()[1],
+						 positionToLook.getCubeCoordinates()[2]))
+					return true;
+			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
+					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
+						 position.getCubeCoordinates()[1],
+						 position.getCubeCoordinates()[2]-i)==
+						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
+						 positionToLook.getCubeCoordinates()[1],
+						 positionToLook.getCubeCoordinates()[2]))
 					return true;
 		}
 		return false;
@@ -310,7 +377,66 @@ public class Cube {
         		this.caveIn();
         }
     }
-    
+//    public ArrayList<Cube> getNeighboringCubes(){
+//    	ArrayList<Cube> neighboringCubes = new ArrayList<>();
+//		for (int i = -1; i < 2; i= i+2) {
+//			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
+//					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
+//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0]-i,
+//														position.getCubeCoordinates()[1],
+//														position.getCubeCoordinates()[2]));
+//			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
+//					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
+//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0],
+//														position.getCubeCoordinates()[1]-1,
+//														position.getCubeCoordinates()[2]));
+//			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
+//					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
+//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0],
+//														position.getCubeCoordinates()[1]-1,
+//														position.getCubeCoordinates()[2]));
+//		}
+//		//System.out.println(neighboringCubes.size());
+//		return neighboringCubes;
+//    }
+
+	public List<Cube> getNeighboringCubes() {
+        int posX = this.getPosition().getCubeCoordinates()[0];
+        int posY = this.getPosition().getCubeCoordinates()[1];
+        int posZ = this.getPosition().getCubeCoordinates()[2];
+        int[][] allNeighboringCubePositions =  new int[][]{
+                {posX-1, posY, posZ},
+                {posX+1, posY, posZ},
+                {posX, posY-1, posZ},
+                {posX, posY+1, posZ},
+                {posX, posY, posZ-1},
+                {posX, posY, posZ+1}
+        };
+		List<Cube> validNeighboringCubes = new ArrayList<>();
+		for (int[] cubePosition :
+				allNeighboringCubePositions) {
+			if (isValidPosition(cubePosition)) {
+				validNeighboringCubes.add(this.getWorld().getCube(cubePosition[0], cubePosition[1], cubePosition[2]));
+			}
+		}
+		return validNeighboringCubes;
+	}
+
+	/**
+	 * Check whether the given coordinates are valid coordinates for
+	 * any position.
+	 * @param cubeCoordinates The coordinates to check.
+	 * @return True if all coordinates are within range, false otherwise. | result ==
+	 * |	(coordinates[0] >= 0) && (coordinates[0] < 50) &&
+	 * |	(coordinates[1] >= 0) && (coordinates[1] < 50) &&
+	 * | 	(coordinates[2] >= 0) && (coordinates[2] < 50)
+	 */
+	private boolean isValidPosition(int[] cubeCoordinates) {
+		return	(cubeCoordinates[0] >= 0) && (cubeCoordinates[0] < this.getWorld().getNbCubesX()) &&
+				(cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
+				(cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
+	}
+
     private static final double TIMETOCAVEIN = 0.5;
     
     private boolean hasToCaveIn = false;
@@ -321,18 +447,18 @@ public class Cube {
 	 * @return
 	 */
 	public boolean hasLog() {
-		if(this.material == null)
+		if(this.getLog() == null)
 			return false;
-		return this.material instanceof Log;
+		return true;
 	}
 
 	/**
 	 * @return
 	 */
 	public boolean hasBoulder() {
-		if(this.material == null)
+		if(this.getBoulder() == null)
 			return false;
-		return this.material instanceof Boulder;
+		return true;
 	}
 
 	/**

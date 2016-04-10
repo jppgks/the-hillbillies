@@ -42,7 +42,6 @@ public class UnitTest {
 	@Test
 	public void CreateUnit_LegalCase() {
 		assertEquals("TestUnit", this.unit.getName());
-
 		double halfCubeSideLength = this.unit.getPosition().getCubeSideLength() / 2;
 		assertDoublePositionEquals(
 				1 + halfCubeSideLength, 2 + halfCubeSideLength, 3 +halfCubeSideLength,
