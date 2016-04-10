@@ -306,6 +306,8 @@ public class Unit {
      */
     private double fallDistance = 0;
 
+	private boolean somthingAdded = false;
+
 	/**
 	 * Constant reflecting the lowest possible initial value for
 	 * this unit's attributes, being:
@@ -967,9 +969,12 @@ public class Unit {
 		if(!isDefending)
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
 		
-		this.search(new Position(this.getTargetPosition()),0);
-		this.updatePosition(dt);
-		
+		this.walking(this.getWorld().getCube(this.getTargetPosition()[0],
+											this.getTargetPosition()[1], 
+											this.getTargetPosition()[2]));
+		if (this.getState()!=State.NONE) {
+			this.updatePosition(dt);
+		}		
 	}
 
 	/**
@@ -1221,29 +1226,29 @@ public class Unit {
 	 * @return	  The displacement of this unit when moving.
 	 *
 	 */
-	private int[] getMovementChange() {
+	private int[] getMovementChange(Position postitionToMoveTo) {
 		int dx;
 		int dy;
 		int dz;
-		if(startPosition[0]== this.getTargetPosition()[0]){
+		if(startPosition[0]== postitionToMoveTo.getCubeCoordinates()[0]){
 			dx = 0;
-		}else if(startPosition[0]< this.getTargetPosition()[0]){
+		}else if(startPosition[0]< postitionToMoveTo.getCubeCoordinates()[0]){
 			dx = 1;
 		}else{
 			dx = -1;
 		}
 
-		if(startPosition[1]== this.getTargetPosition()[1]){
+		if(startPosition[1]== postitionToMoveTo.getCubeCoordinates()[1]){
 			dy = 0;
-		}else if(startPosition[1]< this.getTargetPosition()[1]){
+		}else if(startPosition[1]< postitionToMoveTo.getCubeCoordinates()[1]){
 			dy = 1;
 		}else{
 			dy = -1;
 		}
 
-		if(startPosition[2]== this.getTargetPosition()[2]){
+		if(startPosition[2]== postitionToMoveTo.getCubeCoordinates()[2]){
 			dz = 0;
-		}else if(startPosition[2]< this.getTargetPosition()[2]){
+		}else if(startPosition[2]< postitionToMoveTo.getCubeCoordinates()[2]){
 			dz = 1;
 		}else{
 			dz = -1;
@@ -1277,6 +1282,7 @@ public class Unit {
 		if (Math.abs(this.getNeighboringCubeToMoveTo()[0]) - Math.abs(this.getInitialPosition()[0]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[1]) - Math.abs(this.getInitialPosition()[1]) <= 0 &&
 				Math.abs(this.getNeighboringCubeToMoveTo()[2]) - Math.abs(this.getInitialPosition()[2]) <= 0) {
+			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+1);
 			this.setPosition(
                     new Position(
                             new int[]{
@@ -1506,35 +1512,35 @@ public class Unit {
 			this.AttributeValueIncrease(2);
 			//Increase Weight
 			this.AttributeValueIncrease(3);
-			world.getLogs().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
-			world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
-			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
+			world.getLogs().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getLog());
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog(null);
+			world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getBoulder());
+			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder(null);
 		}
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
 			if (this.getWorkActivity() == WorkActivity.PICKING_UP_LOG) {
-				this.setMaterial((Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
+				this.setMaterial((Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getLog());
 				this.setWeight(this.getWeight()+ this.getMaterial().getWeight());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog(null);
 				world.getLogs().remove(this.getMaterial());
 			}if (this.getWorkActivity() == WorkActivity.PICKING_UP_BOULDER) {
-				this.setMaterial((Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getMaterial());
+				this.setMaterial((Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getBoulder());
 				this.setWeight(this.getWeight()+ this.getMaterial().getWeight());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(null);
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder(null);
 				world.getBoulders().remove(this.getMaterial());
 			}
 			if (this.getWorkActivity() == WorkActivity.DROPPING_BOULDER){
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(this.getMaterial());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder((Boulder) this.getMaterial());
 				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
 				world.getBoulders().add((Boulder) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
 				this.setState(State.NONE);
 			}if (this.getWorkActivity() == WorkActivity.DROPPING_LOG){
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
-				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setMaterial(this.getMaterial());
+				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog((Log) this.getMaterial());
 				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
 				world.getLogs().add((Log) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
@@ -1757,81 +1763,71 @@ public class Unit {
 				this.startDefaultBehavior();
 			}
 	}
-	private void search(Position destination,int n){
-		Map.Entry<Position, Integer> nextToLook = new AbstractMap.SimpleEntry<>(destination,0);
-		walkPath.push(nextToLook);
-		Position coordinates = destination;
-		List<Cube> allNeighbouringCubes = this.getWorld().getCube(coordinates.getCubeCoordinates()[0],
-																		   coordinates.getCubeCoordinates()[1], 
-																		   coordinates.getCubeCoordinates()[2]).getNeighboringCubes();
-		for(Cube cube : allNeighbouringCubes){
-			if(!cube.isSolid() && cube.hasSolidNeighboringCubes() && !this.inQueue(cube.getPosition()) )
-				walkPath.push(new AbstractMap.SimpleEntry<>(cube.getPosition(),n+1));
+	private void search(Cube cubeToHandle ,int n){
+		for (Cube cube : this.getWorld().getCube(cubeToHandle.getPosition().getCubeCoordinates()[0],
+													cubeToHandle.getPosition().getCubeCoordinates()[1], 
+													cubeToHandle.getPosition().getCubeCoordinates()[2]).getNeighboringCubes()) {
+			if(!cube.isSolid() && cube.hasSolidNeighboringCubes()){
+				walkPath.removeIf(e -> e.getKey() == cube && e.getValue() > n);
+				if(!inQueue(cube))
+					walkPath.add(new AbstractMap.SimpleEntry<>(cube,n+1));
+			}
 		}
-		//System.out.println(walkPath);
-		while (!inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition()) && hasNext(nextToLook.getKey())) {
-			System.out.println("ja");
-			nextToLook = getNext();
-			search(nextToLook.getKey(), nextToLook.getValue());
-			System.out.println(Arrays.toString(new int[]{nextToLook.getKey().getCubeCoordinates()[0], 
-					nextToLook.getKey().getCubeCoordinates()[1], 
-					nextToLook.getKey().getCubeCoordinates()[2]}));
+	}
+	private void walking(Cube cube){
+		int size;
+		walkPath.add(new AbstractMap.SimpleEntry<>(cube,0));
+		while (!this.inQueue(this.getWorld().getCube(this.getStartPosition()[0], 
+													this.getStartPosition()[1], 
+													this.getStartPosition()[2]))&& this.hasNext()){
+			System.out.println(walkPath.size());
+			size = walkPath.size();
+			Map.Entry<Cube, Integer> next = this.walkPath.peek();
+			this.search(next.getKey(), next.getValue());
+			walkPath.poll();
+			walkPath.add(next);
 		}
-		if(inQueue(world.getCube(startPosition[0], startPosition[1], startPosition[2]).getPosition())){
-			while(true){
-				if(this.getWorld().getCube(startPosition[0],
-						   startPosition[1], 
-						   startPosition[2]).isNeighboringCube(walkPath.peek().getKey())){
-					System.out.println("oke");
-					Map.Entry<Position, Integer> cubeToMove = walkPath.pop();
-//						System.out.println(Arrays.toString(new int[]{cubeToMove.getKey().getCubeCoordinates()[0], 
-//								cubeToMove.getKey().getCubeCoordinates()[1], 
-//								cubeToMove.getKey().getCubeCoordinates()[2]}));
-					this.setNeighboringCubeToMoveTo(new int[]{cubeToMove.getKey().getCubeCoordinates()[0]-startPosition[0], 
-							cubeToMove.getKey().getCubeCoordinates()[1]- startPosition[1], 
-							cubeToMove.getKey().getCubeCoordinates()[2]- startPosition[2]});
-					walkPath.clear();
-					break;
-				}else{
-					walkPath.pop();
+		if(this.inQueue(this.getWorld().getCube(this.getStartPosition()[0], 
+													this.getStartPosition()[1], 
+													this.getStartPosition()[2]))){
+			Map.Entry<Cube, Integer> cubeToMoveTo = null;
+			for (Map.Entry<Cube, Integer> tuple : walkPath) {
+				if(tuple.getKey().isNeighboringCube(this.getWorld().getCube(this.getStartPosition()[0], 
+																			this.getStartPosition()[1], 
+																			this.getStartPosition()[2]).getPosition())){
+					if (cubeToMoveTo == null)
+						cubeToMoveTo = tuple;
+					if(tuple.getValue() < cubeToMoveTo.getValue())
+						cubeToMoveTo = tuple;
 				}
 			}
-//				if(this.getWorld().getCube(startPosition[0],
-//										   startPosition[1], 
-//										   startPosition[2]).isNeighboringCube(next.getKey())
-//					next= walkPath.pop();
-//				while(this.getWorld().getCube(startPosition[0],
-//						startPosition[1], 
-//						startPosition[2]).isNeighboringCube(walkPath.peek().getKey())&&
-//						walkPath.peek().getValue() <= next.getValue())
-//							next = walkPath.pop();
-
-//				
-		}else
-			return;
+			this.setNeighboringCubeToMoveTo(this.getMovementChange(cubeToMoveTo.getKey().getPosition()));
+		}else{
+			this.setState(State.NONE);
+		}
+		walkPath.clear();
 	}
 	
 	/**
 	 * @return
 	 */
-	private Entry<Position, Integer> getNext() {
-		return walkPath.pop();
+	private boolean hasNext() {
+		for (Entry<Cube, Integer> element : walkPath) {
+			List<Cube> neightbouringCubes = element.getKey().getNeighboringCubes();
+			for (Cube cube : neightbouringCubes) {
+				if(!cube.isSolid() && cube.hasSolidNeighboringCubes()){
+					if(!inQueue(cube))
+						return true;
+				}
+			}
+		}
+		return false;
 	}
 
-	/**
-	 * @param positionToLook 
-	 * @return
-	 */
-	private boolean hasNext(Position positionToLook) {
-		return(world.getCube(positionToLook.getCubeCoordinates()[0], 
-				positionToLook.getCubeCoordinates()[1], 
-				positionToLook.getCubeCoordinates()[2]).hasPassebleNeighboringCubes()&& !inQueue(positionToLook));
-	}
-
-	private Stack<Map.Entry<Position, Integer>> walkPath = new Stack<>();
+	private Queue<Map.Entry<Cube, Integer>> walkPath = new LinkedList<>();
 	
-	private boolean inQueue(Position position) {
-		for(Map.Entry<Position, Integer> position1 : walkPath){
+	private boolean inQueue(Cube position) {
+		for(Map.Entry<Cube, Integer> position1 : walkPath){
 			if (position1.getKey() == position)
 				return true;
 		}
@@ -1898,7 +1894,10 @@ public class Unit {
 		if(!this.isValidPosition(new int[]{
 				this.getPosition().getCubeCoordinates()[0]+dx,
 				this.getPosition().getCubeCoordinates()[1]+dy,
-				this.getPosition().getCubeCoordinates()[2]+dz})) {
+				this.getPosition().getCubeCoordinates()[2]+dz}) || this.getWorld().getCube(
+				this.getPosition().getCubeCoordinates()[0]+dx,
+				this.getPosition().getCubeCoordinates()[1]+dy,
+				this.getPosition().getCubeCoordinates()[2]+dz).isSolid()) {
 			throw new IllegalArgumentException();
 		}
 		if (dx == 0 && dy == 0 && dz == 0) {
@@ -1955,7 +1954,10 @@ public class Unit {
      * TODO: 16/03/16 Integr
 	 */
 	public void moveTo(int[] targetPosition) throws IllegalCoordinateException {
-		if (! this.isValidPosition(targetPosition) || targetPosition == null) {
+		if (! this.isValidPosition(targetPosition) || targetPosition == null || this.getWorld().getCube(
+				targetPosition[0],
+				targetPosition[1],
+				targetPosition[2]).isSolid()) {
 			throw new IllegalCoordinateException(targetPosition);
 		}
 		if(this.getState()== State.MOVING){
@@ -2533,38 +2535,28 @@ public class Unit {
 		return this.getCurrentExperiencePoints() >= 10;
 	}
 
-//	/**
-//	 * @return True if one of the neighboring cubes has a solid terrain type, false otherwise.
-//	 */
-//	public boolean hasSolidNeighboringCube() {
-//		return Arrays.stream(this.getNeighboringCubes()).anyMatch(Cube::isSolid);
-//	}
-//
-//    private Cube[] getNeighboringCubes() {
-//        int posX = this.getPosition().getCubeCoordinates()[0];
-//        int posY = this.getPosition().getCubeCoordinates()[1];
-//        int posZ = this.getPosition().getCubeCoordinates()[2];
-//        return new Cube[]{
-//                this.getWorld().getCube(posX-1, posY, posZ),
-//                this.getWorld().getCube(posX+1, posY, posZ),
-//                this.getWorld().getCube(posX, posY-1, posZ),
-//                this.getWorld().getCube(posX, posY+1, posZ),
-//                this.getWorld().getCube(posX, posY, posZ-1),
-//                this.getWorld().getCube(posX, posY, posZ+1),
-//        };
-//    }
-
 	private void die() {
         this.setState(State.NONE);
         if (this.getMaterial() != null) {
-            this.
-                    getWorld().
-                    getCube(
-                            this.getPosition().getCubeCoordinates()[0],
-                            this.getPosition().getCubeCoordinates()[1],
-                            this.getPosition().getCubeCoordinates()[2]
-                    ).
-                    setMaterial(this.getMaterial()); // TODO: Has to be something like 'setAsMaterial' => one cube can have multiple materials?
+        	if (this.getMaterial() instanceof Log) {
+        		this.
+                getWorld().
+                getCube(
+                        this.getPosition().getCubeCoordinates()[0],
+                        this.getPosition().getCubeCoordinates()[1],
+                        this.getPosition().getCubeCoordinates()[2]
+                ).
+                setLog((Log) this.getMaterial());
+        	} else {
+        		this.
+                getWorld().
+                getCube(
+                        this.getPosition().getCubeCoordinates()[0],
+                        this.getPosition().getCubeCoordinates()[1],
+                        this.getPosition().getCubeCoordinates()[2]
+                ).
+                setBoulder((Boulder) this.getMaterial());
+        	}
         }
         this.getFaction().getMembers().remove(this);
 		this.getWorld().removeAsUnit(this);

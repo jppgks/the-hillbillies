@@ -36,15 +36,25 @@ public class Cube {
         this.setWorld(world);
 	}
 
-	public Material getMaterial() {
-		return material;
+	public Log getLog() {
+		return log;
 	}
 
-	public void setMaterial(Material material) {
-		this.material = material;
+	public void setLog(Log log) {
+		this.log = log;
 	}
 
-	public Material material;
+	public Log log;
+	
+	public Boulder getBoulder() {
+		return boulder;
+	}
+
+	public void setBoulder(Boulder boulder) {
+		this.boulder = boulder;
+	}
+
+	public Boulder boulder;
     /**
      * Variable registering the terrain type of this cube.
      */
@@ -210,22 +220,22 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-//        }
+        }
        this.getWorld().calculateConnectedToBorder();
 	}
 
     private void spawnBoulderOrLog() {
-//        if (ThreadLocalRandom.current().nextInt(2) == 0) {
+    	if (this.getTerrain() instanceof Tree) {
         	Log log = new Log(this.getPosition(), this.getWorld());
             this.getWorld().addLog(log);
-            this.setMaterial(log);
-//        } else {
-//        	Boulder boulder =new Boulder(this.getPosition(), this.getWorld());
-//            this.getWorld().addBoulder(boulder); // TODO: I really hate this piece of code
-//            this.setMaterial(boulder);
-//        }
+            this.setLog(log);
+    	} else {
+    		Boulder boulder = new Boulder(this.getPosition(), this.getWorld());
+        	this.getWorld().addBoulder(boulder);
+        	this.setBoulder(boulder);
+    	}
     }
 
 	/**
@@ -437,18 +447,18 @@ public class Cube {
 	 * @return
 	 */
 	public boolean hasLog() {
-		if(this.material == null)
+		if(this.getLog() == null)
 			return false;
-		return this.material instanceof Log;
+		return true;
 	}
 
 	/**
 	 * @return
 	 */
 	public boolean hasBoulder() {
-		if(this.material == null)
+		if(this.getBoulder() == null)
 			return false;
-		return this.material instanceof Boulder;
+		return true;
 	}
 
 	/**
