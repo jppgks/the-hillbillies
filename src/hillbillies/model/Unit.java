@@ -1884,7 +1884,6 @@ public class Unit {
 		while (!this.inQueue(this.getWorld().getCube(this.getStartPosition()[0], 
 													this.getStartPosition()[1], 
 													this.getStartPosition()[2]))&& this.hasNext()){
-			System.out.println(walkPath.size());
 			size = walkPath.size();
 			Map.Entry<Cube, Integer> next = this.walkPath.peek();
 			this.search(next.getKey(), next.getValue());
