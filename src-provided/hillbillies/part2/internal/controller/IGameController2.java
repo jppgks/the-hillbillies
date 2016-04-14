@@ -1,6 +1,6 @@
 package hillbillies.part2.internal.controller;
 
-import hillbillies.model.gameobject.Faction;
+import hillbillies.model.Faction;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.part1.internal.controller.IGameController1;

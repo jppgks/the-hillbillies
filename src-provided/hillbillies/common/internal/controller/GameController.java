@@ -76,7 +76,7 @@ public abstract class GameController<V extends IHillbilliesView> implements Hill
 	protected void handleError(ModelException e) {
 		if (getOptions().printModelExceptionTraces().getValue()) {
 			getView().setStatusText("ERROR: " + e.getMessage());
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 

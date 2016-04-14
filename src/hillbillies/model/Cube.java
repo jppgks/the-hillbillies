@@ -1,8 +1,5 @@
 package hillbillies.model;
 
-import hillbillies.model.gameobject.Boulder;
-import hillbillies.model.gameobject.Log;
-import hillbillies.model.gameobject.Material;
 import hillbillies.model.terrain.*;
 
 import java.util.ArrayList;

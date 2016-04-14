@@ -1,8 +1,5 @@
 package hillbillies.model;
 
-import hillbillies.model.gameobject.Boulder;
-import hillbillies.model.gameobject.Faction;
-import hillbillies.model.gameobject.Log;
 import hillbillies.part2.listener.DefaultTerrainChangeListener;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,8 +7,8 @@ import org.junit.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static hillbillies.model.tests.util.PositionAsserts.assertDoublePositionEquals;
-import static hillbillies.model.tests.util.PositionAsserts.assertIntegerPositionEquals;
+import static hillbillies.tests.util.PositionAsserts.assertDoublePositionEquals;
+import static hillbillies.tests.util.PositionAsserts.assertIntegerPositionEquals;
 import static org.junit.Assert.*;
 
 /**

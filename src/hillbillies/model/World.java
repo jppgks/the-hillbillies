@@ -1,8 +1,5 @@
 package hillbillies.model;
 
-import hillbillies.model.gameobject.Boulder;
-import hillbillies.model.gameobject.Faction;
-import hillbillies.model.gameobject.Log;
 import hillbillies.model.terrain.*;
 import hillbillies.part2.listener.TerrainChangeListener;
 import hillbillies.util.ConnectedToBorder;
