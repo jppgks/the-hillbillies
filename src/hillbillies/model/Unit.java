@@ -1862,23 +1862,25 @@ public class Unit {
 	public Boolean getDefaultBehaviorEnabled(){
 		return this.defaultBehaviorEnabled;
 	}
-
+	
 	private void walking(Cube goal) {
         Queue<QueueElement> openSet = new LinkedList<>();
         List<QueueElement> closedSet = new LinkedList<>();
-        openSet.add(new QueueElement(new Position(startPosition), 0, null));
+        openSet.add(new QueueElement(goal.getPosition(), 0, null));
         while (! openSet.isEmpty()) {
             QueueElement current = openSet.poll();
-            if (current.position.equals(goal.getPosition())) {
-                QueueElement bla = current;
-                while (bla.previous != null) {
-                    bla = bla.previous;
-                }
-                this.setNeighboringCubeToMoveTo(this.getMovementChange(current.position));
+            if (current.position.equals(new Position(startPosition))) {
+                System.out.println("oke");
+                this.setNeighboringCubeToMoveTo(this.getMovementChange(current.previous.position));
                 return;
             }
             closedSet.add(current);
             for (Cube neighbor : this.getWorld().getCube(current.position).getNeighboringCubes()) {
+            	QueueElement element = new QueueElement(neighbor.getPosition(), current.cost+1, current);
+            	if(closedSet.contains(element)){
+            		System.out.println("in closed set");
+            		continue;
+            	}
                 if (((!closedSet.contains(neighbor)) || (!openSet.contains(neighbor))) && (!neighbor.isSolid()) && neighbor.hasSolidNeighboringCubes()) {
                     openSet.add(new QueueElement(neighbor.getPosition(), (current.cost + 1), current));
                 }
@@ -1901,7 +1903,7 @@ public class Unit {
 
         @Override
         public boolean equals(Object o) {
-            return Arrays.equals(position.getCubeCoordinates(), ((Cube)o).getPosition().getCubeCoordinates());
+            return Arrays.equals(position.getCubeCoordinates(), ((QueueElement)o).position.getCubeCoordinates());
         }
     }
 
