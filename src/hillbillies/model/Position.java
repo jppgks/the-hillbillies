@@ -5,6 +5,8 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import be.kuleuven.cs.som.annotate.Value;
 
+import java.util.Arrays;
+
 @Value
 public class Position {
 
@@ -124,4 +126,26 @@ public class Position {
     double getCubeSideLength() {
 		return CUBE_SIDE_LENGTH;
 	}
+
+	@Override
+    public boolean equals(Object o) {
+        return o instanceof Position && Arrays.equals(this.getCubeCoordinates(), ((Position) o).getCubeCoordinates());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.getCubeCoordinates());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.getCubeCoordinates()[0]).
+                append(",").
+                append(this.getCubeCoordinates()[1]).
+                append(",").
+                append(this.getCubeCoordinates()[2]
+                );
+        return sb.toString();
+    }
 }

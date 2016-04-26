@@ -9,7 +9,6 @@ import hillbillies.model.terrain.Tree;
 import hillbillies.model.terrain.Workshop;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * A class for a 'cubical object that occupies a position in the game world'.
@@ -1050,9 +1049,9 @@ public class Unit {
 		}
 		if(!this.isDefending())
 			this.setOrientation((float) Math.atan2(this.getUnitVelocity()[1], this.getUnitVelocity()[0]));
-		
+
 		this.walking(this.getWorld().getCube(this.getTargetPosition()[0],
-											this.getTargetPosition()[1], 
+											this.getTargetPosition()[1],
 											this.getTargetPosition()[2]));
 		if (this.getState()!=State.NONE) {
 			this.updatePosition(dt);
@@ -1863,75 +1862,49 @@ public class Unit {
 	public Boolean getDefaultBehaviorEnabled(){
 		return this.defaultBehaviorEnabled;
 	}
-	private void search(Cube cubeToHandle ,int n){
-		for (Cube cube : this.getWorld().getCube(cubeToHandle.getPosition().getCubeCoordinates()[0],
-													cubeToHandle.getPosition().getCubeCoordinates()[1], 
-													cubeToHandle.getPosition().getCubeCoordinates()[2]).getNeighboringCubes()) {
-			if(!cube.isSolid() && cube.hasSolidNeighboringCubes()){
-				walkPath.removeIf(e -> e.getKey() == cube && e.getValue() > n);
-				if(!inQueue(cube))
-					walkPath.add(new AbstractMap.SimpleEntry<>(cube,n+1));
-			}
-		}
-	}
-	private void walking(Cube cube){
-		int size;
-		walkPath.add(new AbstractMap.SimpleEntry<>(cube,0));
-		while (!this.inQueue(this.getWorld().getCube(this.getStartPosition()[0], 
-													this.getStartPosition()[1], 
-													this.getStartPosition()[2]))&& this.hasNext()){
-			size = walkPath.size();
-			Map.Entry<Cube, Integer> next = this.walkPath.peek();
-			this.search(next.getKey(), next.getValue());
-			walkPath.poll();
-			walkPath.add(next);
-		}
-		if(this.inQueue(this.getWorld().getCube(this.getStartPosition()[0], 
-													this.getStartPosition()[1], 
-													this.getStartPosition()[2]))){
-			Map.Entry<Cube, Integer> cubeToMoveTo = null;
-			for (Map.Entry<Cube, Integer> tuple : walkPath) {
-				if(tuple.getKey().isNeighboringCube(this.getWorld().getCube(this.getStartPosition()[0], 
-																			this.getStartPosition()[1], 
-																			this.getStartPosition()[2]).getPosition())){
-					if (cubeToMoveTo == null)
-						cubeToMoveTo = tuple;
-					if(tuple.getValue() < cubeToMoveTo.getValue())
-						cubeToMoveTo = tuple;
-				}
-			}
-			this.setNeighboringCubeToMoveTo(this.getMovementChange(cubeToMoveTo.getKey().getPosition()));
-		}else{
-			this.setState(State.NONE);
-		}
-		walkPath.clear();
-	}
-	
-	/**
-	 * @return
-	 */
-	private boolean hasNext() {
-		for (Entry<Cube, Integer> element : walkPath) {
-			List<Cube> neightbouringCubes = element.getKey().getNeighboringCubes();
-			for (Cube cube : neightbouringCubes) {
-				if(!cube.isSolid() && cube.hasSolidNeighboringCubes()){
-					if(!inQueue(cube))
-						return true;
-				}
-			}
-		}
-		return false;
+
+	private void walking(Cube goal) {
+        Queue<QueueElement> openSet = new LinkedList<>();
+        List<QueueElement> closedSet = new LinkedList<>();
+        openSet.add(new QueueElement(new Position(startPosition), 0, null));
+        while (! openSet.isEmpty()) {
+            QueueElement current = openSet.poll();
+            if (current.position.equals(goal.getPosition())) {
+                QueueElement bla = current;
+                while (bla.previous != null) {
+                    bla = bla.previous;
+                }
+                this.setNeighboringCubeToMoveTo(this.getMovementChange(current.position));
+                return;
+            }
+            closedSet.add(current);
+            for (Cube neighbor : this.getWorld().getCube(current.position).getNeighboringCubes()) {
+                if (((!closedSet.contains(neighbor)) || (!openSet.contains(neighbor))) && (!neighbor.isSolid()) && neighbor.hasSolidNeighboringCubes()) {
+                    openSet.add(new QueueElement(neighbor.getPosition(), (current.cost + 1), current));
+                }
+            }
+        }
+        this.setState(State.NONE);
 	}
 
-	private Queue<Map.Entry<Cube, Integer>> walkPath = new LinkedList<>();
-	
-	private boolean inQueue(Cube position) {
-		for(Map.Entry<Cube, Integer> position1 : walkPath){
-			if (position1.getKey() == position)
-				return true;
-		}
-		return false;
-	}
+    private class QueueElement {
+
+        QueueElement previous;
+        Position position;
+        int cost;
+
+        public QueueElement(Position position, int cost, QueueElement previous) {
+            this.position = position;
+            this.cost = cost;
+            this.previous = previous;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return Arrays.equals(position.getCubeCoordinates(), ((Cube)o).getPosition().getCubeCoordinates());
+        }
+    }
+
     /**
      * @throws IllegalStateException if the unit is doing a state
      *                               | if this.getState() != NONE
@@ -2317,33 +2290,15 @@ public class Unit {
 	 * @param cubeCoordinatesOfPossibleNeighbor
 	 * 			  The cube coordinates to check
 	 * @return 	  True if the given coordinate is a neighboring cube
-	 * 			  False if the given coordinate isn't a neighboring cube 
+	 * 			  False if the given coordinate isn't a neighboring cube
 	 */
 	private boolean isNeighboringCube(int[] cubeCoordinatesOfPossibleNeighbor) {
-		if(cubeCoordinatesOfPossibleNeighbor == null ||
-				(! this.isValidPosition(cubeCoordinatesOfPossibleNeighbor))) {
-			return false;
-		}
-		if (Math.abs(cubeCoordinatesOfPossibleNeighbor[0] - this.getPosition().getCubeCoordinates()[0]) == 1) {
-			if (Arrays.
-					stream(new int[]{-1, 0, 1}).
-					anyMatch(i -> i == cubeCoordinatesOfPossibleNeighbor[1] - this.getPosition().getCubeCoordinates()[1])) {
-				return true;
-			}
-		}
-		if (cubeCoordinatesOfPossibleNeighbor[0] == this.getPosition().getCubeCoordinates()[0]) {
-			if (Math.abs(cubeCoordinatesOfPossibleNeighbor[1] - this.getPosition().getCubeCoordinates()[1]) == 1) {
-				if (cubeCoordinatesOfPossibleNeighbor[2] == this.getPosition().getCubeCoordinates()[2]) {
-					return true;
-				}
-			} else if (cubeCoordinatesOfPossibleNeighbor[1] == this.getPosition().getCubeCoordinates()[1]) {
-				if (Math.abs(cubeCoordinatesOfPossibleNeighbor[2] - this.getPosition().getCubeCoordinates()[2]) == 1) {
-					return true;
-				}
-			}
-		}
-		return false;
+        return this.getCube().isNeighboringCube(new Position(cubeCoordinatesOfPossibleNeighbor));
 	}
+
+    private Cube getCube() {
+        return this.getWorld().getCube(this.getPosition());
+    }
 
 	/**
 	 * @return	  The time needed for fighting

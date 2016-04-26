@@ -242,82 +242,16 @@ public class Cube {
      *          false otherwise.
 	 */
 	public boolean hasSolidNeighboringCubes() {
-		for (int i = -1; i < 2; i= i+2) {
-			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
-					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
-				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
-						 position.getCubeCoordinates()[1],
-						 position.getCubeCoordinates()[2]).isSolid())
-					return true;
-			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
-					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
-				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
-						 position.getCubeCoordinates()[1]-i,
-						 position.getCubeCoordinates()[2]).isSolid())
-					return true;
-			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
-					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
-				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
-						 position.getCubeCoordinates()[1],
-						 position.getCubeCoordinates()[2]-i).isSolid())
-					return true;
-		}
-		return false;
+		for (Cube cube : this.getNeighboringCubes()) {
+            if (cube.isSolid()) {
+                return true;
+            }
+        }
+        return false;
 	}
-	public boolean hasPassebleNeighboringCubes() {
-		for (int i = -1; i < 2; i= i+2) {
-			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
-					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
-				if(!this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
-						 position.getCubeCoordinates()[1],
-						 position.getCubeCoordinates()[2]).isSolid())
-					return true;
-			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
-					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
-				if(!this.getWorld().getCube(position.getCubeCoordinates()[0],
-						 position.getCubeCoordinates()[1]-i,
-						 position.getCubeCoordinates()[2]).isSolid())
-					return true;
-			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
-					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
-				if(!this.getWorld().getCube(position.getCubeCoordinates()[0],
-						 position.getCubeCoordinates()[1],
-						 position.getCubeCoordinates()[2]-i).isSolid())
-					return true;
-		}
-		return false;
-	}
+
 	public boolean isNeighboringCube(Position positionToLook){
-		for (int i = -1; i < 2; i= i+2) {
-			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
-					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
-				if(this.getWorld().getCube(position.getCubeCoordinates()[0]-i,
-						 position.getCubeCoordinates()[1],
-						 position.getCubeCoordinates()[2])==
-						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
-						 positionToLook.getCubeCoordinates()[1],
-						 positionToLook.getCubeCoordinates()[2]))
-					return true;
-			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
-					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
-				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
-						 position.getCubeCoordinates()[1]-i,
-						 position.getCubeCoordinates()[2])==
-						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
-						 positionToLook.getCubeCoordinates()[1],
-						 positionToLook.getCubeCoordinates()[2]))
-					return true;
-			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
-					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
-				if(this.getWorld().getCube(position.getCubeCoordinates()[0],
-						 position.getCubeCoordinates()[1],
-						 position.getCubeCoordinates()[2]-i)==
-						 this.getWorld().getCube(positionToLook.getCubeCoordinates()[0],
-						 positionToLook.getCubeCoordinates()[1],
-						 positionToLook.getCubeCoordinates()[2]))
-					return true;
-		}
-		return false;
+        return this.getNeighboringCubes().contains(positionToLook);
 	}
 
     /**
@@ -374,28 +308,6 @@ public class Cube {
         		this.caveIn();
         }
     }
-//    public ArrayList<Cube> getNeighboringCubes(){
-//    	ArrayList<Cube> neighboringCubes = new ArrayList<>();
-//		for (int i = -1; i < 2; i= i+2) {
-//			if( 0 <= (position.getCubeCoordinates()[0]-i) &&
-//					(position.getCubeCoordinates()[0]-i) < this.world.getNbCubesX())
-//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0]-i,
-//														position.getCubeCoordinates()[1],
-//														position.getCubeCoordinates()[2]));
-//			if( 0 <= (position.getCubeCoordinates()[1]-i) &&
-//					(position.getCubeCoordinates()[1]-i) < this.world.getNbCubesY())
-//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0],
-//														position.getCubeCoordinates()[1]-1,
-//														position.getCubeCoordinates()[2]));
-//			if( 0 <= (position.getCubeCoordinates()[2]-i) &&
-//					(position.getCubeCoordinates()[2]-i) < this.world.getNbCubesZ())
-//					neighboringCubes.add(world.getCube(position.getCubeCoordinates()[0],
-//														position.getCubeCoordinates()[1]-1,
-//														position.getCubeCoordinates()[2]));
-//		}
-//		//System.out.println(neighboringCubes.size());
-//		return neighboringCubes;
-//    }
 
 	public List<Cube> getNeighboringCubes() {
         int posX = this.getPosition().getCubeCoordinates()[0];
@@ -433,10 +345,6 @@ public class Cube {
 				(cubeCoordinates[1] >= 0) && (cubeCoordinates[1] < this.getWorld().getNbCubesY()) &&
 				(cubeCoordinates[2] >= 0) && (cubeCoordinates[2] < this.getWorld().getNbCubesZ());
 	}
-
-    private static final double TIMETOCAVEIN = 0.5;
-    
-    private boolean hasToCaveIn = false;
     
     private double timeToCaveInCounter;
 
@@ -476,4 +384,9 @@ public class Cube {
 	public void setTimeToCaveInCounter(double timeToCaveInCounter) {
 		this.timeToCaveInCounter = timeToCaveInCounter;
 	}
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s", this.getTerrain(), this.getPosition().toString());
+    }
 }

@@ -253,21 +253,16 @@ public class World {
      * @post      The cubes that get disconnected cave in.
      */
     void calculateConnectedToBorder() {
-        List<int[]> newlyDisconnectedCubes = new ArrayList<>();
         for (int i = 0; i < this.getNbCubesX(); i++) {
             for (int j = 0; j < this.getNbCubesY(); j++) {
                 for (int k = 0; k < this.getNbCubesZ(); k++) {
                     if (this.getCube(i, j, k).getTerrain() instanceof Passable) {
-                        newlyDisconnectedCubes.addAll(connectedToBorder.changeSolidToPassable(i,j,k));
+                        connectedToBorder.changeSolidToPassable(i,j,k);
                     } else {
                         connectedToBorder.changePassableToSolid(i,j,k);
                     }
                 }
             }
-        }
-        for (int[] cubeCoordinate :
-                newlyDisconnectedCubes) {
-            this.getCube(cubeCoordinate[0], cubeCoordinate[1], cubeCoordinate[2]).caveIn();
         }
     }
 
@@ -486,5 +481,9 @@ public class World {
                 this.getBoulders()) {
             boulder.advanceTime(dt);
         }
+    }
+
+    public Cube getCube(Position position) {
+        return this.getCube(position.getCubeCoordinates()[0], position.getCubeCoordinates()[1], position.getCubeCoordinates()[2]);
     }
 }
