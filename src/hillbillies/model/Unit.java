@@ -2181,12 +2181,17 @@ public class Unit {
 	 * TODO: 16/03/16 If unit is falling, abort.
      */
 	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
+		
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
+		
 		if(!this.isNeighboringCube(new int[]{x,y,z})){
+			System.out.println(" exc  ");
 			throw new IllegalArgumentException();
 		}
+		
 		this.setWorkCounter(this.getTimeForWork());
+		
 		if(this.isCarryingLog() && !this.getWorld().getCube(x,y,z).isSolid()){
 			this.setWorkActivity(WorkActivity.DROPPING_LOG);
 			this.setWorkCounter(0.3);
