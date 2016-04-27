@@ -99,9 +99,9 @@ public class Facade implements IFacade {
     	try {
     		unit.work(x,y,z);
 		} catch (IllegalArgumentException exc) {
-			
+			throw new ModelException("can't work right now");
 		} catch (IllegalStateException exc) {
-			
+			throw new ModelException("can't work right now");
 		}       
     }
 
