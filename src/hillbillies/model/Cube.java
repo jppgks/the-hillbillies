@@ -217,9 +217,9 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-        }
+//        }
        this.getWorld().calculateConnectedToBorder();
 	}
 
@@ -251,7 +251,7 @@ public class Cube {
 	}
 
 	public boolean isNeighboringCube(Position positionToLook){
-        return this.getNeighboringCubes().contains(positionToLook);
+        return this.getNeighboringCubes().contains(this.getWorld().getCube(positionToLook));
 	}
 
     /**

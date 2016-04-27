@@ -1864,7 +1864,12 @@ public class Unit {
 	}
 	
 	private void walking(Cube goal) {
-        Queue<QueueElement> openSet = new LinkedList<>();
+        PriorityQueue<QueueElement> openSet = new PriorityQueue<>(new Comparator<QueueElement>(){
+			@Override
+			public int compare(QueueElement arg0, QueueElement arg1) {
+				return(arg0.cost+arg0.heuristic) - (arg1.cost+arg1.heuristic);
+			}
+        });
         List<QueueElement> closedSet = new LinkedList<>();
         openSet.add(new QueueElement(goal.getPosition(), 0, null));
         while (! openSet.isEmpty()) {
@@ -1894,17 +1899,26 @@ public class Unit {
         QueueElement previous;
         Position position;
         int cost;
+        int heuristic;
+
 
         public QueueElement(Position position, int cost, QueueElement previous) {
             this.position = position;
             this.cost = cost;
-            this.previous = previous;
+            this.previous = previous; 
+            this.heuristic = heuristic();
         }
+        public int heuristic() {
+			return (getTargetPosition()[0]-this.position.getCubeCoordinates()[0]) + 
+					(getTargetPosition()[1]-this.position.getCubeCoordinates()[1])+
+					(getTargetPosition()[2]-this.position.getCubeCoordinates()[2]);		
+		}
 
         @Override
         public boolean equals(Object o) {
             return Arrays.equals(position.getCubeCoordinates(), ((QueueElement)o).position.getCubeCoordinates());
         }
+        
     }
 
     /**
@@ -2167,12 +2181,17 @@ public class Unit {
 	 * TODO: 16/03/16 If unit is falling, abort.
      */
 	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
+		
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
+		
 		if(!this.isNeighboringCube(new int[]{x,y,z})){
+			System.out.println(" exc  ");
 			throw new IllegalArgumentException();
 		}
+		
 		this.setWorkCounter(this.getTimeForWork());
+		
 		if(this.isCarryingLog() && !this.getWorld().getCube(x,y,z).isSolid()){
 			this.setWorkActivity(WorkActivity.DROPPING_LOG);
 			this.setWorkCounter(0.3);
