@@ -75,6 +75,7 @@ public class Unit {
 		this.setCurrentHitPoints(this.getMaxHitPoints());
 		this.setCurrentStaminaPoints(this.getMaxStaminaPoints());
 		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
+		this.setWeightUnitWithMaterial(this.getWeight());
 		this.setState(State.NONE);
 	}
 
@@ -130,7 +131,31 @@ public class Unit {
 	/**
 	 * Variable registering the current weight of this unit.
 	 */
-	private double weight;
+	private double weightUnit;
+	
+	/**
+	 * Variable registering the current weight of this unit.
+	 */
+	private double weightUnitWithMaterial;
+
+	/**
+	 * Return the weightUnitWithMaterial of this Unit.
+	 */
+	public double getWeightUnitWithMaterial() {
+		return weightUnitWithMaterial;
+	}
+
+	/**
+	 * Set the weightUnitWithMaterial of this Unit to the given weightUnitWithMaterial.
+	 *
+	 * @param  weightUnitWithMaterial
+	 *         The weightUnitWithMaterial to set.
+	 * @post   The weightUnitWithMaterial of this of this Unit is equal to the given weightUnitWithMaterial.
+	 *       | new.getweightUnitWithMaterial() == weightUnitWithMaterial
+	 */
+	public void setWeightUnitWithMaterial(double weightUnitWithMaterial) {
+		this.weightUnitWithMaterial = weightUnitWithMaterial;
+	}
 
 	/**
 	 * Variable registering the current toughness of this unit.
@@ -557,13 +582,13 @@ public class Unit {
 	 */
 	public void setWeight(double weight) {
 		if (weight > this.getMaxAttributeValue()) {
-			this.weight = this.getMaxAttributeValue();
+			this.weightUnit = this.getMaxAttributeValue();
 		}
 		if (weight < this.getMinWeight()) {
-			this.weight = this.getMinWeight();
+			this.weightUnit = this.getMinWeight();
 		}
 		if (weight >= this.getMinWeight() && weight <= this.getMaxAttributeValue())
-			this.weight = weight;
+			this.weightUnit = weight;
 	}
 
 	/**
@@ -1125,7 +1150,7 @@ public class Unit {
 	 * 			| Result == 1.5*((this.getStrength() + this.getAgility)/(200*(this.getWeight/100))
 	 */
 	private double getUnitBaseSpeed() {
-		return 1.5*((this.getStrength()+this.getAgility())/(200*this.getWeight()/100));
+		return 1.5*((this.getStrength()+this.getAgility())/(200*this.getWeightUnitWithMaterial()/100));
 	}
 
 	/**
@@ -1587,41 +1612,45 @@ public class Unit {
 			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog(null);
 			world.getBoulders().remove(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getBoulder());
 			world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder(null);
+			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
+			this.setWorkActivity(WorkActivity.NONE);
+			this.setState(State.NONE);
+			this.resetCounter("WORK_COUNTER");
+			return;
 		}
 		if (this.getWorkCounter() <= 0) {
 			this.setState(State.NONE);
 			// reset the WORK_COUNTER
 			if (this.getWorkActivity() == WorkActivity.PICKING_UP_LOG) {
 				this.setMaterial((Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getLog());
-				this.setWeight(this.getWeight()+ this.getMaterial().getWeight());
+				this.setWeightUnitWithMaterial(this.getWeight()+ this.getMaterial().getWeight());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog(null);
 				world.getLogs().remove(this.getMaterial());
 			}if (this.getWorkActivity() == WorkActivity.PICKING_UP_BOULDER) {
 				this.setMaterial((Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getBoulder());
-				this.setWeight(this.getWeight()+ this.getMaterial().getWeight());
+				this.setWeightUnitWithMaterial(this.getWeight()+ this.getMaterial().getWeight());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder(null);
 				world.getBoulders().remove(this.getMaterial());
 			}
 			if (this.getWorkActivity() == WorkActivity.DROPPING_BOULDER){
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder((Boulder) this.getMaterial());
-				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
+				this.setWeightUnitWithMaterial(this.getWeightUnitWithMaterial()- this.getMaterial().getWeight());
                 this.getWorld().getBoulders().add((Boulder) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
-				this.setState(State.NONE);
 			}if (this.getWorkActivity() == WorkActivity.DROPPING_LOG){
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog((Log) this.getMaterial());
-				this.setWeight(this.getWeight()- this.getMaterial().getWeight());
+				this.setWeightUnitWithMaterial(this.getWeightUnitWithMaterial()- this.getMaterial().getWeight());
                 this.getWorld().getLogs().add((Log) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
-				this.setState(State.NONE);
 			}
 			if(this.getWorkActivity()== WorkActivity.DIGGING){
                 this.getWorld().getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).caveIn();
 				this.setState(State.NONE);
 			}
-			this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
+			if(this.getWorkActivity() == WorkActivity.DIGGING)
+				this.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+10);
 			this.setWorkActivity(WorkActivity.NONE);
 			this.resetCounter("WORK_COUNTER");
 			this.hasToFall();
@@ -1875,7 +1904,6 @@ public class Unit {
         while (! openSet.isEmpty()) {
             QueueElement current = openSet.poll();
             if (current.position.equals(new Position(startPosition))) {
-                System.out.println("oke");
                 this.setNeighboringCubeToMoveTo(this.getMovementChange(current.previous.position));
                 return;
             }
@@ -1883,7 +1911,6 @@ public class Unit {
             for (Cube neighbor : this.getWorld().getCube(current.position).getNeighboringCubes()) {
             	QueueElement element = new QueueElement(neighbor.getPosition(), current.cost+1, current);
             	if(closedSet.contains(element)){
-            		System.out.println("in closed set");
             		continue;
             	}
                 if (((!closedSet.contains(neighbor)) || (!openSet.contains(neighbor))) && (!neighbor.isSolid()) && neighbor.hasSolidNeighboringCubes()) {
@@ -2028,7 +2055,7 @@ public class Unit {
 	 */
 	@Basic
 	public double getWeight() {
-		return this.weight;
+		return this.weightUnit;
 	}
 
 	/**
@@ -2192,11 +2219,11 @@ public class Unit {
 		
 		this.setWorkCounter(this.getTimeForWork());
 		
-		if(this.isCarryingLog() && !this.getWorld().getCube(x,y,z).isSolid()){
+		if(this.isCarryingLog() && !this.getWorld().getCube(x,y,z).isSolid() && !this.getWorld().getCube(x,y,z).hasLog()){
 			this.setWorkActivity(WorkActivity.DROPPING_LOG);
 			this.setWorkCounter(0.3);
 		}
-		else if(this.isCarryingBoulder()&& !this.getWorld().getCube(x,y,z).isSolid()){
+		else if(this.isCarryingBoulder()&& !this.getWorld().getCube(x,y,z).isSolid() && !this.getWorld().getCube(x,y,z).hasBoulder()){
 			this.setWorkActivity(WorkActivity.DROPPING_BOULDER);
 			this.setWorkCounter(0.3);
 		}

@@ -174,7 +174,7 @@ public class Facade implements IFacade {
 
     @Override
     public int getWeight(Unit unit) throws ModelException {
-        return (int) unit.getWeight();
+        return (int) unit.getWeightUnitWithMaterial();
     }
 
     @Override
