@@ -867,9 +867,12 @@ public class Unit {
 			advanceWhileAttacking(dt);
 		}
         // Complete default attack behaviour.
-        if (this.getToAttack() != null && this.isNeighboringCube(this.getToAttack().getPosition().getCubeCoordinates())) {
-            this.attack(this.getToAttack());
-            this.setToAttack(null);
+        if (this.getToAttack() != null) {
+            if (this.isNeighboringCube(this.getToAttack().getPosition().getCubeCoordinates())
+                    || this.getToAttack().getPosition().equals(this.getPosition())) {
+                this.attack(this.getToAttack());
+                this.setToAttack(null);
+            }
         }
 
 		//When NeedToRestCounter is smaller then 0 the unit needs to rest
@@ -1974,7 +1977,7 @@ public class Unit {
         } else if (randomBehaviorNumber == 2) {
             Unit randomHostileUnit = this.calculateHostileUnit();
             if (randomHostileUnit == null) {
-                this.startDefaultBehavior();
+            	this.startDefaultBehavior();
             }
             try {
                 this.moveTo(randomHostileUnit.getPosition().getCubeCoordinates());
@@ -1982,12 +1985,14 @@ public class Unit {
             } catch (IllegalStateException exc) {
                 this.startDefaultBehavior();
             }
-        } else
-            try {
-                rest();
-            } catch (IllegalStateException exc) {
-                this.startDefaultBehavior();
-            }
+        }
+        else {
+			try {
+				rest();
+			} catch (IllegalStateException exc) {
+				this.startDefaultBehavior();
+			}
+		}
     }
 
     /**
@@ -2392,27 +2397,26 @@ public class Unit {
 	 * 			  relative to the strength of the attacker.
 	 * 			| new.getCurrentHitPoints() == this.getCurrentHitPoints() - this.damge(attackerStrength)
 	 */
-	private void defend(double attackerAgility, double attackerStrength,Unit attacker) {
+	private void defend(double attackerAgility, double attackerStrength, Unit attacker) {
 		this.setDefending(true);
-		if (!this.getWorld().getCube(this.getPosition().getCubeCoordinates()[0],
-				this.getPosition().getCubeCoordinates()[1],
-				this.getPosition().getCubeCoordinates()[2]).hasSolidNeighboringCubes()) {
-			double dodge = Math.random();
-			if(dodge < this.chanceForDodging(attackerAgility)){
-				this.dodge();
-				this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
-				return;
-			}
-		}else{
-			double block = Math.random();
-			if(block< this.chanceForBlocking(attackerAgility,attackerStrength)){
-				this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
-				return;
-			}else{
-				attacker.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+20);
-				this.setCurrentHitPoints(this.getCurrentHitPoints() - this.damage(attackerStrength));
-			}
-		}
+        double dodge = Math.random();
+        if(dodge < this.chanceForDodging(attackerAgility)){
+            try {
+                this.dodge();
+            } catch (IllegalStateException exc) {
+                return;
+            }
+            this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
+            return;
+        }
+        double block = Math.random();
+        if(block< this.chanceForBlocking(attackerAgility,attackerStrength)){
+            this.setCurrentHitPoints(this.getCurrentExperiencePoints()+20);
+            return;
+        }else{
+            attacker.setCurrentExperiencePoints(this.getCurrentExperiencePoints()+20);
+            this.setCurrentHitPoints(this.getCurrentHitPoints() - this.damage(attackerStrength));
+        }
 		this.saveUnitSate();
 		this.setState(State.NONE);
 	}
@@ -2440,9 +2444,14 @@ public class Unit {
 	 * @post	  Set the position of the unit to those coordinates
 	 * 			| new.position.setUnitCoordinates(randomNeighboringCube)
 	 */
-	private void dodge() {
+	private void dodge() throws IllegalStateException {
+        if (this.getWorld().getCube(this.getPosition().getCubeCoordinates()[0],
+                this.getPosition().getCubeCoordinates()[1],
+                this.getPosition().getCubeCoordinates()[2]).getNeighboringCubes().stream().allMatch(Cube::isSolid)) {
+            throw new IllegalStateException();
+        }
         int[] randomNeighboringCube = calculateRandomNeighboringCube();
-        while (! this.isValidPosition(randomNeighboringCube) && !(this.getWorld().getCube(randomNeighboringCube[0],
+        while (! this.isValidPosition(randomNeighboringCube) && (this.getWorld().getCube(randomNeighboringCube[0],
 																		  randomNeighboringCube[1],
 																		  randomNeighboringCube[2]).isSolid())){
             randomNeighboringCube = calculateRandomNeighboringCube();
