@@ -76,7 +76,6 @@ public class Unit {
 		this.setCurrentHitPoints(this.getMaxHitPoints());
 		this.setCurrentStaminaPoints(this.getMaxStaminaPoints());
 		this.setDefaultBehaviorEnabled(enableDefaultBehavior);
-		this.setWeightUnitWithMaterial(this.getWeight());
 		this.setState(State.NONE);
 	}
 
@@ -132,31 +131,7 @@ public class Unit {
 	/**
 	 * Variable registering the current weight of this unit.
 	 */
-	private double weightUnit;
-	
-	/**
-	 * Variable registering the current weight of this unit.
-	 */
-	private double weightUnitWithMaterial;
-
-	/**
-	 * Return the weightUnitWithMaterial of this Unit.
-	 */
-	public double getWeightUnitWithMaterial() {
-		return weightUnitWithMaterial;
-	}
-
-	/**
-	 * Set the weightUnitWithMaterial of this Unit to the given weightUnitWithMaterial.
-	 *
-	 * @param  weightUnitWithMaterial
-	 *         The weightUnitWithMaterial to set.
-	 * @post   The weightUnitWithMaterial of this of this Unit is equal to the given weightUnitWithMaterial.
-	 *       | new.getweightUnitWithMaterial() == weightUnitWithMaterial
-	 */
-	public void setWeightUnitWithMaterial(double weightUnitWithMaterial) {
-		this.weightUnitWithMaterial = weightUnitWithMaterial;
-	}
+	private double weight;
 
 	/**
 	 * Variable registering the current toughness of this unit.
@@ -583,13 +558,13 @@ public class Unit {
 	 */
 	public void setWeight(double weight) {
 		if (weight > this.getMaxAttributeValue()) {
-			this.weightUnit = this.getMaxAttributeValue();
+			this.weight = this.getMaxAttributeValue();
 		}
 		if (weight < this.getMinWeight()) {
-			this.weightUnit = this.getMinWeight();
+			this.weight = this.getMinWeight();
 		}
 		if (weight >= this.getMinWeight() && weight <= this.getMaxAttributeValue())
-			this.weightUnit = weight;
+			this.weight = weight;
 	}
 
 	/**
@@ -1154,7 +1129,7 @@ public class Unit {
 	 * 			| Result == 1.5*((this.getStrength() + this.getAgility)/(200*(this.getWeight/100))
 	 */
 	private double getUnitBaseSpeed() {
-		return 1.5*((this.getStrength()+this.getAgility())/(200*this.getWeightUnitWithMaterial()/100));
+		return 1.5*((this.getStrength()+this.getAgility())/(200*this.getWeight()/100));
 	}
 
 	/**
@@ -1627,25 +1602,21 @@ public class Unit {
 			// reset the WORK_COUNTER
 			if (this.getWorkActivity() == WorkActivity.PICKING_UP_LOG) {
 				this.setMaterial((Log) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getLog());
-				this.setWeightUnitWithMaterial(this.getWeight()+ this.getMaterial().getWeight());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog(null);
 				world.getLogs().remove(this.getMaterial());
 			}if (this.getWorkActivity() == WorkActivity.PICKING_UP_BOULDER) {
 				this.setMaterial((Boulder) world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getBoulder());
-				this.setWeightUnitWithMaterial(this.getWeight()+ this.getMaterial().getWeight());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder(null);
 				world.getBoulders().remove(this.getMaterial());
 			}
 			if (this.getWorkActivity() == WorkActivity.DROPPING_BOULDER){
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setBoulder((Boulder) this.getMaterial());
-				this.setWeightUnitWithMaterial(this.getWeightUnitWithMaterial()- this.getMaterial().getWeight());
                 this.getWorld().getBoulders().add((Boulder) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
 			}if (this.getWorkActivity() == WorkActivity.DROPPING_LOG){
 				this.getMaterial().setPosition(world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).getPosition());
 				world.getCube(getCubeToWorkOn()[0], getCubeToWorkOn()[1], getCubeToWorkOn()[2]).setLog((Log) this.getMaterial());
-				this.setWeightUnitWithMaterial(this.getWeightUnitWithMaterial()- this.getMaterial().getWeight());
                 this.getWorld().getLogs().add((Log) this.getMaterial()); // TODO Correct use of set methods
 				this.setMaterial(null);
 			}
@@ -1687,7 +1658,7 @@ public class Unit {
      *
      * @return    The material this unit is carrying.
      */
-    private Material getMaterial() {
+    public Material getMaterial() {
         return material;
     }
 
@@ -2068,7 +2039,10 @@ public class Unit {
 	 */
 	@Basic
 	public double getWeight() {
-		return this.weightUnit;
+        if (this.getMaterial() != null) {
+            return this.weight + this.getMaterial().getWeight();
+        }
+		return this.weight;
 	}
 
 	/**
