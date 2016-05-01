@@ -3,6 +3,7 @@ package hillbillies.model;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
+import hillbillies.model.exceptions.IllegalCoordinateException;
 import hillbillies.model.terrain.Passable;
 import hillbillies.model.terrain.Rock;
 import hillbillies.model.terrain.Tree;
@@ -1962,10 +1963,17 @@ public class Unit {
     private void startDefaultBehavior() throws IllegalStateException {
         if (this.getState() != State.NONE)
             throw new IllegalStateException();
+        if (this.isSprinting()) {
+            this.stopSprinting();
+        }
         int randomBehaviorNumber = new Random().nextInt(6);
         if (randomBehaviorNumber == 0) {
-            moveTo(new int[]{new Random().nextInt(this.getWorld().getNbCubesX()), new Random().nextInt(this.getWorld().getNbCubesY()), new Random().nextInt(this.getWorld().getNbCubesZ())});
-            this.startSprinting();
+            try {
+                moveTo(new int[]{new Random().nextInt(this.getWorld().getNbCubesX()), new Random().nextInt(this.getWorld().getNbCubesY()), new Random().nextInt(this.getWorld().getNbCubesZ())});
+                this.startSprinting();
+            } catch (IllegalCoordinateException exc) {
+                this.startDefaultBehavior();
+            }
         } else if (randomBehaviorNumber == 1) {
             int[] cubeToWorkOn = calculateRandomNeighboringCube();
             try {
@@ -1982,7 +1990,7 @@ public class Unit {
             try {
                 this.moveTo(randomHostileUnit.getPosition().getCubeCoordinates());
                 this.setToAttack(randomHostileUnit);
-            } catch (IllegalStateException exc) {
+            } catch (Exception exc) {
                 this.startDefaultBehavior();
             }
         }
@@ -2173,8 +2181,6 @@ public class Unit {
 	 * 			| this.Position.getPosition() == targetPosition
 	 * 			| new.setState(State.MOVING)
 	 * @post      if the unit is moving set the newTargetPosition equals to targetPosition
-	 * TODO: 16/03/16 If unit is falling, abort.
-     * TODO: 16/03/16 Integr
 	 */
 	public void moveTo(int[] targetPosition) throws IllegalCoordinateException {
 		if (! this.isValidPosition(targetPosition) || targetPosition == null || this.getWorld().getCube(
@@ -2217,8 +2223,7 @@ public class Unit {
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
 		
-		if(!this.isNeighboringCube(new int[]{x,y,z})){
-			System.out.println(" exc  ");
+		if((!isValidPosition(new int[]{x,y,z})) || (!this.isNeighboringCube(new int[]{x,y,z}))){
 			throw new IllegalArgumentException();
 		}
 		
