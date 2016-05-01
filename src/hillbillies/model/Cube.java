@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Cube {
 
@@ -242,12 +241,7 @@ public class Cube {
      *          false otherwise.
 	 */
 	public boolean hasSolidNeighboringCubes() {
-		for (Cube cube : this.getNeighboringCubes()) {
-            if (cube.isSolid()) {
-                return true;
-            }
-        }
-        return false;
+		return this.getNeighboringCubes().stream().anyMatch(Cube::isSolid);
 	}
 
 	public boolean isNeighboringCube(Position positionToLook){
