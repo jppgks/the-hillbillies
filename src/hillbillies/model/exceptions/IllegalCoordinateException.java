@@ -1,4 +1,4 @@
-package hillbillies.model;
+package hillbillies.model.exceptions;
 
 import java.util.Arrays;
 
