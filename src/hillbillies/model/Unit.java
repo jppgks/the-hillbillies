@@ -1879,6 +1879,8 @@ public class Unit {
         while (! openSet.isEmpty()) {
             QueueElement current = openSet.poll();
             if (current.position.equals(new Position(startPosition))) {
+            	if(current.previous == null)
+            		return;
                 this.setNeighboringCubeToMoveTo(this.getMovementChange(current.previous.position));
                 return;
             }
@@ -1940,7 +1942,7 @@ public class Unit {
         int randomBehaviorNumber = new Random().nextInt(6);
         if (randomBehaviorNumber == 0) {
             try {
-                moveTo(new int[]{new Random().nextInt(this.getWorld().getNbCubesX()), new Random().nextInt(this.getWorld().getNbCubesY()), new Random().nextInt(this.getWorld().getNbCubesZ())});
+                moveTo(new int[]{new Random().nextInt(this.getWorld().getNbCubesX()-1), new Random().nextInt(this.getWorld().getNbCubesY()-1), new Random().nextInt(this.getWorld().getNbCubesZ()-1)});
                 this.startSprinting();
             } catch (IllegalCoordinateException exc) {
                 this.startDefaultBehavior();
@@ -2304,7 +2306,7 @@ public class Unit {
             throw new IllegalStateException();
         }
 		// Can't attack units that not on a neighboring cube of the attacker
-		if(!(this.isNeighboringCube(defender.getPosition().getCubeCoordinates())))
+		if(!(this.isNeighboringCube(defender.getPosition().getCubeCoordinates())|| this.getPosition().equals(defender.getPosition())))
 			throw new IllegalStateException();
 		if(defender.getCurrentHitPoints()<=0)
 			this.setState(State.NONE);
@@ -2430,7 +2432,7 @@ public class Unit {
             throw new IllegalStateException();
         }
         int[] randomNeighboringCube = calculateRandomNeighboringCube();
-        while (! this.isValidPosition(randomNeighboringCube) && (this.getWorld().getCube(randomNeighboringCube[0],
+        while ((! this.isValidPosition(randomNeighboringCube)) && (this.getWorld().getCube(randomNeighboringCube[0],
 																		  randomNeighboringCube[1],
 																		  randomNeighboringCube[2]).isSolid())){
             randomNeighboringCube = calculateRandomNeighboringCube();

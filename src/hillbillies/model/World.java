@@ -232,22 +232,6 @@ public class World {
     }
 
     /**
-     * Returns the index in the list of cubes for the cube at the given coordinates.
-     *
-     * @param     x
-     *            The X-coordinate of the cube.
-     * @param     y
-     *            The Y-coordinate of the cube.
-     * @param     z
-     *            The Z-coordinate of the cube.
-     * @return The index in the list of cubes for the cube at the given coordinates.
-     */
-    private int cubeIndexInCubeList(int x, int y, int z) {
-        return x+ getNbCubesX()*y+
-                (getNbCubesX()* getNbCubesY())*z;
-    }
-
-    /**
      * (Re)calculates the connectedToBorder object for the cubes in this world.
      *
      * @post      The cubes that get disconnected cave in.
@@ -465,22 +449,11 @@ public class World {
      * 			  The time period, in seconds, by which to advance the world's state.
      */
     public void advanceTime(double dt) {
-        for (Cube cube :
-                this.getCubes()) {
-            cube.advanceTime(dt);
-        }
-        for (Unit unit :
-                this.getUnits()) {
-            unit.advanceTime(dt);
-        }
-        for (Log log :
-                this.getLogs()) {
-            log.advanceTime(dt);
-        }
-        for (Boulder boulder :
-                this.getBoulders()) {
-            boulder.advanceTime(dt);
-        }
+        this.getCubes().stream().forEach(cube->cube.advanceTime(dt));
+        Set<Unit> copyOfUnits = new HashSet<>(this.getUnits());
+        copyOfUnits.stream().forEach(unit->unit.advanceTime(dt));
+        this.getLogs().stream().forEach(log->log.advanceTime(dt));
+        this.getBoulders().stream().forEach(boulder->boulder.advanceTime(dt));
     }
 
     public Cube getCube(Position position) {
