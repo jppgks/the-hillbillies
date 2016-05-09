@@ -6,11 +6,11 @@ import hillbillies.model.expression.Expression;
 /**
  * Created by joppegeluykens on 09/05/16.
  */
-public final class WorkStatement extends Statement {
+public final class StatementWork extends Statement {
 
     private final Expression<Position> position;
 
-    public WorkStatement(Expression<Position> position) {
+    public StatementWork(Expression<Position> position) {
         this.position = position;
     }
 

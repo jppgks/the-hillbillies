@@ -6,11 +6,11 @@ import hillbillies.model.expression.Expression;
 /**
  * Created by joppegeluykens on 09/05/16.
  */
-public final class FollowStatement extends Statement {
+public final class StatementFollow extends Statement {
 
     private final Expression<Unit> unit;
 
-    public FollowStatement(Expression<Unit> unit) {
+    public StatementFollow(Expression<Unit> unit) {
         this.unit = unit;
     }
 

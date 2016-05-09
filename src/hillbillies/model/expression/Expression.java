@@ -6,9 +6,15 @@ package hillbillies.model.expression;
  * @author  ...
  * @version 1.0
  */
-public class Expression<T> {
+public abstract class Expression<T> {
 
-    public Expression(Expression<?> value) {
+    protected final T value;
 
+    public Expression(T value) {
+        this.value = value;
+    }
+
+    public T getValue() {
+        return value;
     }
 }

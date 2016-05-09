@@ -5,11 +5,11 @@ import java.util.List;
 /**
  * Created by joppegeluykens on 09/05/16.
  */
-public final class SequenceStatement extends Statement {
+public final class StatementSequence extends Statement {
 
     private final List<Statement> statements;
 
-    public SequenceStatement(List<Statement> statements) {
+    public StatementSequence(List<Statement> statements) {
         this.statements = statements;
     }
 
