@@ -1,14 +1,9 @@
 package hillbillies.part3.facade;
 
-import hillbillies.model.Scheduler;
-import hillbillies.model.Task;
-import hillbillies.model.Unit;
-import hillbillies.model.World;
-import hillbillies.model.Boulder;
-import hillbillies.model.Faction;
-import hillbillies.model.Log;
+import hillbillies.model.*;
 import hillbillies.part2.listener.TerrainChangeListener;
 import hillbillies.part3.programs.ITaskFactory;
+import hillbillies.part3.programs.TaskFactory;
 import ogp.framework.util.ModelException;
 
 import java.util.Collection;
@@ -21,7 +16,7 @@ import java.util.Set;
 public class Facade implements IFacade {
     @Override
     public ITaskFactory<?, ?, Task> createTaskFactory() {
-        return null;
+        return new TaskFactory();
     }
 
     @Override

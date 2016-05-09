@@ -1,5 +1,11 @@
 package hillbillies.part3.programs;
 
+import hillbillies.model.Position;
+import hillbillies.model.Unit;
+import hillbillies.model.expression.*;
+import hillbillies.model.statements.*;
+import hillbillies.model.Task;
+
 import java.util.List;
 
 /**
@@ -8,140 +14,137 @@ import java.util.List;
  * @author  ...
  * @version 1.0
  */
-public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
+public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
+
+    /* TASKS */
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createTasks(java.lang.String, int, java.lang.Object, java.util.List)
 	 */
 	@Override
-	public List<T> createTasks(String name, int priority, S activity, List<int[]> selectedCubes) {
+	public List<Task> createTasks(String name, int priority, Statement activity, List<int[]> selectedCubes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    /* STATEMENTS */
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createAssignment(java.lang.String, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createAssignment(String variableName, E value, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createAssignment(String variableName, Expression<?> value, SourceLocation sourceLocation) {
+        return new AssignmentStatement(variableName, value);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createWhile(java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createWhile(E condition, S body, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createWhile(Expression condition, Statement body, SourceLocation sourceLocation) {
+		return new WhileStatement(condition, body);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIf(java.lang.Object, java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createIf(E condition, S ifBody, S elseBody, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createIf(Expression condition, Statement ifBody, Statement elseBody, SourceLocation sourceLocation) {
+		return new IfStatement(condition, ifBody, elseBody);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createBreak(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createBreak(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createBreak(SourceLocation sourceLocation) {
+		return new BreakStatement();
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createPrint(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createPrint(E value, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createPrint(Expression<?> value, SourceLocation sourceLocation) {
+		return new PrintStatement(value);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createSequence(java.util.List, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createSequence(List<S> statements, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createSequence(List<Statement> statements, SourceLocation sourceLocation) {
+		return new SequenceStatement(statements);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createMoveTo(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createMoveTo(E position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createMoveTo(Expression position, SourceLocation sourceLocation) {
+		return new MoveToStatement(position);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createWork(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createWork(E position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createWork(Expression position, SourceLocation sourceLocation) {
+		return new WorkStatement(position);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createFollow(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createFollow(E unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createFollow(Expression unit, SourceLocation sourceLocation) {
+		return new FollowStatement(unit);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createAttack(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public S createAttack(E unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Statement createAttack(Expression unit, SourceLocation sourceLocation) {
+		return new AttackStatement(unit);
 	}
+
+    /* EXPRESSIONS */
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createReadVariable(java.lang.String, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createReadVariable(String variableName, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression createReadVariable(String variableName, SourceLocation sourceLocation) {
+		// Return Expression assigned to variableName, retrieve from context hashmap.
+		//return new Expression(context.getValue(variableName));
+        return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsSolid(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createIsSolid(E position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression<Boolean> createIsSolid(Expression position, SourceLocation sourceLocation) {
+        // BooleanExpression
+		return new Expression<Boolean>(position);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsPassable(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createIsPassable(E position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression<Boolean> createIsPassable(Expression position, SourceLocation sourceLocation) {
+        // BooleanExpression
+		return new Expression<Boolean>(position);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsFriend(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createIsFriend(E unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Boolean> createIsFriend(Expression unit, SourceLocation sourceLocation) {
+        // BooleanExpression
 		return null;
 	}
 
@@ -149,8 +152,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsEnemy(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createIsEnemy(E unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Boolean> createIsEnemy(Expression unit, SourceLocation sourceLocation) {
+        // BooleanExpression
 		return null;
 	}
 
@@ -158,8 +161,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createIsAlive(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createIsAlive(E unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Boolean> createIsAlive(Expression unit, SourceLocation sourceLocation) {
+        // BooleanExpression
 		return null;
 	}
 
@@ -167,8 +170,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createCarriesItem(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createCarriesItem(E unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Boolean> createCarriesItem(Expression unit, SourceLocation sourceLocation) {
+		// BooleanExpression
 		return null;
 	}
 
@@ -176,8 +179,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createNot(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createNot(E expression, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Boolean> createNot(Expression expression, SourceLocation sourceLocation) {
+		// BooleanExpression
 		return null;
 	}
 
@@ -185,8 +188,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createAnd(java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createAnd(E left, E right, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Boolean> createAnd(Expression left, Expression right, SourceLocation sourceLocation) {
+        // BooleanExpression
 		return null;
 	}
 
@@ -194,8 +197,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createOr(java.lang.Object, java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createOr(E left, E right, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Boolean> createOr(Expression left, Expression right, SourceLocation sourceLocation) {
+        // BooleanExpression
 		return null;
 	}
 
@@ -203,8 +206,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createHerePosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createHerePosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Position> createHerePosition(SourceLocation sourceLocation) {
+        // PositionExpression
 		return null;
 	}
 
@@ -212,8 +215,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createLogPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createLogPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Position> createLogPosition(SourceLocation sourceLocation) {
+        // PositionExpression
 		return null;
 	}
 
@@ -221,8 +224,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createBoulderPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createBoulderPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Position> createBoulderPosition(SourceLocation sourceLocation) {
+        // PositionExpression
 		return null;
 	}
 
@@ -230,8 +233,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createWorkshopPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createWorkshopPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Position> createWorkshopPosition(SourceLocation sourceLocation) {
+        // PositionExpression
 		return null;
 	}
 
@@ -239,8 +242,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createSelectedPosition(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createSelectedPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Position> createSelectedPosition(SourceLocation sourceLocation) {
+        // PositionExpression
 		return null;
 	}
 
@@ -248,17 +251,17 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createNextToPosition(java.lang.Object, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createNextToPosition(E position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+	public Expression<Position> createNextToPosition(Expression position, SourceLocation sourceLocation) {
+        // PositionExpression
+		return new Expression<Position>(position);
 	}
 
 	/* (non-Javadoc)
 	 * @see hillbillies.part3.programs.ITaskFactory#createLiteralPosition(int, int, int, hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Position> createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
+        // PositionExpression
 		return null;
 	}
 
@@ -266,8 +269,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createThis(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createThis(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Unit> createThis(SourceLocation sourceLocation) {
+        // UnitExpression
 		return null;
 	}
 
@@ -275,8 +278,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createFriend(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createFriend(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Unit> createFriend(SourceLocation sourceLocation) {
+        // UnitExpression
 		return null;
 	}
 
@@ -284,8 +287,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createEnemy(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createEnemy(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Unit> createEnemy(SourceLocation sourceLocation) {
+        // UnitExpression
 		return null;
 	}
 
@@ -293,8 +296,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createAny(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createAny(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Unit> createAny(SourceLocation sourceLocation) {
+        // UnitExpression
 		return null;
 	}
 
@@ -302,8 +305,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createTrue(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createTrue(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Unit> createTrue(SourceLocation sourceLocation) {
+        // BooleanExpression
 		return null;
 	}
 
@@ -311,8 +314,8 @@ public class TaskFactory<E, S, T> implements ITaskFactory<E, S, T> {
 	 * @see hillbillies.part3.programs.ITaskFactory#createFalse(hillbillies.part3.programs.SourceLocation)
 	 */
 	@Override
-	public E createFalse(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
+	public Expression<Unit> createFalse(SourceLocation sourceLocation) {
+        // BooleanExpression
 		return null;
 	}
 
