@@ -5,7 +5,7 @@ import hillbillies.model.statements.*;
 /**
  * Created by joppegeluykens on 14/04/16.
  */
-public class Task {
+public class Task{
 	
 	/**
 	 * 
@@ -86,4 +86,25 @@ public class Task {
 		this.taskName = taskName;
 	}
 	
+	@Override
+	public boolean equals(Object o){
+		if (!(o instanceof Task)) {
+			return false;
+		}
+		return  (this.getTaskName().equals(((Task)o).getTaskName())&&
+				(this.getPriority() ==((Task)o).getPriority())&&
+				(this.getActivities().equals(((Task)o).getActivities())));
+		
+	}
+	@Override
+	public int hashCode(){
+		int result = hashCode();
+		if (result == 0) {
+			result = 17;
+			result = 31 * result + this.getTaskName().hashCode();
+			result = 31 * result + this.getPriority();
+			result = 31 * result + this.getActivities().hashCode();
+		}
+		return result;
+	}
 }
