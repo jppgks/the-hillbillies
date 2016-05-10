@@ -1,19 +1,11 @@
 package hillbillies.model;
 
-import java.lang.reflect.GenericArrayType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * Created by joppegeluykens on 14/04/16.
  */
-public class Scheduler implements Iterator<Task> {
+public class Scheduler implements Iterable<Task> {
 	
 	private Faction faction;
 	
@@ -26,6 +18,10 @@ public class Scheduler implements Iterator<Task> {
 	});
 	
 	private HashMap<Task,Unit> assigned = new HashMap<Task, Unit>();
+
+	public Scheduler(Faction faction) {
+		this.faction = faction;
+	}
 
 	/**
 	 * Return the assigned of this Scheduler.
@@ -76,7 +72,7 @@ public class Scheduler implements Iterator<Task> {
 		
 	}
 	
-	public void replace(Task original, Task replacment){
+	public void replace(Task original, Task replacement){
 		
 	}
 	
@@ -103,22 +99,22 @@ public class Scheduler implements Iterator<Task> {
 	public void resetAssigned(Task task, Unit unit) {
 		
 	}
-	/* (non-Javadoc)
-	 * @see java.util.Iterator#hasNext()
-	 */
-	@Override
-	public boolean hasNext() {
-		// TODO Auto-generated method stub
-		return false;
+
+	public void schedule(Task task) {
+
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.Iterator#next()
-	 */
-	@Override
-	public Task next() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterator<Task> iterator() {
+		return new Iterator<Task>() {
+			@Override
+			public boolean hasNext() {
+				return false;
+			}
+
+			@Override
+			public Task next() {
+				return null;
+			}
+		};
 	}
-	
 }

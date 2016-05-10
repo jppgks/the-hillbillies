@@ -30,7 +30,9 @@ import java.util.*;
  *          | isValidName(this.getName())
  */
 public class Unit {
-    /**
+	private Task assignedTask;
+
+	/**
 	 * Initialize this new unit with a name, initial position,
 	 * weight, agility, strength, toughness and whether default behavior
 	 * is enabled or not.
@@ -1898,7 +1900,11 @@ public class Unit {
         this.setState(State.NONE);
 	}
 
-    private class QueueElement {
+	public Task getAssignedTask() {
+		return assignedTask;
+	}
+
+	private class QueueElement {
 
         QueueElement previous;
         Position position;
