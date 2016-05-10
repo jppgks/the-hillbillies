@@ -95,7 +95,7 @@ public class World {
      */
     private Set<Log> logs = new HashSet<>();
 
-    private Faction faction1 = new Faction("team 1");
+    public Faction faction1 = new Faction("team 1");
     private Faction faction2 = new Faction("team 2");
     private Faction faction3 = new Faction("team 3");
     private Faction faction4 = new Faction("team 4");
@@ -154,7 +154,13 @@ public class World {
      * @return A set of all active (i.e., non-empty) factions in the world.
      */
     public Set<Faction> getActiveFactions() {
-        return this.factions;
+    	Set<Faction> active = new HashSet<>();
+    	for (Faction faction : this.factions) {
+			if (!faction.getMembers().isEmpty()) {
+				active.add(faction);
+			}
+		}
+        return active;
     }
 
     /**
