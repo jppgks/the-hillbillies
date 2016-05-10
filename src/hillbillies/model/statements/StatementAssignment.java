@@ -1,5 +1,6 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 
 /**
@@ -15,4 +16,9 @@ public final class StatementAssignment extends Statement {
         this.value = value;
     }
 
+    @Override
+    void execute(Unit unit) {
+        // Already executed.
+        throw new IllegalStateException("An assignment statement needn't be executed.");
+    }
 }

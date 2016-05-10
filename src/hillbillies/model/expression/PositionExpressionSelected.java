@@ -5,7 +5,7 @@ import hillbillies.model.Position;
 /**
  * Created by joppegeluykens on 10/05/16.
  */
-public class PositionExpressionSelected extends PositionExpression<int[]> {
+public final class PositionExpressionSelected extends PositionExpression<int[]> {
 
     @Override
     Position evaluate(int[] selectedCube) {

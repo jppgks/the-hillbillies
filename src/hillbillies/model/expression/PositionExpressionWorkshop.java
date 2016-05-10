@@ -1,16 +1,17 @@
 package hillbillies.model.expression;
 
-import hillbillies.model.Cube;
 import hillbillies.model.Position;
+import hillbillies.model.Unit;
 
 /**
  * Created by joppegeluykens on 10/05/16.
  */
-public class PositionExpressionWorkshop extends PositionExpression<Cube> {
+public final class PositionExpressionWorkshop extends PositionExpression<Unit> {
 
     @Override
-    Position evaluate(Cube cube) {
-        return cube.getPosition();
+    Position evaluate(Unit unit) {
+        // TODO Implement method: return nearest accessible object of a workshop
+        return null;
     }
 
 }

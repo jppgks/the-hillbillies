@@ -9,6 +9,10 @@ import java.util.List;
  */
 public final class StatementSequence extends Statement {
 
+    public List<Statement> getStatements() {
+        return statements;
+    }
+
     private List<Statement> statements;
 
     public StatementSequence(List<Statement> statements) {

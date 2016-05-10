@@ -1,7 +1,7 @@
 package hillbillies.model.expression;
 
-/**
- * Created by joppegeluykens on 09/05/16.
+/*
+ * Not abstract because True and False expressions are instantiated through this class.
  */
 public class LogicalExpression extends Expression<Boolean> {
 

@@ -4,6 +4,7 @@ import hillbillies.model.*;
 import hillbillies.model.expression.*;
 import hillbillies.model.statements.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,10 +20,31 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
     /* TASKS */
 
+    /**
+     * Create a list of tasks from the given arguments.
+     *
+     * @param name
+     *            The name of the task
+     * @param priority
+     *            The initial priority of the task
+     * @param activity
+     *            The activity of the task. Most likely this is a sequence
+     *            statement.
+     * @param selectedCubes
+     *            A list of cube coordinates (each represented as an array {x,
+     *            y, z}) that were selected by the player in the GUI.
+     * @return A list of new task instances. One task instance should be created
+     *         for each selectedCube coordinate. If selectedCubes is empty and
+     *         the 'selected' expression does not occur in the activity, a list
+     *         with exactly one Task instance should be returned.
+     */
 	@Override
 	public List<Task> createTasks(String name, int priority, Statement activity, List<int[]> selectedCubes) {
-		// TODO Auto-generated method stub
-		return null;
+        List<Task> taskList = new ArrayList<>();
+        Task task = new Task(name, priority, activity);
+        taskList.add(task);
+        // Returning multiple tasks???
+        return taskList;
 	}
 
     /* STATEMENTS */
@@ -137,57 +159,53 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	}
 
 	@Override
-	public PositionExpression<Log> createLogPosition(SourceLocation sourceLocation) {
+	public PositionExpression<Unit> createLogPosition(SourceLocation sourceLocation) {
         return new PositionExpressionLog();
 	}
 
 	@Override
-	public PositionExpression<Boulder> createBoulderPosition(SourceLocation sourceLocation) {
+	public PositionExpression<Unit> createBoulderPosition(SourceLocation sourceLocation) {
         return new PositionExpressionBoulder();
 	}
 
 	@Override
-	public PositionExpression<Cube> createWorkshopPosition(SourceLocation sourceLocation) {
+	public PositionExpression<Unit> createWorkshopPosition(SourceLocation sourceLocation) {
         return new PositionExpressionWorkshop();
 	}
 
 	@Override
-	public PositionExpression createSelectedPosition(SourceLocation sourceLocation) {
+	public PositionExpression<int[]> createSelectedPosition(SourceLocation sourceLocation) {
 		return new PositionExpressionSelected();
 	}
 
 	@Override
-	public PositionExpression createNextToPosition(Expression position, SourceLocation sourceLocation) {
+	public PositionExpression<World> createNextToPosition(Expression position, SourceLocation sourceLocation) {
 		return new PositionExpressionNextTo(position);
 	}
 
 	@Override
-	public PositionExpression createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
-		return new PositionExpressionLiteral(new int[] {x, y, z});
+	public Expression<Position> createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
+		return new LiteralPositionExpression(new int[] {x, y, z});
 	}
 
 	@Override
-	public Expression<Unit> createThis(SourceLocation sourceLocation) {
-        // UnitExpression
-		return null;
+	public UnitExpression createThis(SourceLocation sourceLocation) {
+        return new UnitExpressionThis();
 	}
 
 	@Override
-	public Expression<Unit> createFriend(SourceLocation sourceLocation) {
-        // UnitExpression
-		return null;
+	public UnitExpression createFriend(SourceLocation sourceLocation) {
+        return new UnitExpressionFriend();
 	}
 
 	@Override
-	public Expression<Unit> createEnemy(SourceLocation sourceLocation) {
-        // UnitExpression
-		return null;
+	public UnitExpression createEnemy(SourceLocation sourceLocation) {
+        return new UnitExpressionEnemy();
 	}
 
 	@Override
-	public Expression<Unit> createAny(SourceLocation sourceLocation) {
-        // UnitExpression
-		return null;
+	public UnitExpression createAny(SourceLocation sourceLocation) {
+        return new UnitExpressionAny();
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import hillbillies.model.Unit;
 /**
  * Created by joppegeluykens on 10/05/16.
  */
-public class PositionExpressionUnit extends PositionExpression<Unit> {
+public final class PositionExpressionUnit extends PositionExpression<Unit> {
 
     @Override
     Position evaluate(Unit unit) {

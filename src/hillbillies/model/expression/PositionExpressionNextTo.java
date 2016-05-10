@@ -10,14 +10,14 @@ import java.util.Optional;
  * TODO: To be shown on defense
  *         (use of generics, polymorphism, streams, lambda expressions, Optional, conditional operator)
  */
-public class PositionExpressionNextTo extends PositionExpression<World> {
+public final class PositionExpressionNextTo extends PositionExpression<World> {
 
     public PositionExpressionNextTo(Expression<Position> positionExpression) {
         this.value = positionExpression.evaluate();
     }
 
     @Override
-    public Position evaluate(World world) {
+    Position evaluate(World world) {
         // Next to position need be passable and solid neighbouring cube
         Optional<Cube> cubeOptional =
                 world.getCube(this.evaluate()).getNeighboringCubes().stream()

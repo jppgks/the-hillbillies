@@ -1,16 +1,17 @@
 package hillbillies.model.expression;
 
-import hillbillies.model.Boulder;
 import hillbillies.model.Position;
+import hillbillies.model.Unit;
 
 /**
  * Created by joppegeluykens on 10/05/16.
  */
-public class PositionExpressionBoulder extends PositionExpression<Boulder> {
+public final class PositionExpressionBoulder extends PositionExpression<Unit> {
 
     @Override
-    Position evaluate(Boulder boulder) {
-        return boulder.getPosition();
+    Position evaluate(Unit unit) {
+        // TODO Implement method: return nearest accessible object of a boulder
+        return null;
     }
 
 }

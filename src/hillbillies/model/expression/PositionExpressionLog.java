@@ -1,16 +1,17 @@
 package hillbillies.model.expression;
 
-import hillbillies.model.Log;
 import hillbillies.model.Position;
+import hillbillies.model.Unit;
 
 /**
  * Created by joppegeluykens on 10/05/16.
  */
-public class PositionExpressionLog extends PositionExpression<Log> {
+public final class PositionExpressionLog extends PositionExpression<Unit> {
 
     @Override
-    Position evaluate(Log log) {
-        return log.getPosition();
+    Position evaluate(Unit unit) {
+        // TODO Implement method: return nearest accessible object of a log
+        return null;
     }
 
 }
