@@ -1,11 +1,14 @@
 package hillbillies.model;
 
 import java.lang.reflect.GenericArrayType;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 /**
  * Created by joppegeluykens on 14/04/16.
@@ -14,7 +17,13 @@ public class Scheduler implements Iterator<Task> {
 	
 	private Faction faction;
 	
-	private List<Task> tasks;
+	private PriorityQueue<Task> tasks = new PriorityQueue<>(new Comparator<Task>() {
+
+		@Override
+		public int compare(Task o1, Task o2) {
+			return o2.getPriority()-o1.getPriority();
+		}
+	});
 	
 	private HashMap<Task,Unit> assigned = new HashMap<Task, Unit>();
 
@@ -29,19 +38,7 @@ public class Scheduler implements Iterator<Task> {
 	 * Return the tasks of this Scheduler.
 	 */
 	public List<Task> getTasks() {
-		return tasks;
-	}
-
-	/**
-	 * Set the tasks of this Scheduler to the given tasks.
-	 *
-	 * @param  tasks
-	 *         The tasks to set.
-	 * @post   The tasks of this of this Scheduler is equal to the given tasks.
-	 *       | new.gettasks() == tasks
-	 */
-	public void setTasks(List<Task> tasks) {
-		this.tasks = tasks;
+		return new ArrayList<>(tasks);
 	}
 
 	/**
@@ -92,7 +89,7 @@ public class Scheduler implements Iterator<Task> {
 	}
 	
 	public List<Task> getAll(){
-		return null;	
+		return this.getTasks();	
 	}
 	
 	public List<Task> getPositive(){
