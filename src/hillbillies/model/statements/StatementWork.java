@@ -1,6 +1,7 @@
 package hillbillies.model.statements;
 
 import hillbillies.model.Position;
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 
 /**
@@ -15,7 +16,7 @@ public final class StatementWork extends Statement {
     }
 
     @Override
-    public void execute() {
-
+    public void execute(Unit unit) {
+        unit.work(position.evaluate());
     }
 }

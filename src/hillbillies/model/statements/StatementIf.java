@@ -1,5 +1,6 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 
 /**
@@ -18,7 +19,16 @@ public final class StatementIf extends Statement {
     }
 
     @Override
-    public void execute() {
-
+    public void execute(Unit unit) {
+        if (condition.evaluate()) {
+            if (ifBody.hasNext()) {
+                ifBody.next().execute(unit);
+            }
+        }
+        if (elseBody != null) {
+            if (elseBody.hasNext()) {
+                elseBody.next().execute(unit);
+            }
+        }
     }
 }

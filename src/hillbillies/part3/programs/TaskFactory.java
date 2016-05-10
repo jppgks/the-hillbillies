@@ -1,10 +1,10 @@
 package hillbillies.part3.programs;
 
 import hillbillies.model.Position;
+import hillbillies.model.Task;
 import hillbillies.model.Unit;
 import hillbillies.model.expression.*;
 import hillbillies.model.statements.*;
-import hillbillies.model.Task;
 
 import java.util.List;
 
@@ -81,7 +81,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createReadVariable(String variableName, SourceLocation sourceLocation) {
 		// Return Expression assigned to variableName, retrieve from context hashmap.
-		//return new Expression(context.getValue(variableName));
+		//return new Expression(context.evaluate(variableName));
         return null;
 	}
 
@@ -132,26 +132,22 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
 	@Override
 	public Expression<Position> createHerePosition(SourceLocation sourceLocation) {
-        // PositionExpression
 		return null;
 	}
 
 	@Override
 	public Expression<Position> createLogPosition(SourceLocation sourceLocation) {
-        // PositionExpression
-		return null;
+        return null;
 	}
 
 	@Override
 	public Expression<Position> createBoulderPosition(SourceLocation sourceLocation) {
-        // PositionExpression
-		return null;
+        return null;
 	}
 
 	@Override
 	public Expression<Position> createWorkshopPosition(SourceLocation sourceLocation) {
-        // PositionExpression
-		return null;
+        return null;
 	}
 
 	@Override
@@ -197,15 +193,13 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	}
 
 	@Override
-	public Expression<Unit> createTrue(SourceLocation sourceLocation) {
-        // BooleanExpression
-		return null;
+	public LogicalExpression createTrue(SourceLocation sourceLocation) {
+        return new LogicalExpression(true);
 	}
 
 	@Override
-	public Expression<Unit> createFalse(SourceLocation sourceLocation) {
-        // BooleanExpression
-		return null;
+	public LogicalExpression createFalse(SourceLocation sourceLocation) {
+        return new LogicalExpression(false);
 	}
 
 }

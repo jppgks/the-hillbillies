@@ -139,7 +139,7 @@ public class UnitTest {
 			e.printStackTrace();
 		}
         try {
-			unit.work(this.unit.getPosition().getCubeCoordinates()[0], this.unit.getPosition().getCubeCoordinates()[1], this.unit.getPosition().getCubeCoordinates()[2]);
+			unit.work(this.unit.getPosition());
 		} catch (Exception ignored) {
 
 		}
@@ -169,9 +169,7 @@ public class UnitTest {
 		}
 		try {
             unit.work(
-                    this.unit.getPosition().getCubeCoordinates()[0],
-                    this.unit.getPosition().getCubeCoordinates()[1],
-                    this.unit.getPosition().getCubeCoordinates()[2]
+                    this.unit.getPosition()
             );
 		} catch (Exception exc) {
 

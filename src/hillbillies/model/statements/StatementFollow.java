@@ -15,7 +15,7 @@ public final class StatementFollow extends Statement {
     }
 
     @Override
-    public void execute() {
-
+    public void execute(Unit unit) {
+        unit.moveTo(this.unit.evaluate().getPosition().getCubeCoordinates());
     }
 }

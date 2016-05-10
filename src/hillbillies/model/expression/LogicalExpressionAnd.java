@@ -5,6 +5,6 @@ package hillbillies.model.expression;
  */
 public class LogicalExpressionAnd extends LogicalExpression {
     public LogicalExpressionAnd(Expression<Boolean> left, Expression<Boolean> right) {
-        super(left.getValue() && right.getValue());
+        super(left.evaluate() && right.evaluate());
     }
 }

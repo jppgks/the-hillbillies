@@ -7,11 +7,11 @@ import hillbillies.model.Unit;
  */
 public class BooleanExpressionIsEnemy extends BooleanExpression<Unit> {
     public BooleanExpressionIsEnemy(Expression<Unit> unitExpression) {
-        super(unitExpression.getValue());
+        super(unitExpression.evaluate());
     }
 
     @Override
     boolean evaluate(Unit unit) {
-        return ! unit.getFaction().equals(this.getValue().getFaction());
+        return ! unit.getFaction().equals(this.evaluate().getFaction());
     }
 }

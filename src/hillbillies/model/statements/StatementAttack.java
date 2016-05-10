@@ -15,7 +15,7 @@ public final class StatementAttack extends Statement {
     }
 
     @Override
-    public void execute() {
-
+    public void execute(Unit unit) {
+        unit.attack(this.unit.evaluate());
     }
 }

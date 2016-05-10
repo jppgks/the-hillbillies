@@ -14,7 +14,7 @@ public abstract class Expression<T> {
         this.value = value;
     }
 
-    public T getValue() {
+    public T evaluate() {
         return value;
     }
 }

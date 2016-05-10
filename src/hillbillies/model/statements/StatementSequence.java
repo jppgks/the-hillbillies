@@ -1,5 +1,7 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.Unit;
+
 import java.util.List;
 
 /**
@@ -7,14 +9,26 @@ import java.util.List;
  */
 public final class StatementSequence extends Statement {
 
-    private final List<Statement> statements;
+    private List<Statement> statements;
 
     public StatementSequence(List<Statement> statements) {
         this.statements = statements;
     }
 
     @Override
-    public void execute() {
+    public boolean hasNext() {
+        return ! statements.isEmpty();
+    }
 
+    @Override
+    public Statement next() {
+        return statements.remove(0);
+    }
+
+    @Override
+    public void execute(Unit unit) {
+        if (hasNext()) {
+            next().execute(unit);
+        }
     }
 }

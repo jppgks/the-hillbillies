@@ -8,7 +8,7 @@ import hillbillies.model.Unit;
 public final class UnitExpression extends Expression<Unit> {
 
     UnitExpression(Expression<Unit> unitExpression) {
-        super(unitExpression.getValue());
+        super(unitExpression.evaluate());
     }
 
 }

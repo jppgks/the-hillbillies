@@ -1,5 +1,6 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.Unit;
 import hillbillies.model.expression.Expression;
 
 /**
@@ -14,7 +15,7 @@ public final class StatementPrint extends Statement {
     }
 
     @Override
-    public void execute() {
-
+    public void execute(Unit unit) {
+        System.out.println(value);
     }
 }

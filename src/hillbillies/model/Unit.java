@@ -1950,7 +1950,7 @@ public class Unit {
         } else if (randomBehaviorNumber == 1) {
             int[] cubeToWorkOn = calculateRandomNeighboringCube();
             try {
-                work(cubeToWorkOn[0], cubeToWorkOn[1], cubeToWorkOn[2]);
+                work(new Position(cubeToWorkOn));
             } catch (IllegalArgumentException exc) {
                 this.startDefaultBehavior();
             }
@@ -2180,9 +2180,6 @@ public class Unit {
 	}
 
 	/**
-	 * @param z 
-	 * @param y 
-	 * @param x 
 	 * @post 	  the state of the unit is set to work
 	 * 			| new.setState(State.WORKING)
 	 *
@@ -2194,41 +2191,41 @@ public class Unit {
 	 * 			| if(this.getState() != State.NONE)
 	 * TODO: 16/03/16 If unit is falling, abort.
      */
-	public void work(int x, int y, int z) throws IllegalStateException,IllegalArgumentException {
+	public void work(Position position) throws IllegalStateException,IllegalArgumentException {
 		
 		if(this.getState() != State.NONE)
 			throw new IllegalStateException();
 		
-		if((!isValidPosition(new int[]{x,y,z})) || (!this.isNeighboringCube(new int[]{x,y,z}))){
+		if((!isValidPosition(position.getCubeCoordinates())) || (!this.isNeighboringCube(position.getCubeCoordinates()))){
 			throw new IllegalArgumentException();
 		}
 		
 		this.setWorkCounter(this.getTimeForWork());
 		
-		if(this.isCarryingLog() && !this.getWorld().getCube(x,y,z).isSolid() && !this.getWorld().getCube(x,y,z).hasLog()){
+		if(this.isCarryingLog() && !this.getWorld().getCube(position).isSolid() && !this.getWorld().getCube(position).hasLog()){
 			this.setWorkActivity(WorkActivity.DROPPING_LOG);
 			this.setWorkCounter(0.3);
 		}
-		else if(this.isCarryingBoulder()&& !this.getWorld().getCube(x,y,z).isSolid() && !this.getWorld().getCube(x,y,z).hasBoulder()){
+		else if(this.isCarryingBoulder()&& !this.getWorld().getCube(position).isSolid() && !this.getWorld().getCube(position).hasBoulder()){
 			this.setWorkActivity(WorkActivity.DROPPING_BOULDER);
 			this.setWorkCounter(0.3);
 		}
 		// terrain type is workshop
-		else if (this.getWorld().getCube(x, y, z).getTerrain() instanceof Workshop) {
-			if(this.getWorld().getCube(x, y, z).hasBoulder() && this.getWorld().getCube(x, y, z).hasLog())
+		else if (this.getWorld().getCube(position).getTerrain() instanceof Workshop) {
+			if(this.getWorld().getCube(position).hasBoulder() && this.getWorld().getCube(position).hasLog())
 				this.setWorkActivity(WorkActivity.WORKING);
 			else
 				return;
 			
 		}
-		else if(this.getWorld().getCube(x, y, z).hasLog()) {
+		else if(this.getWorld().getCube(position).hasLog()) {
 			if(!isCarryingBoulder() && !isCarryingLog()){
 				this.setWorkActivity(WorkActivity.PICKING_UP_LOG);
 				this.setWorkCounter(0.3);
 			}else
 				return;
 		}
-		else if(this.getWorld().getCube(x, y, z).hasBoulder()){
+		else if(this.getWorld().getCube(position).hasBoulder()){
 			if(!isCarryingBoulder() && !isCarryingLog()){
 				this.setWorkActivity(WorkActivity.PICKING_UP_BOULDER);
 				this.setWorkCounter(0.3);
@@ -2236,14 +2233,14 @@ public class Unit {
 				return;
 		}
 		// terrain type is wood
-		else if (this.getWorld().getCube(x, y, z).getTerrain() instanceof Tree){
+		else if (this.getWorld().getCube(position).getTerrain() instanceof Tree){
 			if(!isCarryingBoulder() && !isCarryingLog())
 				setWorkActivity(WorkActivity.DIGGING);
 			else 
 				return;
 		}
 		// terrain type is rock
-		else if (this.getWorld().getCube(x, y, z).getTerrain() instanceof Rock){
+		else if (this.getWorld().getCube(position).getTerrain() instanceof Rock){
 			if(!isCarryingBoulder() && !isCarryingLog())
 				this.setWorkActivity(WorkActivity.DIGGING);
 			else
@@ -2251,7 +2248,7 @@ public class Unit {
 		}
 		else
 			return;
-		this.setCubeToWorkOn(x, y, z);
+		this.setCubeToWorkOn(position);
 		this.setState(State.WORKING);
 	}
 
@@ -2572,8 +2569,8 @@ public class Unit {
      * @post   The cubeToWorkOn of this of this Unit is equal to the given cubeToWorkOn.
      *       | new.getcubeToWorkOn() == cubeToWorkOn
      */
-    private void setCubeToWorkOn(int x, int y, int z) {
-        this.cubeWorkOn = new int[]{x,y,z};
+    private void setCubeToWorkOn(Position position) {
+        this.cubeWorkOn = position.getCubeCoordinates();
     }
 
     /**

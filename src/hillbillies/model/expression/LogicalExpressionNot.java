@@ -6,7 +6,7 @@ package hillbillies.model.expression;
 public final class LogicalExpressionNot extends LogicalExpression {
 
     public LogicalExpressionNot(Expression<Boolean> booleanExpression) {
-        super(! booleanExpression.getValue());
+        super(! booleanExpression.evaluate());
     }
 
 }

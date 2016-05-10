@@ -8,12 +8,12 @@ import hillbillies.model.Unit;
 public class BooleanExpressionIsFriend extends BooleanExpression<Unit> {
 
     public BooleanExpressionIsFriend(Expression<Unit> unitExpression) {
-        super(unitExpression.getValue());
+        super(unitExpression.evaluate());
     }
 
 
     @Override
     boolean evaluate(Unit unit) {
-        return unit.getFaction().equals(this.getValue().getFaction());
+        return unit.getFaction().equals(this.evaluate().getFaction());
     }
 }

@@ -9,11 +9,11 @@ import hillbillies.model.Unit;
 public final class BooleanExpressionIsPassable extends BooleanExpression<Position> {
 
     public BooleanExpressionIsPassable(Expression<Position> positionExpression) {
-        super(positionExpression.getValue());
+        super(positionExpression.evaluate());
     }
 
     @Override
     public boolean evaluate(Unit unit) {
-        return ! unit.getWorld().getCube(this.getValue()).isSolid();
+        return ! unit.getWorld().getCube(this.evaluate()).isSolid();
     }
 }

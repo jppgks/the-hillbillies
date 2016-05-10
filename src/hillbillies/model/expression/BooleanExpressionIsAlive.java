@@ -7,11 +7,11 @@ import hillbillies.model.Unit;
  */
 public class BooleanExpressionIsAlive extends BooleanExpression<Unit> {
     public BooleanExpressionIsAlive(Expression<Unit> unitExpression) {
-        super(unitExpression.getValue());
+        super(unitExpression.evaluate());
     }
 
     @Override
     boolean evaluate(Unit unit) {
-        return this.getValue().isAlive();
+        return this.evaluate().isAlive();
     }
 }
