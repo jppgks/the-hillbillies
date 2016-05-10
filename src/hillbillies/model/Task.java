@@ -2,6 +2,8 @@ package hillbillies.model;
 
 import hillbillies.model.statements.*;
 
+import java.util.Set;
+
 /**
  * Created by joppegeluykens on 14/04/16.
  */
@@ -28,6 +30,8 @@ public class Task{
 	 * 
 	 */
 	private Statement activities;
+	private Unit assignedUnit;
+	private Set<Scheduler> schedulers;
 
 	public Task(String name, int priority, Statement activities) {
 		this.name = name;
@@ -112,5 +116,17 @@ public class Task{
 			result = 31 * result + this.getActivities().hashCode();
 		}
 		return result;
+	}
+
+	public boolean isWellFormed() {
+		return false;
+	}
+
+	public Unit getAssignedUnit() {
+		return assignedUnit;
+	}
+
+	public Set<Scheduler> getSchedulers() {
+		return schedulers;
 	}
 }
