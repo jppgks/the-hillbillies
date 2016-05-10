@@ -5,9 +5,10 @@ import hillbillies.model.Unit;
 /**
  * Created by joppegeluykens on 09/05/16.
  */
-public class BooleanExpressionIsEnemy extends BooleanExpression<Unit> {
+public final class BooleanExpressionIsEnemy extends BooleanExpression<Unit> {
+
     public BooleanExpressionIsEnemy(Expression<Unit> unitExpression) {
-        super(unitExpression.evaluate());
+        this.value = unitExpression.evaluate();
     }
 
     @Override

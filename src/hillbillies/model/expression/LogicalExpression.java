@@ -6,7 +6,7 @@ package hillbillies.model.expression;
 public class LogicalExpression extends Expression<Boolean> {
 
     public LogicalExpression(Boolean booleanValue) {
-        super(booleanValue);
+        this.value = booleanValue;
     }
 
 }

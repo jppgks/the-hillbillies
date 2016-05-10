@@ -1,12 +1,12 @@
 package hillbillies.model.expression;
 
+import hillbillies.model.Position;
+
 /**
  * Created by joppegeluykens on 09/05/16.
  */
-public abstract class PositionExpression<T> extends Expression<T> {
+public abstract class PositionExpression<T> extends Expression<Position> {
 
-    PositionExpression(Expression<T> positionExpression) {
-        super(positionExpression.evaluate());
-    }
+    abstract Position evaluate(T t);
 
 }

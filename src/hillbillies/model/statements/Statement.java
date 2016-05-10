@@ -1,7 +1,5 @@
 package hillbillies.model.statements;
 
-import hillbillies.model.Unit;
-
 import java.util.Iterator;
 
 /**
@@ -13,8 +11,6 @@ import java.util.Iterator;
 public abstract class Statement implements Iterator<Statement> {
 
     private boolean hasNext = true;
-
-    abstract void execute(Unit unit);
 
     @Override
     public boolean hasNext() {

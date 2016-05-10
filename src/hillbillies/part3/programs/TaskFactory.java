@@ -1,11 +1,10 @@
 package hillbillies.part3.programs;
 
-import hillbillies.model.Position;
-import hillbillies.model.Task;
-import hillbillies.model.Unit;
+import hillbillies.model.*;
 import hillbillies.model.expression.*;
 import hillbillies.model.statements.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -15,6 +14,8 @@ import java.util.List;
  * @version 1.0
  */
 public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task> {
+
+    private HashMap<String, Expression<?>> context;
 
     /* TASKS */
 
@@ -28,6 +29,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
 	@Override
 	public Statement createAssignment(String variableName, Expression value, SourceLocation sourceLocation) {
+        context.put(variableName, value);
         return new StatementAssignment(variableName, value);
 	}
 
@@ -81,8 +83,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Expression createReadVariable(String variableName, SourceLocation sourceLocation) {
 		// Return Expression assigned to variableName, retrieve from context hashmap.
-		//return new Expression(context.evaluate(variableName));
-        return null;
+		return context.get(variableName);
 	}
 
 	@Override
@@ -131,41 +132,38 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	}
 
 	@Override
-	public Expression<Position> createHerePosition(SourceLocation sourceLocation) {
-		return null;
+	public PositionExpression<Unit> createHerePosition(SourceLocation sourceLocation) {
+		return new PositionExpressionUnit();
 	}
 
 	@Override
-	public Expression<Position> createLogPosition(SourceLocation sourceLocation) {
-        return null;
+	public PositionExpression<Log> createLogPosition(SourceLocation sourceLocation) {
+        return new PositionExpressionLog();
 	}
 
 	@Override
-	public Expression<Position> createBoulderPosition(SourceLocation sourceLocation) {
-        return null;
+	public PositionExpression<Boulder> createBoulderPosition(SourceLocation sourceLocation) {
+        return new PositionExpressionBoulder();
 	}
 
 	@Override
-	public Expression<Position> createWorkshopPosition(SourceLocation sourceLocation) {
-        return null;
+	public PositionExpression<Cube> createWorkshopPosition(SourceLocation sourceLocation) {
+        return new PositionExpressionWorkshop();
 	}
 
 	@Override
-	public Expression<Position> createSelectedPosition(SourceLocation sourceLocation) {
-        // PositionExpression
-		return null;
+	public PositionExpression createSelectedPosition(SourceLocation sourceLocation) {
+		return new PositionExpressionSelected();
 	}
 
 	@Override
-	public Expression<Position> createNextToPosition(Expression position, SourceLocation sourceLocation) {
-        // PositionExpression
-		return null;
+	public PositionExpression createNextToPosition(Expression position, SourceLocation sourceLocation) {
+		return new PositionExpressionNextTo(position);
 	}
 
 	@Override
-	public Expression<Position> createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
-        // PositionExpression
-		return null;
+	public PositionExpression createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
+		return new PositionExpressionLiteral(new int[] {x, y, z});
 	}
 
 	@Override

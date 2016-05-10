@@ -7,10 +7,6 @@ import hillbillies.model.Unit;
  */
 public abstract class BooleanExpression<T> extends Expression<T> {
 
-    BooleanExpression(T argToEvaluate) {
-        super(argToEvaluate);
-    }
-
     abstract boolean evaluate(Unit unit);
 
 }

@@ -8,11 +8,7 @@ package hillbillies.model.expression;
  */
 public abstract class Expression<T> {
 
-    protected final T value;
-
-    public Expression(T value) {
-        this.value = value;
-    }
+    protected T value;
 
     public T evaluate() {
         return value;
