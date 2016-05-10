@@ -12,7 +12,7 @@ public class Task{
 	 *variable that's hold the name if this task
 	 * 
 	 */
-	private String taskName;
+	private String name;
 	
 	
 	/**
@@ -28,6 +28,12 @@ public class Task{
 	 * 
 	 */
 	private Statement activities;
+
+	public Task(String name, int priority, Statement activities) {
+		this.name = name;
+		this.priority = priority;
+		this.activities = activities;
+	}
 
 	/**
 	 * Return the activities of this Task.
@@ -68,22 +74,22 @@ public class Task{
 	}
 
 	/**
-	 * Return the taskName of this Task.
+	 * Return the name of this Task.
 	 */
-	public String getTaskName() {
-		return taskName;
+	public String getName() {
+		return name;
 	}
 
 	/**
-	 * Set the taskName of this Task to the given taskName.
+	 * Set the name of this Task to the given name.
 	 *
-	 * @param  taskName
-	 *         The taskName to set.
-	 * @post   The taskName of this of this Task is equal to the given taskName.
-	 *       | new.gettaskName() == taskName
+	 * @param  name
+	 *         The name to set.
+	 * @post   The name of this of this Task is equal to the given name.
+	 *       | new.getName() == name
 	 */
-	public void setTaskName(String taskName) {
-		this.taskName = taskName;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	@Override
@@ -91,7 +97,7 @@ public class Task{
 		if (!(o instanceof Task)) {
 			return false;
 		}
-		return  (this.getTaskName().equals(((Task)o).getTaskName())&&
+		return  (this.getName().equals(((Task)o).getName())&&
 				(this.getPriority() ==((Task)o).getPriority())&&
 				(this.getActivities().equals(((Task)o).getActivities())));
 		
@@ -101,7 +107,7 @@ public class Task{
 		int result = hashCode();
 		if (result == 0) {
 			result = 17;
-			result = 31 * result + this.getTaskName().hashCode();
+			result = 31 * result + this.getName().hashCode();
 			result = 31 * result + this.getPriority();
 			result = 31 * result + this.getActivities().hashCode();
 		}
