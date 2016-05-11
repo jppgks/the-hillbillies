@@ -6,9 +6,9 @@ import java.util.*;
  * Created by joppegeluykens on 14/04/16.
  */
 public class Scheduler implements Iterable<Task> {
-	
+
 	private Faction faction;
-	
+
 	private PriorityQueue<Task> tasks = new PriorityQueue<>(new Comparator<Task>() {
 
 		@Override
@@ -18,10 +18,6 @@ public class Scheduler implements Iterable<Task> {
 	});
 	
 	private HashMap<Task,Unit> assigned = new HashMap<Task, Unit>();
-
-	public Scheduler(Faction faction) {
-		this.faction = faction;
-	}
 
 	/**
 	 * Return the assigned of this Scheduler.

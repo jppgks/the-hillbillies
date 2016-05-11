@@ -4,6 +4,8 @@ import java.util.*;
 
 public class Faction extends GameObject {
 
+	private Scheduler scheduler;
+
 	/**
 	 * Creates a new faction object and initializes it with the given name.
      *
@@ -66,5 +68,9 @@ public class Faction extends GameObject {
 	 */
 	public Set<Unit> getMembers() {
 		return members;
+	}
+
+	public Scheduler getScheduler() {
+		return scheduler;
 	}
 }
