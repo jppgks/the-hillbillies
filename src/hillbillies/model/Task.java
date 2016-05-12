@@ -30,7 +30,9 @@ public class Task{
 	 * 
 	 */
 	private Statement activities;
+
 	private Unit assignedUnit;
+
 	private Set<Scheduler> schedulers;
 
 	public Task(String name, int priority, Statement activities) {
@@ -123,7 +125,12 @@ public class Task{
 	}
 
 	public Unit getAssignedUnit() {
-		return assignedUnit;
+		return this.assignedUnit;
+	}
+
+	public void assignTo(Unit unit) {
+		this.assignedUnit = unit;
+		unit.assignTo(this);
 	}
 
 	public Set<Scheduler> getSchedulers() {

@@ -73,4 +73,8 @@ public class Faction extends GameObject {
 	public Scheduler getScheduler() {
 		return scheduler;
 	}
+
+	public void setScheduler(Scheduler scheduler) {
+		this.scheduler = scheduler;
+	}
 }
