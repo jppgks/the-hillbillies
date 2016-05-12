@@ -14,10 +14,6 @@ public class Scheduler implements Iterable<Task> {
 			return o2.getPriority()-o1.getPriority();
 		}
 	});
-
-	public void setFaction(Faction faction) {
-		faction.setScheduler(this);
-	}
 	
 	public void add(Task task){
 		this.tasks.add(task);

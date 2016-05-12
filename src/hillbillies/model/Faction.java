@@ -16,6 +16,7 @@ public class Faction extends GameObject {
 	 */
 	public Faction(String name) {
 		this.setName(name);
+		this.setScheduler(new Scheduler());
 	}
 
     /**
