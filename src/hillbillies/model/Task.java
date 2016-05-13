@@ -129,6 +129,7 @@ public class Task{
 	}
 
 	public void assignTo(Unit unit) {
+		this.activities.setUnit(unit);
 		this.assignedUnit = unit;
 	}
 

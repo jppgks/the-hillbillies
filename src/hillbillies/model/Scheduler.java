@@ -8,12 +8,7 @@ import java.util.stream.Collectors;
  */
 public class Scheduler implements Iterable<Task> {
 
-	private PriorityQueue<Task> tasks = new PriorityQueue<>(new Comparator<Task>() {
-		@Override
-		public int compare(Task o1, Task o2) {
-			return o2.getPriority()-o1.getPriority();
-		}
-	});
+	private List<Task> tasks = new ArrayList<>();
 	
 	public void add(Task task){
 		this.tasks.add(task);
@@ -72,17 +67,7 @@ public class Scheduler implements Iterable<Task> {
 	}
 
 	public Iterator<Task> iterator() {
-		return new Iterator<Task>() {
-			@Override
-			public boolean hasNext() {
-				return ! tasks.isEmpty();
-			}
-
-			@Override
-			public Task next() {
-				return tasks.poll(); // Does the iterator only return the tasks or does it also remove them from the queue?
-			}
-		};
+		return this.tasks.iterator();
 	}
 	public boolean isEmpty(){
 		return this.tasks.isEmpty();

@@ -870,10 +870,19 @@ public class Unit {
 
 		//If the units default behavior is enabled start a new behavior
 		if(this.getDefaultBehaviorEnabled()){
-			try {
-				this.startDefaultBehavior();
-			} catch (IllegalStateException exc) {
+			if(this.getAssignedTask() != null){
+				if (this.getAssignedTask().getActivities().hasNext()) {
+					this.getAssignedTask().getActivities().next().execute();
+				}
+			}
+			else if (this.getFaction().getScheduler().iterator().hasNext()) {    		
+				this.assignTo(this.getFaction().getScheduler().iterator().next());
+			}else{
+				try {
+					this.startDefaultBehavior();
+				} catch (IllegalStateException exc) {
 
+				}
 			}
 		}
 	}
@@ -1937,9 +1946,6 @@ public class Unit {
      * |	then this.startSprinting()
      */
     private void startDefaultBehavior() throws IllegalStateException {
-    	if (!this.getFaction().getScheduler().isEmpty()) {
-			this.assignTo(this.getFaction().getScheduler().iterator().next());
-		}
         if (this.getState() != State.NONE)
             throw new IllegalStateException();
         if (this.isSprinting()) {
