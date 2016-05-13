@@ -30,7 +30,6 @@ import java.util.*;
  *          | isValidName(this.getName())
  */
 public class Unit {
-	private Task assignedTask;
 
 	/**
 	 * Initialize this new unit with a name, initial position,
@@ -311,6 +310,8 @@ public class Unit {
      * when default behaviour action is attacking.
      */
     private Unit toAttack;
+
+	private Task assignedTask;
 
 	/**
 	 * Constant reflecting the lowest possible initial value for
@@ -1900,10 +1901,6 @@ public class Unit {
         this.setState(State.NONE);
 	}
 
-	public Task getAssignedTask() {
-		return assignedTask;
-	}
-
 	private class QueueElement {
 
         QueueElement previous;
@@ -2734,4 +2731,12 @@ public class Unit {
     public void setWorld(World world) {
         this.world = world;
     }
+
+	public Task getAssignedTask() {
+		return assignedTask;
+	}
+
+	public void assignTo(Task task) {
+		this.assignedTask = task;
+	}
 }

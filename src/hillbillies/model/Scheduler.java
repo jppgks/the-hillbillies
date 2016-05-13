@@ -1,115 +1,86 @@
 package hillbillies.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by joppegeluykens on 14/04/16.
  */
 public class Scheduler implements Iterable<Task> {
 
-	private Faction faction;
-
 	private PriorityQueue<Task> tasks = new PriorityQueue<>(new Comparator<Task>() {
-
 		@Override
 		public int compare(Task o1, Task o2) {
 			return o2.getPriority()-o1.getPriority();
 		}
 	});
 	
-	private HashMap<Task,Unit> assigned = new HashMap<Task, Unit>();
+	public void add(Task task){
+		this.tasks.add(task);
+	}
+	
+	public void addAll(List<Task> tasks){
+		this.tasks.addAll(tasks);
+	}
 
-	/**
-	 * Return the assigned of this Scheduler.
-	 */
-	public HashMap<Task, Unit> getAssigned() {
-		return assigned;
+	public void remove(Task task) {
+		this.tasks.remove(task);
+	}
+	
+	public void removeCollection(Collection<Task> tasks) {
+		this.tasks.removeAll(tasks);
+	}
+	
+	public void replace(Task original, Task replacement){
+		this.tasks.remove(original);
+		this.tasks.add(replacement);
+	}
+	
+	public boolean hasAsTask(Task task){
+		return this.tasks.contains(task);
+	}
+	
+	public boolean hasAsTasks(Collection<Task> tasks){
+		return this.tasks.containsAll(tasks);
 	}
 
 	/**
 	 * Return the tasks of this Scheduler.
 	 */
-	public List<Task> getTasks() {
+	public List<Task> getAll() {
 		return new ArrayList<>(tasks);
-	}
-
-	/**
-	 * Return the faction of this Scheduler.
-	 */
-	public Faction getFaction() {
-		return faction;
-	}
-
-	/**
-	 * Set the faction of this Scheduler to the given faction.
-	 *
-	 * @param  faction
-	 *         The faction to set.
-	 * @post   The faction of this of this Scheduler is equal to the given faction.
-	 *       | new.getfaction() == faction
-	 */
-	public void setFaction(Faction faction) {
-		this.faction = faction;
-	}
-	
-	public void add(Task task){
-		
-	}
-	
-	public void addAll(List<Task> task){
-		
-	}
-
-	public void remove() {
-		
-	}
-	
-	public void removeCollection(Collection<Task> tasks) {
-		
-	}
-	
-	public void replace(Task original, Task replacement){
-		
-	}
-	
-	public boolean hasAsTask(Task task){
-		return false;
-	}
-	
-	public boolean hasAsTasks(Collection<Task> task){
-		return false;
-	}
-	
-	public List<Task> getAll(){
-		return this.getTasks();	
 	}
 	
 	public List<Task> getPositive(){
-		return null;
+		return this.tasks.stream()
+				.filter(task -> task.getPriority() > 0)
+				.collect(Collectors.toList());
 	}
 	
 	public void markAssigned(Task task, Unit unit) {
-		
+		this.tasks.remove(task);
+		task.assignTo(unit);
 	}
-	
+
+	// Documentatie!
 	public void resetAssigned(Task task, Unit unit) {
 		
 	}
 
 	public void schedule(Task task) {
-
+		this.add(task);
 	}
 
 	public Iterator<Task> iterator() {
 		return new Iterator<Task>() {
 			@Override
 			public boolean hasNext() {
-				return false;
+				return ! tasks.isEmpty();
 			}
 
 			@Override
 			public Task next() {
-				return null;
+				return tasks.poll(); // Does the iterator only return the tasks or does it also remove them from the queue?
 			}
 		};
 	}
