@@ -84,4 +84,7 @@ public class Scheduler implements Iterable<Task> {
 			}
 		};
 	}
+	public boolean isEmpty(){
+		return this.tasks.isEmpty();
+	}
 }

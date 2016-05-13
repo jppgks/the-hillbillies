@@ -1937,6 +1937,9 @@ public class Unit {
      * |	then this.startSprinting()
      */
     private void startDefaultBehavior() throws IllegalStateException {
+    	if (!this.getFaction().getScheduler().isEmpty()) {
+			this.assignTo(this.getFaction().getScheduler().iterator().next());
+		}
         if (this.getState() != State.NONE)
             throw new IllegalStateException();
         if (this.isSprinting()) {
@@ -2738,5 +2741,6 @@ public class Unit {
 
 	public void assignTo(Task task) {
 		this.assignedTask = task;
+		task.assignTo(this);
 	}
 }

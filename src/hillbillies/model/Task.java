@@ -130,7 +130,6 @@ public class Task{
 
 	public void assignTo(Unit unit) {
 		this.assignedUnit = unit;
-		unit.assignTo(this);
 	}
 
 	public Set<Scheduler> getSchedulers() {
