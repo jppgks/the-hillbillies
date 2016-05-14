@@ -17,7 +17,7 @@ public final class StatementAssignment extends Statement {
     }
 
     @Override
-    void execute(Unit unit) {
+	public void execute(Unit unit) {
         // Already executed.
         throw new IllegalStateException("An assignment statement needn't be executed.");
     }

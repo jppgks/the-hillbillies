@@ -126,7 +126,11 @@ public class Task{
 
 	public Unit getAssignedUnit() {
 		return this.assignedUnit;
+	}	
+	public  void setAssignedUnit(Unit unit) {
+		this.assignedUnit = unit;
 	}
+	
 
 	public void assignTo(Unit unit) {
 		this.assignedUnit = unit;

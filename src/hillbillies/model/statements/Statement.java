@@ -14,7 +14,7 @@ public abstract class Statement implements Iterator<Statement> {
 
     private boolean hasNext = true;
 
-    abstract void execute(Unit unit);
+    public abstract void execute(Unit unit);
 
     @Override
     public boolean hasNext() {
