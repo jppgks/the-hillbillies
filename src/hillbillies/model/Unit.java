@@ -871,10 +871,10 @@ public class Unit {
 		//If the units default behavior is enabled start a new behavior
 		if(this.getDefaultBehaviorEnabled()){
 			if(this.getAssignedTask() != null){
-				if (this.getAssignedTask().getActivities().hasNext()) {
+				if (this.getAssignedTask().getActivities().hasNext() && this.getState() == State.NONE) {
 					this.getAssignedTask().getActivities().next().execute(this);
 				}
-				else{
+				else if(!this.getAssignedTask().getActivities().hasNext()){
 					this.getFaction().getScheduler().remove(this.assignedTask);
 					this.getFaction().getScheduler().resetAssigned(this.getAssignedTask(), this);
 				}
@@ -882,7 +882,7 @@ public class Unit {
 			else if (this.getFaction().getScheduler().iterator().hasNext()) {    		
 				this.assignTo(this.getFaction().getScheduler().iterator().next());
 			
-			}else{
+			}else if ( this.getAssignedTask() == null && this.getState() == State.NONE ){
 				try {
 					this.startDefaultBehavior();
 				} catch (IllegalStateException exc) {
@@ -2210,12 +2210,12 @@ public class Unit {
      */
 	public void work(Position position) throws IllegalStateException,IllegalArgumentException {
 		
-		if(this.getState() != State.NONE)
-			throw new IllegalStateException();
-		
-		if((!isValidPosition(position.getCubeCoordinates())) || (!this.isNeighboringCube(position.getCubeCoordinates()))){
-			throw new IllegalArgumentException();
-		}
+//		if(this.getState() != State.NONE)
+//			throw new IllegalStateException();
+//		
+//		if((!isValidPosition(position.getCubeCoordinates())) || (!this.isNeighboringCube(position.getCubeCoordinates()))){
+//			throw new IllegalArgumentException();
+//		}
 		
 		this.setWorkCounter(this.getTimeForWork());
 		

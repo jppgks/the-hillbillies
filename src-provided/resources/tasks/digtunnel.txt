@@ -1,11 +1,8 @@
 name: "dig tunnel from (11, 10, 10) to (14, 10, 10)"
 priority : 1000
 activities:
-	moveTo (10, 10, 10);
-	work (11, 10, 10);
-	moveTo (11, 10, 10);
-	work (12, 10, 10);
-	moveTo (12, 10, 10);
-	work (13, 10, 10);
-	moveTo (13, 10, 10);
-	work (14, 10, 10);
+	moveTo (11, 10, 9);
+	work (11, 11, 9);
+	moveTo (11, 11, 9);
+	work (11, 12, 9);
+	moveTo (11, 12, 9);
