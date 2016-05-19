@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Cube {
 
@@ -216,12 +217,17 @@ public class Cube {
 	 */
     void caveIn() {
         this.setTerrain(0, false);
-//        if (ThreadLocalRandom.current().nextInt(5) == 0) {
+        if (ThreadLocalRandom.current().nextInt(5) == 0) {
             this.spawnBoulderOrLog();
-//        }
+        }
        this.getWorld().calculateConnectedToBorder();
 	}
 
+    /**
+     * Spawns a blouder on an Rock cube and a log on a Tree cube
+     * 
+     * @post Material is spawned on this cube.
+     */
     private void spawnBoulderOrLog() {
     	if (this.getTerrain() instanceof Tree) {
         	Log log = new Log(this.getPosition(), this.getWorld());

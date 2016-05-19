@@ -762,6 +762,7 @@ public class Unit {
 	 */
 	@Raw
 	private void setCurrentStaminaPoints(double stamina) {
+		assert isValidStamina(stamina);
 		this.currentStaminaPoints = stamina;
 	}
 
@@ -2553,7 +2554,7 @@ public class Unit {
     /**
      * Returns whether or not this unit is carrying a boulder.
      *
-     * @return Whether or not this unit is carrying a boulder.
+     * @return Whether or not this unit is carrying a.
      */
     public boolean isCarryingBoulder() {
         return (this.getMaterial() != null && this.getMaterial() instanceof Boulder);
