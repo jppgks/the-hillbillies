@@ -1,22 +1,168 @@
 \documentclass[]{article}
+\usepackage{fullpage}
 
 %opening
-\title{}
-\author{}
+\title{\textbf{Concept applications in project}}
+\author{Iwein Bau \and Joppe Geluykens}
 
 \begin{document}
 
 \maketitle
 
-\section{}
-	\begin{itemize}
-		\item line 1036(public State getState())
-			  line 2074(public double getStregth())
-			  line 2085(getAgility)
-			  line 2165(getOrientation())
-		\item line 22 Unit class
-		\item line 76 try/
-			  line 405 throws
-			  
-	\end{itemize}
+\section{Concepts and their applications}
+\subsection{Basic inspector}
+	\begin{description}
+		\item[Line 1036, Unit] \texttt{getState()}
+		\item[Line 2074, Unit] \texttt{getStrength()}
+		\item[Line 2085, Unit] \texttt{getAgility()}
+		\item[Line 2165, Unit] \texttt{getOrientation()}
+	\end{description}
+	
+\subsection{Class invariant}
+	\begin{description}
+		\item[Line 22, Unit] Unit class
+	\end{description}
+	
+\subsection{Defensive programming}
+	\begin{description}
+		\item[Line 76, Unit] try/catch
+		\item[Line 405, Unit] throws
+		\item[Line 1846, Unit] throws 
+	\end{description}
+	
+\subsection{Nominal programming}
+	\begin{description}
+		\item[Line 765, Unit] \texttt{setCurrentStaminaPoints()}
+	\end{description}
+	
+\subsection{Total programming}
+	\begin{description}
+		\item[Line 562, Unit] \texttt{setWeight()}
+		\item[Line 601, Unit] \texttt{setAgility()}
+		\item (all attributes)
+	\end{description}
+	
+\subsection{Uni-directional association}
+	\begin{description}
+		\item[Line 272, Unit] \texttt{material}
+	\end{description}
+
+\subsection{Bidirectional association}
+	\subsubsection{World-Cube}
+	\begin{description}
+		\item[Line 72, Cube] \texttt{world}
+		\item[Line 76, World] \texttt{cubes}
+	\end{description}
+	\subsubsection{World-Unit}
+	\begin{description}
+		\item[Line 242, Unit] \texttt{world}
+		\item[Line 81, World] \texttt{unit}
+	\end{description}
+	
+\subsection{Destructor}
+	\begin{description}
+		\item[Line 2698, Unit] \texttt{die()}
+	\end{description}
+	
+\subsection{Generic class instantiation}
+	\begin{description}
+		\item[Line 81, World] \texttt{units}
+		\item[Line 86, World] \texttt{factions}
+		\item[Line 91, World] \texttt{boulders}
+		\item[Line 96, World] \texttt{logs}		
+	\end{description}
+	
+\subsection{Test method}
+	\begin{description}
+		\item \texttt{tests} package
+	\end{description}
+
+\subsection{Polymorphism}
+	\begin{description}
+		\item Terrain hierarchy
+		\item Material hierarchy
+	\end{description}
+	
+\subsection{RunTime Type Information}
+	\begin{description}
+		\item[Line 276, Cube] \texttt{isSolid()}
+		\item[Line 231, Cube] \texttt{spawnBoulderOrLog()}
+	\end{description}
+
+\subsection{Dynamic binding}
+	\begin{description}
+		\item[Line 1622, Unit] \texttt{setMaterial(Log)}
+	\end{description}
+	
+\subsection{Liskov Substitution Principle}
+	\begin{description}
+		\item LSP is applied everywhere (all trivial cases).
+	\end{description}
+	
+\subsection{Enumeration}
+	\begin{description}
+		\item \texttt{State}
+		\item \texttt{WorkActivity}
+	\end{description}
+	
+\subsection{Value class}
+	\begin{description}
+		\item \texttt{Position} class
+	\end{description}
+	
+\subsection{Interface/abstract class}
+	\begin{description}
+		\item \texttt{Material}
+		\item \texttt{Expression}
+		\item \texttt{Statement}
+		\item \texttt{Terrain}
+	\end{description}
+	
+\subsection{Anonymous class}
+	\begin{description}
+		\item[line 1889, Unit] \texttt{new Comparator<QueueElement>}
+	\end{description}
+	
+\subsection{Generic class definition}
+	\begin{description}
+		\item \texttt{Expression}
+	\end{description}
+	
+\subsection{Lambda expression}
+	\begin{description}
+		\item[Line 24, PositionExpressionNextTo] \texttt{filter}
+		\item[Line 457, World] \texttt{advanceTime}
+	\end{description}
+	
+\subsection{Stream}
+	\begin{description}
+		\item[Line 23-26, PositionExpressionNextTo] \texttt{cubeOptional}
+		\item[Line 457, World] \texttt{advanceTime}
+	\end{description}
+	
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
